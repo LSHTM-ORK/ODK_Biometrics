@@ -1,0 +1,4 @@
+rootProject.name='ODK Fingerprints Mantra'
+include ':app'
+include ':printscanner'
+include ':mantramfs100'
