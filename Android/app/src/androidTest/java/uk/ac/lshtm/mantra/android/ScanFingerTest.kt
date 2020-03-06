@@ -1,6 +1,7 @@
 package uk.ac.lshtm.mantra.android
 
 import android.app.Activity
+import android.content.Context
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -37,7 +38,7 @@ class ScanFingerTest {
 
 class DummyScannerFactory(private val dummyScanner: DummyScanner) : ScannerFactory {
 
-    override fun create(): Scanner {
+    override fun create(context: Context): Scanner {
         return dummyScanner
     }
 }

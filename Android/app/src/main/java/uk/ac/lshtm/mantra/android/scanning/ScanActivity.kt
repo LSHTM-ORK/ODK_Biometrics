@@ -1,13 +1,13 @@
 package uk.ac.lshtm.mantra.android.scanning
 
 import android.app.Activity
-import android.content.Intent
-import android.os.AsyncTask
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_scan.*
 import uk.ac.lshtm.mantra.android.R
 import uk.ac.lshtm.mantra.core.Scanner
+import uk.ac.lshtm.mantra.mantramfs100.MFS100Scanner
 
 class ScanActivity : Activity() {
 
@@ -15,31 +15,25 @@ class ScanActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
+        val scanner = SCANNER_FACTORY.create(this)
+
         capture_button.setOnClickListener {
             capture_button.visibility = View.GONE
             progress_bar.visibility = View.VISIBLE
 
-            object : AsyncTask<Void, Void, String>() {
-                override fun doInBackground(vararg params: Void?): String {
-                    return SCANNER_FACTORY.create().captureISOTemplate()
-                }
-
-                override fun onPostExecute(template: String) {
-                    val intent = Intent().apply {
-                        putExtra("value", template)
-                    }
-
-                    setResult(RESULT_OK, intent)
-                    finish()
-                }
-            }.execute()
+            Thread(Runnable {
+                val isoTemplate = scanner.captureISOTemplate()
+                intent.putExtra("value", isoTemplate)
+                setResult(RESULT_OK, intent)
+                finish()
+            }).start()
         }
     }
 
     companion object {
         var SCANNER_FACTORY: ScannerFactory = object : ScannerFactory {
-            override fun create(): Scanner {
-                return DemoScanner()
+            override fun create(context: Context): Scanner {
+                return MFS100Scanner(context)
             }
         }
     }
