@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<h:html xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml"
+    xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms"
+    xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2002/xforms">
+    <h:head>
+        <h:title>finger</h:title>
+        <model odk:xforms-version="1.0.0">
+            <instance>
+                <data id="finger">
+                    <left_index />
+                    <meta>
+                        <instanceID />
+                    </meta>
+                </data>
+            </instance>
+            <bind nodeset="/data/left_index" type="string" />
+            <bind nodeset="/data/meta/instanceID" readonly="true()" type="string"
+                jr:preload="uid" />
+        </model>
+    </h:head>
+    <h:body>
+        <input appearance="ex:uk.ac.lshtm.mantra.android
+.SCAN" ref="/data/left_index">
+            <label>Scan left index finger</label>
+        </input>
+    </h:body>
+</h:html>
