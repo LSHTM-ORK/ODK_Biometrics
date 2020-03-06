@@ -39,11 +39,7 @@ class ScanActivity : Activity() {
     companion object {
         var SCANNER_FACTORY: ScannerFactory = object : ScannerFactory {
             override fun create(): Scanner {
-                return object : Scanner {
-                    override fun captureISOTemplate(): String {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
-                }
+                return DemoScanner()
             }
         }
     }

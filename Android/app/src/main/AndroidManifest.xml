@@ -7,7 +7,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight" >
+        android:theme="@style/Theme.MaterialComponents.DayNight">
 
         <activity android:name=".settings.SettingsActivity">
             <intent-filter>
@@ -15,6 +15,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".scanning.ScanActivity" />
+        <activity
+            android:name=".scanning.ScanActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="uk.ac.lshtm.mantra.android.SCAN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
