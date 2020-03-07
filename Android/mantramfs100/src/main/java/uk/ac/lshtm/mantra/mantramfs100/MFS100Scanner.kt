@@ -35,7 +35,7 @@ class MFS100Scanner(context: Context) : Scanner {
     override fun captureISOTemplate(): String {
         val fingerData = FingerData()
         mfS100.AutoCapture(fingerData, 10000, false)
-        return String(fingerData.ISOTemplate())
+        return fingerData.ISOTemplate().toHexString()
     }
 
     private fun initialize() {
@@ -45,4 +45,6 @@ class MFS100Scanner(context: Context) : Scanner {
     private fun loadFirmware() {
         mfS100.LoadFirmware()
     }
+
+    fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 }
