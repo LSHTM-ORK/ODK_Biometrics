@@ -6,15 +6,17 @@ import com.mantra.mfs100.MFS100
 import com.mantra.mfs100.MFS100Event
 import uk.ac.lshtm.mantra.core.Scanner
 
-class MFS100Scanner(context: Context) : Scanner {
+class MFS100Scanner(context: Context, mfs100Provider: (MFS100Event) -> MFS100) : Scanner {
 
-    private val mfS100 = MFS100(object : MFS100Event {
-        override fun OnDeviceAttached(vid: Int, pid: Int, hasPermission: Boolean) {
-            if (vid == 1204 || vid == 11279) {
-                if (pid == 34323) {
+    constructor(context: Context) : this(context, ::MFS100)
+
+    private val mfS100 = mfs100Provider(object : MFS100Event {
+        override fun OnDeviceAttached(vendorID: Int, productID: Int, hasPermission: Boolean) {
+            if (vendorID == 1204 || vendorID == 11279) {
+                if (productID == 34323) {
                     loadFirmware()
 
-                } else if (pid == 4101) {
+                } else if (productID == 4101) {
                     initialize()
                 }
             }
@@ -29,7 +31,6 @@ class MFS100Scanner(context: Context) : Scanner {
 
     init {
         mfS100.SetApplicationContext(context)
-        mfS100.Init()
     }
 
     override fun captureISOTemplate(): String {
