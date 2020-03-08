@@ -6,12 +6,18 @@ import com.mantra.mfs100.MFS100
 import com.mantra.mfs100.MFS100Event
 import uk.ac.lshtm.mantra.core.Scanner
 
-class MFS100Scanner(context: Context, mfs100Provider: (MFS100Event) -> MFS100) : Scanner {
+class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) -> MFS100) : Scanner {
 
     constructor(context: Context) : this(context, ::MFS100)
 
+    private lateinit var onConnected: () -> Unit
+
     private val mfS100 = mfs100Provider(object : MFS100Event {
         override fun OnDeviceAttached(vendorID: Int, productID: Int, hasPermission: Boolean) {
+            if (!hasPermission) {
+                return
+            }
+
             if (vendorID == 1204 || vendorID == 11279) {
                 if (productID == 34323) {
                     loadFirmware()
@@ -29,7 +35,8 @@ class MFS100Scanner(context: Context, mfs100Provider: (MFS100Event) -> MFS100) :
         }
     })
 
-    init {
+    override fun connect(onConnected: () -> Unit) {
+        this.onConnected = onConnected
         mfS100.SetApplicationContext(context)
     }
 
@@ -41,6 +48,7 @@ class MFS100Scanner(context: Context, mfs100Provider: (MFS100Event) -> MFS100) :
 
     private fun initialize() {
         mfS100.Init()
+        onConnected()
     }
 
     private fun loadFirmware() {

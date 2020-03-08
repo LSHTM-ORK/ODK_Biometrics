@@ -3,4 +3,5 @@
     <string name="nothing_here_yet">Nothing here yet!</string>
     <string name="capture">Capture</string>
     <string name="place_finger">Place finger on scanner</string>
+    <string name="connect_scanner">Connect scanner</string>
 </resources>

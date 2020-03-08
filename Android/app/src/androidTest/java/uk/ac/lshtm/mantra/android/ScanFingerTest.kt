@@ -45,6 +45,10 @@ class DummyScannerFactory(private val dummyScanner: DummyScanner) : ScannerFacto
 
 class DummyScanner(private val fingerData: String) : Scanner {
 
+    override fun connect(onConnected: () -> Unit) {
+        onConnected()
+    }
+
     override fun captureISOTemplate(): String {
         return "ISO TEMPLATE $fingerData"
     }

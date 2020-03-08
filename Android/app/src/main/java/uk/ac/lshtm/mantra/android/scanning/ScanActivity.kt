@@ -16,10 +16,16 @@ class ScanActivity : Activity() {
         setContentView(R.layout.activity_scan)
 
         val scanner = SCANNER_FACTORY.create(this)
+        scanner.connect {
+            connect_progress_bar.visibility = View.GONE
+            capture_button.visibility = View.VISIBLE
+            capture_progress_bar.visibility = View.GONE
+        }
 
         capture_button.setOnClickListener {
+            connect_progress_bar.visibility = View.GONE
             capture_button.visibility = View.GONE
-            progress_bar.visibility = View.VISIBLE
+            capture_progress_bar.visibility = View.VISIBLE
 
             Thread(Runnable {
                 val isoTemplate = scanner.captureISOTemplate()
