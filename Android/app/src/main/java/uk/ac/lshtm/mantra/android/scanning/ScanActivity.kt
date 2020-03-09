@@ -1,6 +1,5 @@
 package uk.ac.lshtm.mantra.android.scanning
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -8,10 +7,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_scan.*
 import uk.ac.lshtm.mantra.android.R
+import uk.ac.lshtm.mantra.android.scannerFactory
+import uk.ac.lshtm.mantra.android.taskRunner
 import uk.ac.lshtm.mantra.android.tasks.ThreadTaskRunner
-import uk.ac.lshtm.mantra.core.Scanner
-import uk.ac.lshtm.mantra.core.TaskRunner
-import uk.ac.lshtm.mantra.mantramfs100.MFS100Scanner
 
 class ScanActivity : AppCompatActivity() {
 
@@ -19,9 +17,12 @@ class ScanActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
-        val scanner = SCANNER_FACTORY.create(this)
-        val viewModel = ViewModelProvider(this, ScannerViewModelFactory(scanner, ThreadTaskRunner()))
-            .get(ScannerViewModel::class.java)
+        val viewModel = ViewModelProvider(
+            this, ScannerViewModelFactory(
+                scannerFactory().create(this),
+                taskRunner()
+            )
+        ).get(ScannerViewModel::class.java)
 
         viewModel.scannerState.observe(this, Observer { state ->
             when (state) {
@@ -55,14 +56,6 @@ class ScanActivity : AppCompatActivity() {
 
         capture_button.setOnClickListener {
             viewModel.capture()
-        }
-    }
-
-    companion object {
-        var SCANNER_FACTORY: ScannerFactory = object : ScannerFactory {
-            override fun create(context: Context): Scanner {
-                return MFS100Scanner(context)
-            }
         }
     }
 }

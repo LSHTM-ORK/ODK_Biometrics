@@ -2,6 +2,7 @@ package uk.ac.lshtm.mantra.android
 
 import android.app.Activity
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -24,7 +25,7 @@ class ScanFingerTest {
     @get:Rule
     val rule = object : ActivityTestRule<ScanActivity>(ScanActivity::class.java) {
         override fun beforeActivityLaunched() {
-            ScanActivity.SCANNER_FACTORY = FakeScannerFactory(dummyScanner)
+            ApplicationProvider.getApplicationContext<Mantra>().scannerFactory = FakeScannerFactory(dummyScanner)
         }
     }
 

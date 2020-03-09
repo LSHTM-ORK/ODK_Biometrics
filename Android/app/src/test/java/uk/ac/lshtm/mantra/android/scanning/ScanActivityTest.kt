@@ -2,6 +2,7 @@ package uk.ac.lshtm.mantra.android.scanning
 
 import android.content.Context
 import android.view.View
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.android.synthetic.main.activity_scan.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -11,6 +12,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.LooperMode
+import uk.ac.lshtm.mantra.android.Mantra
 import uk.ac.lshtm.mantra.core.Scanner
 
 @RunWith(RobolectricTestRunner::class)
@@ -22,7 +24,7 @@ class ScanActivityTest {
 
     @Before
     fun setup() {
-        ScanActivity.SCANNER_FACTORY = FakeScannerFactory(dummyScanner)
+        ApplicationProvider.getApplicationContext<Mantra>().scannerFactory = FakeScannerFactory(dummyScanner)
         activity = Robolectric.setupActivity(ScanActivity::class.java)
     }
 
