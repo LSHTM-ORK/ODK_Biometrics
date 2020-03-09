@@ -6,8 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import uk.ac.lshtm.mantra.android.scanning.ScannerState.*
 import uk.ac.lshtm.mantra.core.Scanner
+import uk.ac.lshtm.mantra.core.TaskRunner
 
-class ScannerViewModel(private val scanner: Scanner) : ViewModel() {
+class ScannerViewModel(
+    private val scanner: Scanner,
+    private val taskRunner: TaskRunner
+) : ViewModel() {
 
     private val _scannerState = MutableLiveData(DISCONNECTED)
     private val _fingerTemplate = MutableLiveData<String>(null)
@@ -24,11 +28,11 @@ class ScannerViewModel(private val scanner: Scanner) : ViewModel() {
     fun capture() {
         _scannerState.value = SCANNING
 
-        Thread(Runnable {
+        taskRunner.execute {
             val isoTemplate = scanner.captureISOTemplate()
-            _fingerTemplate.postValue(isoTemplate)
             _scannerState.postValue(CONNECTED)
-        }).start()
+            _fingerTemplate.postValue(isoTemplate)
+        }
     }
 
     public override fun onCleared() {
@@ -40,10 +44,10 @@ enum class ScannerState {
     DISCONNECTED, CONNECTED, SCANNING
 }
 
-class ScannerViewModelFactory(private val scanner: Scanner) : ViewModelProvider.Factory {
+class ScannerViewModelFactory(private val scanner: Scanner, private val taskRunner: TaskRunner) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ScannerViewModel(scanner) as T
+        return ScannerViewModel(scanner, taskRunner) as T
     }
 }

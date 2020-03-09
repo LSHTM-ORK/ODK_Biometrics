@@ -8,7 +8,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_scan.*
 import uk.ac.lshtm.mantra.android.R
+import uk.ac.lshtm.mantra.android.tasks.ThreadTaskRunner
 import uk.ac.lshtm.mantra.core.Scanner
+import uk.ac.lshtm.mantra.core.TaskRunner
 import uk.ac.lshtm.mantra.mantramfs100.MFS100Scanner
 
 class ScanActivity : AppCompatActivity() {
@@ -18,7 +20,7 @@ class ScanActivity : AppCompatActivity() {
         setContentView(R.layout.activity_scan)
 
         val scanner = SCANNER_FACTORY.create(this)
-        val viewModel = ViewModelProvider(this, ScannerViewModelFactory(scanner))
+        val viewModel = ViewModelProvider(this, ScannerViewModelFactory(scanner, ThreadTaskRunner()))
             .get(ScannerViewModel::class.java)
 
         viewModel.scannerState.observe(this, Observer { state ->

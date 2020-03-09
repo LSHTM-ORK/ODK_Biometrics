@@ -3,13 +3,17 @@ package uk.ac.lshtm.mantra.mantramfs100
 import android.app.Application
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.mantra.mfs100.FingerData
 import com.mantra.mfs100.MFS100
 import com.mantra.mfs100.MFS100Event
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 
@@ -100,6 +104,15 @@ class MFS100ScannerTest {
         mfs100Event!!.OnDeviceAttached(VENDOR_IDS[1], NEW_DEVICE_ID, false)
 
         assertThat(listenerCalled, equalTo(false))
+    }
+
+    @Test
+    fun captureISOTemplate_whenCaptureNotSuccessful_returnsNull() {
+        val mfs100 = mock(MFS100::class.java)
+        val mfSScanner = MFS100Scanner(context) { mfs100 }
+
+        `when`(mfs100.AutoCapture(any(FingerData::class.java), any(Int::class.java), any(Boolean::class.java))).thenReturn(-1140)
+        assertThat(mfSScanner.captureISOTemplate(), nullValue())
     }
 
     @Test

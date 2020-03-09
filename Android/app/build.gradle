@@ -39,7 +39,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation project(':printscanner')
+    implementation project(':core')
     implementation project(':mantramfs100')
 
     testImplementation 'junit:junit:4.12'
