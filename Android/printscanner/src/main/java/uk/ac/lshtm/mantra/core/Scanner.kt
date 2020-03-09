@@ -10,4 +10,6 @@ interface Scanner {
      */
     fun captureISOTemplate(): String
 
+    fun disconnect()
+
 }

@@ -46,6 +46,10 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
         return fingerData.ISOTemplate().toHexString()
     }
 
+    override fun disconnect() {
+        mfS100.Dispose()
+    }
+
     private fun initialize() {
         mfS100.Init()
         onConnected()
@@ -55,5 +59,6 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
         mfS100.LoadFirmware()
     }
 
-    fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
+    @kotlin.ExperimentalUnsignedTypes
+    private fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 }

@@ -13,4 +13,8 @@ class DemoScanner : Scanner {
         Thread.sleep(3000)
         return "demo-finger-print-iso-template"
     }
+
+    override fun disconnect() {
+
+    }
 }

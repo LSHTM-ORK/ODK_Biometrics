@@ -17,12 +17,12 @@ import uk.ac.lshtm.mantra.core.Scanner
 @LooperMode(LooperMode.Mode.PAUSED)
 class ScanActivityTest {
 
-    private val dummyScanner = DummyScanner()
+    private val dummyScanner = FakeScanner()
     private lateinit var activity: ScanActivity
 
     @Before
     fun setup() {
-        ScanActivity.SCANNER_FACTORY = DummyScannerFactory(dummyScanner)
+        ScanActivity.SCANNER_FACTORY = FakeScannerFactory(dummyScanner)
         activity = Robolectric.setupActivity(ScanActivity::class.java)
     }
 
@@ -44,14 +44,14 @@ class ScanActivityTest {
     }
 }
 
-class DummyScannerFactory(private val dummyScanner: DummyScanner) : ScannerFactory {
+class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
 
     override fun create(context: Context): Scanner {
-        return dummyScanner
+        return fakeScanner
     }
 }
 
-class DummyScanner : Scanner {
+class FakeScanner : Scanner {
 
     private lateinit var onConnected: () -> Unit
 
@@ -65,5 +65,9 @@ class DummyScanner : Scanner {
 
     override fun captureISOTemplate(): String {
         return ""
+    }
+
+    override fun disconnect() {
+
     }
 }

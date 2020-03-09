@@ -19,12 +19,12 @@ import uk.ac.lshtm.mantra.core.Scanner
 @RunWith(AndroidJUnit4::class)
 class ScanFingerTest {
 
-    private val dummyScanner = DummyScanner("finger-data")
+    private val dummyScanner = FakeScanner("finger-data")
 
     @get:Rule
     val rule = object : ActivityTestRule<ScanActivity>(ScanActivity::class.java) {
         override fun beforeActivityLaunched() {
-            ScanActivity.SCANNER_FACTORY = DummyScannerFactory(dummyScanner)
+            ScanActivity.SCANNER_FACTORY = FakeScannerFactory(dummyScanner)
         }
     }
 
@@ -36,14 +36,14 @@ class ScanFingerTest {
     }
 }
 
-class DummyScannerFactory(private val dummyScanner: DummyScanner) : ScannerFactory {
+class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
 
     override fun create(context: Context): Scanner {
-        return dummyScanner
+        return fakeScanner
     }
 }
 
-class DummyScanner(private val fingerData: String) : Scanner {
+class FakeScanner(private val fingerData: String) : Scanner {
 
     override fun connect(onConnected: () -> Unit) {
         onConnected()
@@ -51,5 +51,9 @@ class DummyScanner(private val fingerData: String) : Scanner {
 
     override fun captureISOTemplate(): String {
         return "ISO TEMPLATE $fingerData"
+    }
+
+    override fun disconnect() {
+
     }
 }
