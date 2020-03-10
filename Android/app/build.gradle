@@ -30,7 +30,7 @@ android {
 
     signingConfigs {
         release {
-            if (secrets.getProperty('RELEASE_STORE_FILE')) {
+            if (secrets.getProperty('KEYSTORE')) {
                 storeFile file(secrets.getProperty('KEYSTORE'))
                 storePassword secrets.getProperty('KEYSTORE_PASSWORD')
                 keyAlias secrets.getProperty('KEY_ALIAS')
@@ -41,7 +41,7 @@ android {
 
     buildTypes {
         release {
-            if (secrets.getProperty('RELEASE_STORE_FILE')) {
+            if (secrets.getProperty('KEYSTORE')) {
                 signingConfig signingConfigs.release
             }
 
