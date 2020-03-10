@@ -20,7 +20,7 @@
         </model>
     </h:head>
     <h:body>
-        <input appearance="ex:uk.ac.lshtm.mantra.android.SCAN" ref="/data/left_index">
+        <input appearance="ex:uk.ac.lshtm.keppel.android.SCAN" ref="/data/left_index">
             <label>Scan left index finger</label>
         </input>
     </h:body>

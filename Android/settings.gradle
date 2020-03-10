@@ -1,4 +1,4 @@
-rootProject.name='ODK Fingerprints Mantra'
+rootProject.name='Keppel'
 include ':app'
 include ':core'
 include ':mantramfs100'

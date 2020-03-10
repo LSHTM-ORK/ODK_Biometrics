@@ -7,7 +7,7 @@ android {
     buildToolsVersion "29.0.2"
 
     defaultConfig {
-        applicationId "uk.ac.lshtm.mantra.android"
+        applicationId "uk.ac.lshtm.keppel.android"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
