@@ -18,6 +18,7 @@ git tag <versionName>
 git push
 git push --tags
 ```
+1. Run `./import-device-sdks.sh` and follow any instructions to make sure device SDKs are setup correctly
 1. Run `./build-android-release.sh` to build the signed release APK
 1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
 1. Set the `versionName` as the "Release title", attach the signed release APK and hit "Publish release" 🚢
