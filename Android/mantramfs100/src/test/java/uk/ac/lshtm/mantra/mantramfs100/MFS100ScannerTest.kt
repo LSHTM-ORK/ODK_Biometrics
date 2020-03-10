@@ -12,10 +12,10 @@ import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
+import uk.ac.lshtm.mantra.core.toHexString
 
 @RunWith(RobolectricTestRunner::class)
 class MFS100ScannerTest {
@@ -107,11 +107,45 @@ class MFS100ScannerTest {
     }
 
     @Test
+    fun captureISOTemplate_whenCaptureSuccessful_returnsHexEncodedTemplate() {
+        val mfs100 = mock(MFS100::class.java)
+        val mfSScanner = MFS100Scanner(context) { mfs100 }
+
+        `when`(
+            mfs100.AutoCapture(
+                any(FingerData::class.java),
+                any(Int::class.java),
+                any(Boolean::class.java)
+            )
+        ).then {
+            val templateField = FingerData::class.java.getDeclaredField("_ISOTemplate")
+            templateField.isAccessible = true
+
+            val fingerData = it.arguments[0] as FingerData
+            templateField.set(fingerData, "finger-template".toByteArray())
+
+            0
+        }
+
+        assertThat(
+            mfSScanner.captureISOTemplate(),
+            equalTo("finger-template".toByteArray().toHexString())
+        )
+    }
+
+    @Test
     fun captureISOTemplate_whenCaptureNotSuccessful_returnsNull() {
         val mfs100 = mock(MFS100::class.java)
         val mfSScanner = MFS100Scanner(context) { mfs100 }
 
-        `when`(mfs100.AutoCapture(any(FingerData::class.java), any(Int::class.java), any(Boolean::class.java))).thenReturn(-1140)
+        `when`(
+            mfs100.AutoCapture(
+                any(FingerData::class.java),
+                any(Int::class.java),
+                any(Boolean::class.java)
+            )
+        ).thenReturn(-1140)
+
         assertThat(mfSScanner.captureISOTemplate(), nullValue())
     }
 

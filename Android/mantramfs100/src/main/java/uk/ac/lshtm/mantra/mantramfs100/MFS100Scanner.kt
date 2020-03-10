@@ -5,6 +5,7 @@ import com.mantra.mfs100.FingerData
 import com.mantra.mfs100.MFS100
 import com.mantra.mfs100.MFS100Event
 import uk.ac.lshtm.mantra.core.Scanner
+import uk.ac.lshtm.mantra.core.toHexString
 
 class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) -> MFS100) : Scanner {
 
@@ -62,6 +63,4 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
     private fun loadFirmware() {
         mfS100.LoadFirmware()
     }
-
-    private fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 }
