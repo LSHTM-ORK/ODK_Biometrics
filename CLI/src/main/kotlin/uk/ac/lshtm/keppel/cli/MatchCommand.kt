@@ -4,17 +4,16 @@ import java.io.File
 
 class MatchCommand(
         private val matcher: Matcher,
-        private val log: (String) -> Unit,
-        private val oneFile: String,
-        private val twoFile: String) {
+        private val threshold: Double) {
 
-    fun execute() {
-        val score = matcher.match(readAndTrim(File(oneFile)), readAndTrim(File(twoFile)))
-
-        if (score >= 40) {
-            log("Match! Score: $score")
+    fun execute(args: Array<String>, logger: Logger): Boolean {
+        val score = matcher.match(readAndTrim(File(args[0])), readAndTrim(File(args[1])))
+        if (score >= threshold) {
+            logger.log("Match! Score: $score")
+            return true
         } else {
-            log("Not a match. Score: $score")
+            logger.log("Not a match. Score: $score")
+            return false
         }
     }
 
