@@ -42,6 +42,10 @@ class ScanActivity : AppCompatActivity() {
                     capture_button.visibility = View.GONE
                     capture_progress_bar.visibility = View.VISIBLE
                 }
+
+                else -> {
+                    // Ignore null case - not expected
+                }
             }
         })
 

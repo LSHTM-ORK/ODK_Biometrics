@@ -2,7 +2,11 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.content.Context
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -20,12 +24,14 @@ import uk.ac.lshtm.keppel.core.Scanner
 @RunWith(AndroidJUnit4::class)
 class ScanFingerTest {
 
-    private val dummyScanner = FakeScanner("finger-data")
+    private val fakeScanner = FakeScanner("finger-data")
+    private val fakeScannerFactory = FakeScannerFactory(fakeScanner)
 
     @get:Rule
     val rule = object : ActivityTestRule<ScanActivity>(ScanActivity::class.java) {
         override fun beforeActivityLaunched() {
-            ApplicationProvider.getApplicationContext<Keppel>().scannerFactory = FakeScannerFactory(dummyScanner)
+            getApplicationContext<Keppel>().availableScanners = listOf(fakeScannerFactory)
+            getApplicationContext<Keppel>().configureDefaultScanner(override = true)
         }
     }
 
@@ -38,6 +44,8 @@ class ScanFingerTest {
 }
 
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
+
+    override val name = "Fake"
 
     override fun create(context: Context): Scanner {
         return fakeScanner

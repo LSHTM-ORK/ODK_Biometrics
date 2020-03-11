@@ -17,49 +17,9 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/settings_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:id="@+id/open_source_licenses"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/icon"
-                style="@style/Icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_code_black_24dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/icon"
-                android:layout_marginStart="32dp"
-                android:layout_toEndOf="@id/icon"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/open_source_libraries" />
-
-                <TextView
-                    style="@style/TextAppearance.MaterialComponents.Body2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/open_source_libraries_description" />
-
-            </LinearLayout>
-        </RelativeLayout>
-
-    </ScrollView>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

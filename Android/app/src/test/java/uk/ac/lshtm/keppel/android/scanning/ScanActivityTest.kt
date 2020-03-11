@@ -19,12 +19,13 @@ import uk.ac.lshtm.keppel.core.Scanner
 @LooperMode(LooperMode.Mode.PAUSED)
 class ScanActivityTest {
 
-    private val dummyScanner = FakeScanner()
+    private val fakeScanner = FakeScanner()
     private lateinit var activity: ScanActivity
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Keppel>().scannerFactory = FakeScannerFactory(dummyScanner)
+        ApplicationProvider.getApplicationContext<Keppel>().availableScanners = listOf(FakeScannerFactory(fakeScanner))
+        ApplicationProvider.getApplicationContext<Keppel>().configureDefaultScanner(override = true)
         activity = Robolectric.setupActivity(ScanActivity::class.java)
     }
 
@@ -37,7 +38,7 @@ class ScanActivityTest {
 
     @Test
     fun whenScannerConnected_clickingCapture_showsProgressBar() {
-        dummyScanner.connect()
+        fakeScanner.connect()
 
         activity.capture_button.performClick()
         assertThat(activity.capture_button.visibility, equalTo(View.GONE))
@@ -48,9 +49,9 @@ class ScanActivityTest {
 
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
 
-    override fun create(context: Context): Scanner {
-        return fakeScanner
-    }
+    override val name: String = "Fake"
+
+    override fun create(context: Context): Scanner = fakeScanner
 }
 
 class FakeScanner : Scanner {

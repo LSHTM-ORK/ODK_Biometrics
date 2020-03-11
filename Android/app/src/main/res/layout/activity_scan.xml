@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:text="@string/capture"
         android:visibility="gone"
-        app:icon="@drawable/ic_fingerprint_black_24dp" />
+        app:icon="@drawable/ic_fingerprint_24dp" />
 
     <LinearLayout
         android:id="@+id/capture_progress_bar"

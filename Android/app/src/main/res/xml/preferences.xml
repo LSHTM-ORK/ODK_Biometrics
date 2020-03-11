@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:dialogTitle="@string/change_scanner"
+        app:icon="@drawable/ic_usb_24dp"
+        app:key="scanner"
+        app:title="@string/change_scanner"
+        app:useSimpleSummaryProvider="true" />
+
+    <Preference
+        app:icon="@drawable/ic_code_24dp"
+        app:key="open_source"
+        app:summary="@string/open_source_libraries_description"
+        app:title="@string/open_source_libraries" />
+
+</PreferenceScreen>
