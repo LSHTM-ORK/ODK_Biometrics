@@ -39,7 +39,12 @@ class ScannerViewModel(
         }
     }
 
+    fun stopCapture() {
+        scanner.stopCapture()
+    }
+
     public override fun onCleared() {
+        scanner.stopCapture()
         scanner.disconnect()
     }
 }

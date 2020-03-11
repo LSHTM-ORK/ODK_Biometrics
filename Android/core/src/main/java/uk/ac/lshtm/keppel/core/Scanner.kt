@@ -12,5 +12,7 @@ interface Scanner {
      */
     fun captureISOTemplate(): String?
 
+    fun stopCapture()
+
     fun disconnect()
 }

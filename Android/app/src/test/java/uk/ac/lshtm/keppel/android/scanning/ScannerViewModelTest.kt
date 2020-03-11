@@ -31,6 +31,15 @@ class ScannerViewModelTest {
         viewModel.onCleared()
         verify(scanner).disconnect()
     }
+
+    @Test
+    fun onCleared_stopsScannerCapture() {
+        val scanner = mock(Scanner::class.java)
+        val viewModel = ScannerViewModel(scanner, InstantTaskRunner())
+
+        viewModel.onCleared()
+        verify(scanner).stopCapture()
+    }
 }
 
 private class InstantTaskRunner : TaskRunner {

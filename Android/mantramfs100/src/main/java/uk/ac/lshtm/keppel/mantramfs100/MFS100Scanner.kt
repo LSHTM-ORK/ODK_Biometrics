@@ -58,6 +58,10 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
         }
     }
 
+    override fun stopCapture() {
+        mfS100.StopAutoCapture()
+    }
+
     override fun disconnect() {
         mfS100.Dispose()
     }

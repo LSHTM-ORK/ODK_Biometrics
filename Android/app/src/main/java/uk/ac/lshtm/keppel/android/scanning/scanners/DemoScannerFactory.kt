@@ -29,6 +29,10 @@ private class DemoScanner : Scanner {
         return "demo-finger-print-iso-template"
     }
 
+    override fun stopCapture() {
+
+    }
+
     override fun disconnect() {
 
     }

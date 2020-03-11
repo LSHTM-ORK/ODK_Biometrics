@@ -9,8 +9,11 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.spy
+import org.mockito.Mockito.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.LooperMode
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.core.Scanner
@@ -19,15 +22,17 @@ import uk.ac.lshtm.keppel.core.Scanner
 @LooperMode(LooperMode.Mode.PAUSED)
 class ScanActivityTest {
 
-    private val fakeScanner = FakeScanner()
+    private val fakeScanner = spy(FakeScanner())
     private lateinit var activity: ScanActivity
+    private lateinit var activityController: ActivityController<ScanActivity>
 
     @Before
     fun setup() {
         ApplicationProvider.getApplicationContext<Keppel>().availableScanners =
             listOf(FakeScannerFactory(fakeScanner))
         ApplicationProvider.getApplicationContext<Keppel>().configureDefaultScanner(override = true)
-        activity = Robolectric.setupActivity(ScanActivity::class.java)
+        activityController = Robolectric.buildActivity(ScanActivity::class.java)
+        activity = activityController.setup().get()
     }
 
     @Test
@@ -56,6 +61,12 @@ class ScanActivityTest {
         assertThat(activity.capture_progress_bar.visibility, equalTo(View.GONE))
         assertThat(activity.connect_progress_bar.visibility, equalTo(View.VISIBLE))
     }
+
+    @Test
+    fun pausing_stopsCapture() {
+        activityController.pause()
+        verify(fakeScanner).stopCapture()
+    }
 }
 
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
@@ -65,7 +76,7 @@ class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory 
     override fun create(context: Context): Scanner = fakeScanner
 }
 
-class FakeScanner : Scanner {
+open class FakeScanner : Scanner {
 
     private var onDisconnected: (() -> Unit)? = null
     private lateinit var onConnected: () -> Unit
@@ -85,6 +96,10 @@ class FakeScanner : Scanner {
 
     override fun captureISOTemplate(): String {
         return ""
+    }
+
+    override fun stopCapture() {
+
     }
 
     override fun disconnect() {

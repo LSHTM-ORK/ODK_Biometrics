@@ -67,6 +67,10 @@ class FakeScanner(private val fingerData: String) : Scanner {
         return "ISO TEMPLATE $fingerData"
     }
 
+    override fun stopCapture() {
+
+    }
+
     override fun disconnect() {
 
     }

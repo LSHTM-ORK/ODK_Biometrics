@@ -12,11 +12,13 @@ import uk.ac.lshtm.keppel.android.taskRunner
 
 class ScanActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: ScannerViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
-        val viewModel = ViewModelProvider(
+        viewModel = ViewModelProvider(
             this, ScannerViewModelFactory(
                 scannerFactory().create(this),
                 taskRunner()
@@ -60,5 +62,10 @@ class ScanActivity : AppCompatActivity() {
         capture_button.setOnClickListener {
             viewModel.capture()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopCapture()
     }
 }

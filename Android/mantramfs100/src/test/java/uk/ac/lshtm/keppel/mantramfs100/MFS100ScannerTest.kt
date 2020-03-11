@@ -186,6 +186,14 @@ class MFS100ScannerTest {
         mfSScanner.disconnect()
         verify(mfs100).Dispose()
     }
+
+    @Test
+    fun stopCapture_stopsAutoCapture() {
+        val mfs100 = mock(MFS100::class.java)
+        val mfSScanner = MFS100Scanner(context) { mfs100 }
+        mfSScanner.stopCapture()
+        verify(mfs100).StopAutoCapture()
+    }
 }
 
 private val VENDOR_IDS = listOf(1204, 11279) // We see 11279 for the MFS100
