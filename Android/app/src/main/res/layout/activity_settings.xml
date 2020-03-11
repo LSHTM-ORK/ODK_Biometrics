@@ -30,6 +30,7 @@
 
             <ImageView
                 android:id="@+id/icon"
+                style="@style/Icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_alignParentTop="true"
