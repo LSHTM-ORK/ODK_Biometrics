@@ -150,6 +150,36 @@ class MFS100ScannerTest {
     }
 
     @Test
+    fun whenDeviceDisconnected_whenOnDisconnectListener_doesNotExplode() {
+        val mfs100 = mock(MFS100::class.java)
+
+        var mfs100Event: MFS100Event? = null
+        MFS100Scanner(context) { event ->
+            mfs100Event = event
+            mfs100
+        }
+
+        mfs100Event!!.OnDeviceDetached()
+    }
+
+    @Test
+    fun whenDeviceDisconnected_onDisconnectListenerCalled() {
+        val mfs100 = mock(MFS100::class.java)
+
+        var mfs100Event: MFS100Event? = null
+        val mfSScanner = MFS100Scanner(context) { event ->
+            mfs100Event = event
+            mfs100
+        }
+
+        var listenerCalled = false
+        mfSScanner.onDisconnect { listenerCalled = true }
+        mfs100Event!!.OnDeviceDetached()
+
+        assertThat(listenerCalled, equalTo(true))
+    }
+
+    @Test
     fun disconnect_disposesMFS100() {
         val mfs100 = mock(MFS100::class.java)
         val mfSScanner = MFS100Scanner(context) { mfs100 }

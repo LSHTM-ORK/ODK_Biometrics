@@ -12,6 +12,7 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
     constructor(context: Context) : this(context, ::MFS100)
 
     private lateinit var onConnected: () -> Unit
+    private var onDisconnected: (() -> Unit)? = null
 
     private val mfS100 = mfs100Provider(object : MFS100Event {
         override fun OnDeviceAttached(vendorID: Int, productID: Int, hasPermission: Boolean) {
@@ -30,15 +31,21 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
         }
 
         override fun OnDeviceDetached() {
+            onDisconnected?.invoke()
         }
 
         override fun OnHostCheckFailed(p0: String?) {
         }
     })
 
-    override fun connect(onConnected: () -> Unit) {
+    override fun connect(onConnected: () -> Unit): Scanner {
         this.onConnected = onConnected
         mfS100.SetApplicationContext(context)
+        return this
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+        this.onDisconnected = onDisconnected
     }
 
     override fun captureISOTemplate(): String? {

@@ -54,8 +54,13 @@ class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory 
 
 class FakeScanner(private val fingerData: String) : Scanner {
 
-    override fun connect(onConnected: () -> Unit) {
+    override fun connect(onConnected: () -> Unit): Scanner {
         onConnected()
+        return this
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+
     }
 
     override fun captureISOTemplate(): String {

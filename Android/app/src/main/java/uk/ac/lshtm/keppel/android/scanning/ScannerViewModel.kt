@@ -23,6 +23,10 @@ class ScannerViewModel(
         scanner.connect {
             _scannerState.value = CONNECTED
         }
+
+        scanner.onDisconnect {
+            _scannerState.value = DISCONNECTED
+        }
     }
 
     fun capture() {
@@ -44,7 +48,8 @@ enum class ScannerState {
     DISCONNECTED, CONNECTED, SCANNING
 }
 
-class ScannerViewModelFactory(private val scanner: Scanner, private val taskRunner: TaskRunner) : ViewModelProvider.Factory {
+class ScannerViewModelFactory(private val scanner: Scanner, private val taskRunner: TaskRunner) :
+    ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

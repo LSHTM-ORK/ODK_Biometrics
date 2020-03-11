@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="uk.ac.lshtm.keppel.android">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -23,7 +24,9 @@
 
         <activity
             android:name="uk.ac.lshtm.keppel.android.scanning.ScanActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="uk.ac.lshtm.keppel.android.SCAN" />
                 <category android:name="android.intent.category.DEFAULT" />

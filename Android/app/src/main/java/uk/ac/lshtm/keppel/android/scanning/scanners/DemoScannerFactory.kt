@@ -15,8 +15,13 @@ class DemoScannerFactory : ScannerFactory {
 
 private class DemoScanner : Scanner {
 
-    override fun connect(onConnected: () -> Unit) {
+    override fun connect(onConnected: () -> Unit): Scanner {
         Handler().postDelayed(onConnected, 3000)
+        return this
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+
     }
 
     override fun captureISOTemplate(): String {

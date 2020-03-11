@@ -24,7 +24,8 @@ class ScanActivityTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Keppel>().availableScanners = listOf(FakeScannerFactory(fakeScanner))
+        ApplicationProvider.getApplicationContext<Keppel>().availableScanners =
+            listOf(FakeScannerFactory(fakeScanner))
         ApplicationProvider.getApplicationContext<Keppel>().configureDefaultScanner(override = true)
         activity = Robolectric.setupActivity(ScanActivity::class.java)
     }
@@ -45,6 +46,16 @@ class ScanActivityTest {
         assertThat(activity.capture_progress_bar.visibility, equalTo(View.VISIBLE))
         assertThat(activity.connect_progress_bar.visibility, equalTo(View.GONE))
     }
+
+    @Test
+    fun whenScannerConnected_thenDisconnected_showsConnectProgressBar() {
+        fakeScanner.connect()
+        fakeScanner.disconnect()
+
+        assertThat(activity.capture_button.visibility, equalTo(View.GONE))
+        assertThat(activity.capture_progress_bar.visibility, equalTo(View.GONE))
+        assertThat(activity.connect_progress_bar.visibility, equalTo(View.VISIBLE))
+    }
 }
 
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
@@ -56,14 +67,20 @@ class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory 
 
 class FakeScanner : Scanner {
 
+    private var onDisconnected: (() -> Unit)? = null
     private lateinit var onConnected: () -> Unit
 
     fun connect() {
-       onConnected()
+        onConnected()
     }
 
-    override fun connect(onConnected: () -> Unit) {
+    override fun connect(onConnected: () -> Unit): Scanner {
         this.onConnected = onConnected
+        return this
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+        this.onDisconnected = onDisconnected
     }
 
     override fun captureISOTemplate(): String {
@@ -71,6 +88,6 @@ class FakeScanner : Scanner {
     }
 
     override fun disconnect() {
-
+        onDisconnected?.invoke()
     }
 }
