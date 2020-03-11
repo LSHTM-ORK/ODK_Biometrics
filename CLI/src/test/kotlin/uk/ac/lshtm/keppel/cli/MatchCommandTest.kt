@@ -11,8 +11,8 @@ import org.junit.Test
 
 class MatchCommandTest {
 
-    val fileOne = createTempFile().apply { writeText("finger-1\n") }
-    val fileTwo = createTempFile().apply { writeText("  finger-2") }
+    private val fileOne = createTempFile().apply { writeText("finger-1\n") }
+    private val fileTwo = createTempFile().apply { writeText("  finger-2") }
 
     @Test
     fun execute_whenMatchIsLessThanThreshold_returnsFalseAndLogsScore() {
@@ -22,7 +22,7 @@ class MatchCommandTest {
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(arrayOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(false))
+        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(false))
         verify(logger).log("Not a match. Score: 5.0")
     }
 
@@ -34,7 +34,7 @@ class MatchCommandTest {
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(arrayOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
         verify(logger).log("Match! Score: 10.0")
     }
 
@@ -46,7 +46,7 @@ class MatchCommandTest {
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(arrayOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
         verify(logger).log("Match! Score: 11.0")
     }
 
@@ -58,7 +58,27 @@ class MatchCommandTest {
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(arrayOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
+        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
         verify(matcher).match("finger-1".toByteArray(), "finger-2".toByteArray())
+    }
+
+    @Test
+    fun execute_withNoArguments_returnsFalseAndLogsHelp() {
+        val logger = mock<Logger>()
+        val matcher = mock<Matcher>()
+        val matchCommand = MatchCommand(matcher, 10.0)
+
+        assertThat(matchCommand.execute(listOf(), logger), equalTo(false))
+        verify(logger).log("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")
+    }
+
+    @Test
+    fun execute_withOneArgument_returnsFalseAndLogsHelp() {
+        val logger = mock<Logger>()
+        val matcher = mock<Matcher>()
+        val matchCommand = MatchCommand(matcher, 10.0)
+
+        assertThat(matchCommand.execute(listOf(fileOne.absolutePath), logger), equalTo(false))
+        verify(logger).log("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")
     }
 }
