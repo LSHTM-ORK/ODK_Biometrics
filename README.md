@@ -4,7 +4,17 @@ Allows fingerprints to be scanned as part of an [ODK Collect](https://opendataki
 
 ## Usage
 
+### Scanning fingerprints in forms
+
 To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example form can be found [here](docs/form.xml).
+
+### Matching fingerprints
+
+You can install the command line interface from matching fingerprints [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). To match two (hex encoded) fingerprint templates run:
+
+```bash
+keppel match /path/to/first_template /path/to/second_template
+```
 
 ## Creating an Android release
 
