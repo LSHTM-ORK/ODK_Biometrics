@@ -18,7 +18,7 @@ pushd Android
     fi
 
     ./gradlew assembleRelease
-
-    echo ""
-    echo "APK at Android/app/build/outputs/apk/release/app-release.apk"
 popd
+
+echo ""
+echo "APK at Android/app/build/outputs/apk/release/app-release.apk"

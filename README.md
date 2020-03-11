@@ -22,3 +22,18 @@ To create a release:
 1. Run `./build-android-release.sh` to build the signed release APK
 1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
 1. Set the `versionName` as the "Release title", attach the signed release APK and hit "Publish release" 🚢
+
+## Creating a CLI release
+
+**Prerequisites**: You will need to install a JDK
+
+To create a release:
+
+1. Tag the latest commit and push:
+    ```bash
+    git tag <versionName>
+    git push --tags
+    ```
+1. Run `./build-cli-release.sh` to package the CLI
+1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
+1. Set the "Release title", attach the `.zip` package and hit "Publish release" 🚢
