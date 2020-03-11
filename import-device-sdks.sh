@@ -1,5 +1,7 @@
 ##!/usr/bin/env bash
 
+set -e
+
 mkdir -p sdks
 rm -r sdks/*
 
@@ -12,7 +14,8 @@ if [ ! -f MFS100-Android-SDK-9.0.3.2.zip ]; then
 fi
 
 unzip MFS100-Android-SDK-9.0.3.2.zip -d sdks/mfs100
+
 cp sdks/mfs100/MFS100-Android-SDK-9.0.3.2/libs/mantra.mfs100.jar \
     Android/mantramfs100/libs
 cp -r sdks/mfs100/MFS100-Android-SDK-9.0.3.2/jniLibs \
-    Android/mantramfs100/src/main/jniLibs
+    Android/mantramfs100/src/main/
