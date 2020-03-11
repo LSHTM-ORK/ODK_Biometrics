@@ -10,7 +10,11 @@
         app:useSimpleSummaryProvider="true" />
 
     <Preference
-        app:icon="@drawable/ic_code_24dp"
+        app:enableCopying="true"
+        app:key="app_version"
+        app:title="@string/app_version" />
+
+    <Preference
         app:key="open_source"
         app:summary="@string/open_source_libraries_description"
         app:title="@string/open_source_libraries" />

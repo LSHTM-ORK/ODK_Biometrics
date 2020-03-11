@@ -6,4 +6,5 @@
     <string name="open_source_libraries">Open source libraries</string>
     <string name="open_source_libraries_description">Libraries used to build Keppel and their licenses</string>
     <string name="change_scanner">Change scanner</string>
+    <string name="app_version">App version</string>
 </resources>
