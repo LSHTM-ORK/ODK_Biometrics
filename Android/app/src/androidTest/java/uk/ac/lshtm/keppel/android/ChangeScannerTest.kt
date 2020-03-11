@@ -38,7 +38,7 @@ class ChangeScannerTest {
         onView(withText(R.string.change_scanner)).perform(click())
 
         onView(withText("Scanner 2")).perform(click())
-        onView(withText(R.string.app_name)).perform(click())
+        onView(withText(R.string.app_name)).check(matches(isDisplayed()))
 
         val scannerPref =
             getDefaultSharedPreferences(getApplicationContext<Keppel>()).getString("scanner", null)
