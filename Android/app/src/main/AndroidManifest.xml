@@ -20,6 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="uk.ac.lshtm.keppel.android.scanning.ScanActivity"
             android:exported="true">

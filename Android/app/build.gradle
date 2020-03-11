@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 def secretsFile = file('../secrets.properties')
 def secrets = new Properties()
@@ -60,6 +61,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
     implementation project(':core')
     implementation project(':mantramfs100')
 

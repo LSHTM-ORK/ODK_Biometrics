@@ -4,4 +4,6 @@
     <string name="capture">Capture</string>
     <string name="place_finger">Place finger on scanner</string>
     <string name="connect_scanner">Connect scanner</string>
+    <string name="open_source_libraries">Open source libraries</string>
+    <string name="open_source_libraries_description">Libraries used to build Keppel and their licenses</string>
 </resources>
