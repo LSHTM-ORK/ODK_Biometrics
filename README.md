@@ -1,3 +1,5 @@
+![](Android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
+
 # Keppel
 
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
