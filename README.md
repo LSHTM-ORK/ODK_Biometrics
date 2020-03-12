@@ -4,6 +4,12 @@
 
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
 
+## Security and Privacy
+
+It's important to realize that fingerprints (or any form of biometric data) are very sensitive. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so.
+
+If you're collecting any personal information using ODK it would be a good idea to look into [encrypting forms](https://docs.opendatakit.org/encrypted-forms) and also to read ODK's [general documentation on security](https://docs.opendatakit.org/security-privacy/).
+
 ## Usage
 
 ### Scanning fingerprints in forms
