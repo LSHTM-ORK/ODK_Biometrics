@@ -29,13 +29,13 @@ class MatchCommand(
         }
 
         val score = matcher.match(templateOne, templateTwo)
-        return if (score >= threshold) {
+        if (score >= threshold) {
             logger.log("Match! Score: $score")
-            true
         } else {
             logger.log("Not a match. Score: $score")
-            false
         }
+
+        return true
     }
 
     private fun readAndTrim(file: File) = String(file.readBytes()).trim().toByteArray()

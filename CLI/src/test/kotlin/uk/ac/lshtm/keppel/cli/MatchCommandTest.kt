@@ -17,35 +17,35 @@ class MatchCommandTest {
     private val logger = FakeLogger()
 
     @Test
-    fun whenMatchIsLessThanThreshold_returnsFalseAndLogsScore() {
+    fun whenMatchIsLessThanThreshold_andlogsNotAMatch() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 5.0
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(false))
+        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
     }
 
     @Test
-    fun whenEqualToThreshold_returnsTrueAndLogsScore() {
+    fun whenEqualToThreshold_logsNotAMatch() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 10.0
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Match! Score: 10.0")))
     }
 
     @Test
-    fun whenGreaterThanThreshold_returnsTrueAndLogsScore() {
+    fun whenGreaterThanThreshold_logsNotAMatch() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 11.0
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Match! Score: 11.0")))
     }
 
@@ -61,7 +61,17 @@ class MatchCommandTest {
     }
 
     @Test
-    fun withNoArguments_returnsFalseAndLogsHelp() {
+    fun withTwoArguments_returnsTrue() {
+        val matcher = mock<Matcher> {
+            on { match(any(), any()) } doReturn 5.0
+        }
+
+        val matchCommand = MatchCommand(matcher, 0.0)
+        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+    }
+
+    @Test
+    fun withNoArguments_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
         val matchCommand = MatchCommand(matcher, 10.0)
 
@@ -70,7 +80,7 @@ class MatchCommandTest {
     }
 
     @Test
-    fun withOneArgument_returnsFalseAndLogsHelp() {
+    fun withOneArgument_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
         val matchCommand = MatchCommand(matcher, 10.0)
 
@@ -79,18 +89,28 @@ class MatchCommandTest {
     }
 
     @Test
-    fun withPFlag_whenMatchIsLessThanThreshold_returnsFalseAndLogsScore() {
+    fun withPFlag_whenMatchIsLessThanThreshold_logsScore() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 5.0
         }
 
         val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(false))
+        matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
         assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
     }
 
     @Test
-    fun withPFlag_withNoArguments_returnsFalseAndLogsHelp() {
+    fun withPFlag_withTwoArguments_returnsTrue() {
+        val matcher = mock<Matcher> {
+            on { match(any(), any()) } doReturn 5.0
+        }
+
+        val matchCommand = MatchCommand(matcher, 10.0)
+        assertThat(matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(true))
+    }
+
+    @Test
+    fun withPFlag_withNoArguments_returnsFalse_logsHelp() {
         val matcher = mock<Matcher>()
         val matchCommand = MatchCommand(matcher, 10.0)
 
@@ -99,7 +119,7 @@ class MatchCommandTest {
     }
 
     @Test
-    fun withPFlag_withOneArgument_returnsFalseAndLogsHelp() {
+    fun withPFlag_withOneArgument_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
         val matchCommand = MatchCommand(matcher, 10.0)
 
