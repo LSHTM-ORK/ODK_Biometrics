@@ -2,6 +2,8 @@
 
 # Keppel
 
+![CLI](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/CLI/badge.svg)
+
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
 
 ## Security and Privacy
