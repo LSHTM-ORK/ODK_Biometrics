@@ -10,20 +10,20 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 
-class MatchCommandTest {
+class MatchTest {
 
     private val fileOne = createTempFile().apply { writeText("finger-1\n") }
     private val fileTwo = createTempFile().apply { writeText("  finger-2") }
     private val logger = FakeLogger()
 
     @Test
-    fun whenMatchIsLessThanThreshold_andlogsNotAMatch() {
+    fun whenMatchIsLessThanThreshold_logsNotAMatch() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 5.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
+        val app = App(matcher, 10.0)
+        app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
     }
 
@@ -33,8 +33,8 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 10.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
+        val app = App(matcher, 10.0)
+        app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Match! Score: 10.0")))
     }
 
@@ -44,8 +44,8 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 11.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
+        val app = App(matcher, 10.0)
+        app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger)
         assertThat(logger.lines, equalTo(listOf("Match! Score: 11.0")))
     }
 
@@ -55,8 +55,8 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 5.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger)
+        val app = App(matcher, 10.0)
+        app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger)
         verify(matcher).match("finger-1".toByteArray(), "finger-2".toByteArray())
     }
 
@@ -66,25 +66,25 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 5.0
         }
 
-        val matchCommand = MatchCommand(matcher, 0.0)
-        assertThat(matchCommand.execute(listOf(fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        val app = App(matcher, 10.0)
+        assertThat(app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
     }
 
     @Test
     fun withNoArguments_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
-        val matchCommand = MatchCommand(matcher, 10.0)
+        val app = App(matcher, 10.0)
 
-        assertThat(matchCommand.execute(listOf(), logger), equalTo(false))
+        assertThat(app.execute(listOf("match"), logger), equalTo(false))
         assertThat(logger.lines, equalTo(listOf("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")))
     }
 
     @Test
     fun withOneArgument_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
-        val matchCommand = MatchCommand(matcher, 10.0)
+        val app = App(matcher, 10.0)
 
-        assertThat(matchCommand.execute(listOf(fileOne.absolutePath), logger), equalTo(false))
+        assertThat(app.execute(listOf("match", fileOne.absolutePath), logger), equalTo(false))
         assertThat(logger.lines, equalTo(listOf("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")))
     }
 
@@ -94,8 +94,8 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 5.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
+        val app = App(matcher, 10.0)
+        app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
         assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
     }
 
@@ -105,25 +105,25 @@ class MatchCommandTest {
             on { match(any(), any()) } doReturn 5.0
         }
 
-        val matchCommand = MatchCommand(matcher, 10.0)
-        assertThat(matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(true))
+        val app = App(matcher, 10.0)
+        assertThat(app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(true))
     }
 
     @Test
     fun withPFlag_withNoArguments_returnsFalse_logsHelp() {
         val matcher = mock<Matcher>()
-        val matchCommand = MatchCommand(matcher, 10.0)
+        val app = App(matcher, 10.0)
 
-        assertThat(matchCommand.execute(listOf("-p"), logger), equalTo(false))
+        assertThat(app.execute(listOf("match", "-p"), logger), equalTo(false))
         assertThat(logger.lines, equalTo(listOf("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]")))
     }
 
     @Test
     fun withPFlag_withOneArgument_returnsFalse_andLogsHelp() {
         val matcher = mock<Matcher>()
-        val matchCommand = MatchCommand(matcher, 10.0)
+        val app = App(matcher, 10.0)
 
-        assertThat(matchCommand.execute(listOf("-p", Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(false))
+        assertThat(app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(false))
         assertThat(logger.lines, equalTo(listOf("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]")))
     }
 }

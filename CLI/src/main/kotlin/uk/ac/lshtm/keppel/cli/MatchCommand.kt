@@ -4,9 +4,9 @@ import java.io.File
 
 class MatchCommand(
         private val matcher: Matcher,
-        private val threshold: Double) {
+        private val threshold: Double) : Command {
 
-    fun execute(args: List<String>, logger: Logger): Boolean {
+    override fun execute(args: List<String>, logger: Logger): Boolean {
         if (args.isEmpty()) {
             logger.log("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")
             return false
