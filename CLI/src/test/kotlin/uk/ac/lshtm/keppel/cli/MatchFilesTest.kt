@@ -4,10 +4,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import org.apache.commons.codec.binary.Hex
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
+import uk.ac.lshtm.keppel.cli.support.FakeLogger
 import kotlin.test.assertFailsWith
 
 
@@ -81,49 +81,5 @@ class MatchTest {
             app.execute(listOf("match", fileOne.absolutePath), logger)
         }
         assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_TWO\"."))
-    }
-
-    @Test
-    fun withPFlag_whenMatchIsLessThanThreshold_logsScore() {
-        val matcher = mock<Matcher> {
-            on { match(any(), any()) } doReturn 5.0
-        }
-
-        val app = App(matcher, 10.0)
-        app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
-        assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
-    }
-
-    @Test
-    fun withPFlag_withNoArguments_throwsException() {
-        val matcher = mock<Matcher>()
-        val app = App(matcher, 10.0)
-
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match", "-p"), logger)
-        }
-        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_ONE\"."))
-    }
-
-    @Test
-    fun withPFlag_withOneArgument_throwsException() {
-        val matcher = mock<Matcher>()
-        val app = App(matcher, 10.0)
-
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger)
-        }
-        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_TWO\"."))
-    }
-}
-
-private class FakeLogger : Logger {
-    private val _lines: ArrayList<String> = arrayListOf()
-
-    val lines: List<String>
-        get() = _lines
-
-    override fun log(text: String) {
-        _lines.add(text)
     }
 }

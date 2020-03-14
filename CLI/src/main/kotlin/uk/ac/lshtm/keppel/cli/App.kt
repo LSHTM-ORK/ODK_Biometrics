@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.PrintHelpMessage
 import com.github.ajalt.clikt.core.subcommands
 import kotlin.system.exitProcess
 
@@ -9,8 +10,10 @@ fun main(args: Array<String>) {
 
     try {
         App(SourceAFISMatcher(), 40.0).execute(args.toList(), logger)
+    } catch (e: PrintHelpMessage) {
+        logger.log(e.command.getFormattedHelp())
     } catch (e: Exception) {
-        logger.log(e.message!!)
+        if (e.message != null) logger.log(e.message!!)
         exitProcess(1)
     }
 }
@@ -18,7 +21,7 @@ fun main(args: Array<String>) {
 class App(private val matcher: Matcher,
           private val threshold: Double) {
     fun execute(args: List<String>, logger: Logger) {
-        class Root : CliktCommand() {
+        class Root : CliktCommand(name = "keppel") {
             override fun run() = Unit
         }
 
