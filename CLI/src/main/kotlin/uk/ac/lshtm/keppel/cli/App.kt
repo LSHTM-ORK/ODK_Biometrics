@@ -4,11 +4,11 @@ import kotlin.system.exitProcess
 
 class App(private val matcher: Matcher,
           private val threshold: Double) : Command {
-    override fun execute(args: List<String>, logger: Logger): Boolean {
+    override fun execute(args: List<String>, logger: Logger) {
         return when {
             args.isEmpty() -> {
                 printHelp(logger)
-                false
+                throw Exception("")
             }
 
             args[0] == "match" -> {
@@ -17,7 +17,7 @@ class App(private val matcher: Matcher,
 
             else -> {
                 printHelp(logger)
-                false
+                throw Exception("")
             }
         }
     }
@@ -29,8 +29,14 @@ class App(private val matcher: Matcher,
 }
 
 fun main(args: Array<String>) {
-    val result = App(SourceAFISMatcher(), 40.0).execute(args.toList(), StdoutLogger())
-    exitProcess(if (result) { 0 } else { 1 })
+    val logger = StdoutLogger()
+
+    try {
+        App(SourceAFISMatcher(), 40.0).execute(args.toList(), logger)
+    } catch (e: Exception) {
+        logger.log(e.message!!)
+        exitProcess(1)
+    }
 }
 
 private class StdoutLogger : Logger {

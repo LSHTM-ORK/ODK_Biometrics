@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Hex
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 
 class MatchTest {
@@ -61,31 +62,25 @@ class MatchTest {
     }
 
     @Test
-    fun withTwoArguments_returnsTrue() {
-        val matcher = mock<Matcher> {
-            on { match(any(), any()) } doReturn 5.0
+    fun withNoArguments_throwsException() {
+        val matcher = mock<Matcher>()
+        val app = App(matcher, 10.0)
+
+        val exception = assertFailsWith(Exception::class) {
+            app.execute(listOf("match"), logger)
         }
-
-        val app = App(matcher, 10.0)
-        assertThat(app.execute(listOf("match", fileOne.absolutePath, fileTwo.absolutePath), logger), equalTo(true))
+        assertThat(exception.message, equalTo("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]"))
     }
 
     @Test
-    fun withNoArguments_returnsFalse_andLogsHelp() {
+    fun withOneArgument_throwsException() {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        assertThat(app.execute(listOf("match"), logger), equalTo(false))
-        assertThat(logger.lines, equalTo(listOf("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")))
-    }
-
-    @Test
-    fun withOneArgument_returnsFalse_andLogsHelp() {
-        val matcher = mock<Matcher>()
-        val app = App(matcher, 10.0)
-
-        assertThat(app.execute(listOf("match", fileOne.absolutePath), logger), equalTo(false))
-        assertThat(logger.lines, equalTo(listOf("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")))
+        val exception = assertFailsWith(Exception::class) {
+            app.execute(listOf("match", fileOne.absolutePath), logger)
+        }
+        assertThat(exception.message, equalTo("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]"))
     }
 
     @Test
@@ -100,31 +95,25 @@ class MatchTest {
     }
 
     @Test
-    fun withPFlag_withTwoArguments_returnsTrue() {
-        val matcher = mock<Matcher> {
-            on { match(any(), any()) } doReturn 5.0
+    fun withPFlag_withNoArguments_throwsException() {
+        val matcher = mock<Matcher>()
+        val app = App(matcher, 10.0)
+
+        val exception = assertFailsWith(Exception::class) {
+            app.execute(listOf("match", "-p"), logger)
         }
-
-        val app = App(matcher, 10.0)
-        assertThat(app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(true))
+        assertThat(exception.message, equalTo("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]"))
     }
 
     @Test
-    fun withPFlag_withNoArguments_returnsFalse_logsHelp() {
+    fun withPFlag_withOneArgument_throwsException() {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        assertThat(app.execute(listOf("match", "-p"), logger), equalTo(false))
-        assertThat(logger.lines, equalTo(listOf("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]")))
-    }
-
-    @Test
-    fun withPFlag_withOneArgument_returnsFalse_andLogsHelp() {
-        val matcher = mock<Matcher>()
-        val app = App(matcher, 10.0)
-
-        assertThat(app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger), equalTo(false))
-        assertThat(logger.lines, equalTo(listOf("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]")))
+        val exception = assertFailsWith(Exception::class) {
+            app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger)
+        }
+        assertThat(exception.message, equalTo("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]"))
     }
 }
 
