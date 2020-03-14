@@ -69,7 +69,7 @@ class MatchTest {
         val exception = assertFailsWith(Exception::class) {
             app.execute(listOf("match"), logger)
         }
-        assertThat(exception.message, equalTo("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]"))
+        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_ONE\"."))
     }
 
     @Test
@@ -80,7 +80,7 @@ class MatchTest {
         val exception = assertFailsWith(Exception::class) {
             app.execute(listOf("match", fileOne.absolutePath), logger)
         }
-        assertThat(exception.message, equalTo("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]"))
+        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_TWO\"."))
     }
 
     @Test
@@ -102,7 +102,7 @@ class MatchTest {
         val exception = assertFailsWith(Exception::class) {
             app.execute(listOf("match", "-p"), logger)
         }
-        assertThat(exception.message, equalTo("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]"))
+        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_ONE\"."))
     }
 
     @Test
@@ -113,7 +113,7 @@ class MatchTest {
         val exception = assertFailsWith(Exception::class) {
             app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger)
         }
-        assertThat(exception.message, equalTo("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]"))
+        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_TWO\"."))
     }
 }
 

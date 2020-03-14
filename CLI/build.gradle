@@ -13,6 +13,7 @@ dependencies {
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.30'
+    implementation("com.github.ajalt:clikt:2.5.0")
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"

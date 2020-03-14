@@ -1,28 +1,25 @@
 package uk.ac.lshtm.keppel.cli
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import java.io.File
 
 class MatchCommand(
         private val matcher: Matcher,
-        private val threshold: Double) : Command {
+        private val threshold: Double,
+        private val logger: Logger) : CliktCommand(name = "match") {
 
-    override fun execute(args: List<String>, logger: Logger) {
-        if (args.isEmpty()) {
-            throw Exception("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")
-        }
+    private val plainText by option("-p").flag(default = false)
+    private val templateOne by argument(name = "TEMPLATE_ONE")
+    private val templateTwo by argument(name = "TEMPLATE_TWO")
 
-        val (templateOne, templateTwo) = if (args.first() == "-p") {
-            if (args.size < 3) {
-                throw Exception("Usage: match -p [TEMPLATE_1] [TEMPLATE_2]")
-            }
-
-            Pair(args[1].toByteArray(), args[2].toByteArray())
+    override fun run() {
+        val (templateOne, templateTwo) = if (plainText) {
+            Pair(templateOne.toByteArray(), templateTwo.toByteArray())
         } else {
-            if (args.size < 2) {
-                throw Exception("Usage: match [TEMPLATE_FILE_1] [TEMPLATE_FILE_2]")
-            }
-
-            Pair(readAndTrim(File(args[0])), readAndTrim(File(args[1])))
+            Pair(readAndTrim(File(templateOne)), readAndTrim(File(templateTwo)))
         }
 
         val score = matcher.match(templateOne, templateTwo)

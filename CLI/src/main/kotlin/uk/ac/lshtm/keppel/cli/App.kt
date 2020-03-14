@@ -1,32 +1,8 @@
 package uk.ac.lshtm.keppel.cli
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.subcommands
 import kotlin.system.exitProcess
-
-class App(private val matcher: Matcher,
-          private val threshold: Double) : Command {
-    override fun execute(args: List<String>, logger: Logger) {
-        return when {
-            args.isEmpty() -> {
-                printHelp(logger)
-                throw Exception("")
-            }
-
-            args[0] == "match" -> {
-                MatchCommand(matcher, threshold).execute(args.drop(1), logger)
-            }
-
-            else -> {
-                printHelp(logger)
-                throw Exception("")
-            }
-        }
-    }
-
-    private fun printHelp(logger: Logger) {
-        logger.log("Commands:")
-        logger.log("    match    Determine if two (hex encoded) fingerprint templates are from the same finger or not")
-    }
-}
 
 fun main(args: Array<String>) {
     val logger = StdoutLogger()
@@ -39,8 +15,18 @@ fun main(args: Array<String>) {
     }
 }
 
-private class StdoutLogger : Logger {
+class App(private val matcher: Matcher,
+          private val threshold: Double) {
+    fun execute(args: List<String>, logger: Logger) {
+        class Root : CliktCommand() {
+            override fun run() = Unit
+        }
 
+        Root().subcommands(MatchCommand(matcher, threshold, logger)).parse(args)
+    }
+}
+
+private class StdoutLogger : Logger {
     override fun log(text: String) {
         println(text)
     }
