@@ -20,6 +20,13 @@ class MatchHelpTest {
     }
 
     @Test
+    fun showsThreshold() {
+        val app = App(matcher, 12.0)
+        app.execute(listOf("match", "-h"), logger)
+        assertThat(logger.lines[0], containsString("12.0"))
+    }
+
+    @Test
     fun showsOptions() {
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-h"), logger)
