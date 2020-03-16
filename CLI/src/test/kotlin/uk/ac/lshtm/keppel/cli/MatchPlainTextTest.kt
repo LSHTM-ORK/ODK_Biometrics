@@ -14,23 +14,14 @@ class MatchPlainTextTest {
     private val logger = FakeLogger()
 
     @Test
-    fun whenMatchIsLessThanThreshold_logsScore() {
+    fun logsScore() {
         val matcher = mock<Matcher> {
             on { match(any(), any()) } doReturn 5.0
         }
 
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
-        assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
-    }
-
-    @Test
-    fun withNoArguments_throwsException() {
-        val matcher = mock<Matcher>()
-        val app = App(matcher, 10.0)
-
-        app.execute(listOf("match", "-p"), logger)
-        assertThat(logger.lines, equalTo(listOf("Missing argument \"TEMPLATE_ONE\".")))
+        assertThat(logger.lines, equalTo(listOf("5.0")))
     }
 
     @Test

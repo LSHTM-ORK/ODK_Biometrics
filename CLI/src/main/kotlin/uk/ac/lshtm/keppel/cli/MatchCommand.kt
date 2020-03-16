@@ -12,6 +12,7 @@ class MatchCommand(
         private val logger: Logger) : CliktCommand(name = "match") {
 
     private val plainText by option("-p", help = Strings.PLAIN_TEXT_HELP).flag(default = false)
+    private val matchWithScore by option("-ms", help = Strings.MATCH_WITH_SCORE_HELP).flag(default = false)
     private val templateOne by argument(name = "TEMPLATE_ONE")
     private val templateTwo by argument(name = "TEMPLATE_TWO")
 
@@ -23,10 +24,14 @@ class MatchCommand(
         }
 
         val score = matcher.match(templateOne, templateTwo)
-        if (score >= threshold) {
-            logger.log("Match! Score: $score")
+        if (matchWithScore) {
+            if (score >= threshold) {
+                logger.log("match_$score")
+            } else {
+                logger.log("mismatch_$score")
+            }
         } else {
-            logger.log("Not a match. Score: $score")
+            logger.log("$score")
         }
     }
 
