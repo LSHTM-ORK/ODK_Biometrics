@@ -11,7 +11,7 @@ class MatchCommand(
         private val threshold: Double,
         private val logger: Logger) : CliktCommand(name = "match") {
 
-    private val plainText by option("-p").flag(default = false)
+    private val plainText by option("-p", help = Strings.PLAIN_TEXT_HELP).flag(default = false)
     private val templateOne by argument(name = "TEMPLATE_ONE")
     private val templateTwo by argument(name = "TEMPLATE_TWO")
 
