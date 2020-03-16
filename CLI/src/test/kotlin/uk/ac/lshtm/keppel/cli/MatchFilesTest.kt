@@ -8,7 +8,6 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import uk.ac.lshtm.keppel.cli.support.FakeLogger
-import kotlin.test.assertFailsWith
 
 
 class MatchTest {
@@ -62,14 +61,12 @@ class MatchTest {
     }
 
     @Test
-    fun withNoArguments_throwsException() {
+    fun withNoArguments_logsMissingArgument() {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match"), logger)
-        }
-        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_ONE\"."))
+        app.execute(listOf("match"), logger)
+        assertThat(logger.lines, equalTo(listOf("Missing argument \"TEMPLATE_ONE\".")))
     }
 
     @Test
@@ -77,9 +74,7 @@ class MatchTest {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match", fileOne.absolutePath), logger)
-        }
-        assertThat(exception.message, equalTo("Missing argument \"TEMPLATE_TWO\"."))
+        app.execute(listOf("match", fileOne.absolutePath), logger)
+        assertThat(logger.lines, equalTo(listOf("Missing argument \"TEMPLATE_TWO\".")))
     }
 }

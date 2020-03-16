@@ -25,7 +25,11 @@ class App(private val matcher: Matcher,
             override fun run() = Unit
         }
 
-        Root().subcommands(MatchCommand(matcher, threshold, logger)).parse(args)
+        try {
+            Root().subcommands(MatchCommand(matcher, threshold, logger)).parse(args)
+        } catch (e: Exception) {
+            if (e.message != null) logger.log(e.message!!)
+        }
     }
 }
 

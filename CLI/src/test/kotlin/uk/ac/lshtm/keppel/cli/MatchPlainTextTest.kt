@@ -4,11 +4,10 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import org.apache.commons.codec.binary.Hex
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import uk.ac.lshtm.keppel.cli.support.FakeLogger
-import kotlin.test.assertFailsWith
 
 class MatchPlainTextTest {
 
@@ -22,7 +21,7 @@ class MatchPlainTextTest {
 
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray()), Hex.encodeHexString("finger-1".toByteArray())), logger)
-        MatcherAssert.assertThat(logger.lines, CoreMatchers.equalTo(listOf("Not a match. Score: 5.0")))
+        assertThat(logger.lines, equalTo(listOf("Not a match. Score: 5.0")))
     }
 
     @Test
@@ -30,10 +29,8 @@ class MatchPlainTextTest {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match", "-p"), logger)
-        }
-        MatcherAssert.assertThat(exception.message, CoreMatchers.equalTo("Missing argument \"TEMPLATE_ONE\"."))
+        app.execute(listOf("match", "-p"), logger)
+        assertThat(logger.lines, equalTo(listOf("Missing argument \"TEMPLATE_ONE\".")))
     }
 
     @Test
@@ -41,9 +38,7 @@ class MatchPlainTextTest {
         val matcher = mock<Matcher>()
         val app = App(matcher, 10.0)
 
-        val exception = assertFailsWith(Exception::class) {
-            app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger)
-        }
-        MatcherAssert.assertThat(exception.message, CoreMatchers.equalTo("Missing argument \"TEMPLATE_TWO\"."))
+        app.execute(listOf("match", "-p", Hex.encodeHexString("finger-1".toByteArray())), logger)
+        assertThat(logger.lines, equalTo(listOf("Missing argument \"TEMPLATE_TWO\".")))
     }
 }
