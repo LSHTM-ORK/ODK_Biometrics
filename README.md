@@ -2,7 +2,7 @@
 
 # Keppel
 
-[![Android](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/Android/badge.svg)](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/actions?query=workflow%3AAndroid) [![CLI](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/CLI/badge.svg)](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/actions?query=workflow%3ACLI)
+[![CLI](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/CLI/badge.svg)](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/actions?query=workflow%3ACLI)
 
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
 
