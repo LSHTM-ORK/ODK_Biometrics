@@ -20,5 +20,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: |
-          cd ANDROID
+          cd Android
           ./gradlew lintDebug testDebugUnitTest
+    - name: Run Instrumentation Tests
+      uses: vgaidarji/android-github-actions-emulator@v1.0.1
