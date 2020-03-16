@@ -23,7 +23,8 @@ class MatchHelpTest {
     fun showsOptions() {
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-h"), logger)
-        assertThat(logger.lines[0], allOf(containsString("-p")))
-        assertThat(logger.lines[0], allOf(containsString("-ms")))
+        assertThat(logger.lines[0], allOf(containsString("-p ")))
+        assertThat(logger.lines[0], allOf(containsString("-m ")))
+        assertThat(logger.lines[0], allOf(containsString("-ms ")))
     }
 }

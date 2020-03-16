@@ -13,6 +13,7 @@ class MatchCommand(
 
     private val plainText by option("-p", help = Strings.PLAIN_TEXT_HELP).flag(default = false)
     private val matchWithScore by option("-ms", help = Strings.MATCH_WITH_SCORE_HELP).flag(default = false)
+    private val matchWithoutScore by option("-m", help = Strings.MATCH_WITHOUT_SCORE_HELP).flag(default = false)
     private val templateOne by argument(name = "TEMPLATE_ONE")
     private val templateTwo by argument(name = "TEMPLATE_TWO")
 
@@ -29,6 +30,12 @@ class MatchCommand(
                 logger.log("match_$score")
             } else {
                 logger.log("mismatch_$score")
+            }
+        } else if (matchWithoutScore) {
+            if (score >= threshold) {
+                logger.log("match")
+            } else {
+                logger.log("mismatch")
             }
         } else {
             logger.log("$score")
