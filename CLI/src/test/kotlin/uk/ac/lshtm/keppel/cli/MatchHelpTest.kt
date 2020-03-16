@@ -26,5 +26,6 @@ class MatchHelpTest {
         assertThat(logger.lines[0], allOf(containsString("-p ")))
         assertThat(logger.lines[0], allOf(containsString("-m ")))
         assertThat(logger.lines[0], allOf(containsString("-ms ")))
+        assertThat(logger.lines[0], allOf(containsString("-t ")))
     }
 }

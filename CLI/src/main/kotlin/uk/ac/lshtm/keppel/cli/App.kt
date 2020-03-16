@@ -9,14 +9,14 @@ fun main(args: Array<String>) {
 }
 
 class App(private val matcher: Matcher,
-          private val threshold: Double) {
+          private val defaultThreshold: Double) {
     fun execute(args: List<String>, logger: Logger) {
         class Root : CliktCommand(name = "keppel") {
             override fun run() = Unit
         }
 
         try {
-            Root().subcommands(MatchCommand(matcher, threshold, logger)).parse(args)
+            Root().subcommands(MatchCommand(matcher, defaultThreshold, logger)).parse(args)
         } catch (e: PrintHelpMessage) {
             logger.log(e.command.getFormattedHelp())
         } catch (e: Exception) {
