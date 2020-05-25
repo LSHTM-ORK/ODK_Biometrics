@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<h:head>
+	<h:title>form</h:title>
+	<model odk:xforms-version="1.0.0">
+		<instance>
+			<data id="form">
+				<name/>
+				<finger/>
+				<meta>
+					<instanceID/>
+				</meta>
+				</data>
+				</instance>
+				<bind nodeset="/data/name" type="string"/>
+				<bind nodeset="/data/finger" odk:length="10000" type="string"/>
+				<bind jr:preload="uid" nodeset="/data/meta/instanceID" readonly="true()" type="string"/></model></h:head><h:body><input ref="/data/name"><label>Name</label></input><input appearance="ex:uk.ac.lshtm.keppel.android.SCAN" ref="/data/finger"><label>finger</label></input></h:body></h:html>
