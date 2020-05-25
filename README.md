@@ -16,7 +16,7 @@ If you're collecting any personal information using ODK it would be a good idea 
 
 ### Scanning fingerprints in forms
 
-To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example form can be found [here](docs/form.xml).
+To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example XML form can be found [here](docs/form.xml) and an XLS Form version can be found [here](docs/form.xlsx).
 
 ### Matching fingerprints
 
