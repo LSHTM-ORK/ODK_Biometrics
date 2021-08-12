@@ -20,11 +20,55 @@ To setup a form to scan fingerprints the devices used for data collection will a
 
 ### Matching fingerprints
 
-You can install the command line interface from matching fingerprints [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). To match two (hex encoded) fingerprint templates run:
+You can install the command line interface from matching fingerprints [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). 
+
+To install the CLI, download the latest release zip file, unzip and then run
+
+```./install.sh```
+
+This will copy all required applications and libraries to your /usr/local/bin folder
+
+To match two (hex encoded) fingerprint templates run:
 
 ```bash
 keppel match /path/to/first_template /path/to/second_template
 ```
+The core function requires that each template is stored in a single line of its own text file. 
+
+
+#### Other commands
+
+To see available commands type 
+
+```keppel match -h```
+
+From version 0.3, the following options are available
+
+
+**-p**         
+Treats TEMPLATE_ONE and TEMPLATE_TWO as plain text rather than file
+This option is very useful for scripted analysis
+
+Example [templates truncated] 
+
+```keppel match -p 464d520020323000000001080000013c016200c500c5... 464d520020323000000000f00000013c016200c500c...```
+  
+**-ms**     
+Return whether templates match along with score like "match_210.124"
+
+**-m**   
+Return whether templates match (either "match" or "mismatch")
+
+**-t FLOAT**   
+Threshold (score) to be used to determine whether templates are a match or mismatch
+
+**-h, --help** 
+Show this message and exit`
+
+
+
+
+  
 
 ## Creating an Android release
 
