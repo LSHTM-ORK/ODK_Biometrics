@@ -3,7 +3,10 @@
 # Keppel
 [![CLI](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/CLI/badge.svg)](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/actions?query=workflow%3ACLI)
 
-Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
+This project provides a simple Android app that interfaces with mobile data collection software to allow fingerprint templates to be scanned as part of an [XLSForm](https://xlsform.org/). We also provide a second app, designed to be run on a computer workstation, which can compare two fingerprint templates and return a matching score. 
+
+We have tested that this works with 
+[ODK](getodk.org) and [KoBoToolbox](https://www.kobotoolbox.org/)
 
 
 
