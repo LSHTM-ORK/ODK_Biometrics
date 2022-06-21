@@ -6,6 +6,7 @@
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
 
 
+
 ## System design
 
 The novel biometrics system consists of two components. The first component is “Keppel”, a smartphone app designed to run on Google Android operating systems. This app provides an I/O interface between the ODK Collect app and an ANSI INCITS 378-2004 compliant electronic fingerprint reader/sensor device. The app has to be sideloaded (it isn't on play store yet).
@@ -14,19 +15,44 @@ A really important point here is that the system is not simply taking photograph
 
 The Keppel Smartphone app was designed using [Android Studio and Software Development Kit (SDK)](https://developer.android.com/studio). The initial version of the app works only with the low cost (<£50) Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
 
-![photo of the Mantra MFS100 device](imgs/mantra_img.jpeg)
+<p align="center"><img  src="imgs/mantra_img.jpeg" width="400"></p>
+
+
+The app was designed with a view to making the addition of further biometric sensors relatively simple. A software ‘demo’ scanner is also included, and this allows users to test their fingerprint supported ODK forms without having a scanner connected.
+
 
 ## Security and Privacy
 
-It's important to realize that fingerprints (or any form of biometric data) are very sensitive. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so.
+Please be aware that fingerprints (or any form of biometric data) are very sensitive personal data. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so. Please consider carrying out a data protection impact assessment prior to data collection.
 
 If you're collecting any personal information using ODK it would be a good idea to look into [encrypting forms](https://docs.opendatakit.org/encrypted-forms) and also to read ODK's [general documentation on security](https://docs.opendatakit.org/security-privacy/).
 
+
+
 ## Usage
+
+### Install the Keppel App on your Android phone or tablet
+
+
+
 
 ### Scanning fingerprints in forms
 
-To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example XML form can be found [here](docs/form.xml) and an XLS Form version can be found [here](docs/form.xlsx).
+To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example [XML form](Example_ODK_form/form.xml) and [XLS Form](Example_ODK_form/XLS Form) are provided.
+
+To capture all the fingers of one hand, your XLS form would look like this.
+
+<p align="center"><img  src="imgs/form_five_fingers.png"></p>
+
+The images below show how this looks in ODK Collect. Clicking 'launch' in ODK Collect opens the external app. Pressing 'capture' activates the scanner. Once the template has been captured, the data are returned to ODK Collect as plain text (N.B. Here I'm using the dummy scanner)
+<p float="left">
+  <img src="/imgs/form_five_fingers_odk_collect.png" width="200" />
+  <img src="imgs/keppel_app_ss_1.png" width="200" /> 
+  <img src="imgs/keppel_app_ss_2.png" width="200" />
+  <img src="imgs/keppel_app_ss_3.png" width="200" /> 
+</p>
+
+
 
 ### Matching fingerprints
 
