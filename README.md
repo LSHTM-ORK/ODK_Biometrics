@@ -176,6 +176,8 @@ fingerprint.score<-function(print1,print2)
 On an off-the-shelf MacBook Pro with 2.3 GHz 8-Core Intel Core i9 and 32 GB RAM, it took approximately 71 seconds to process 200 template matching calls sequentially. 
 
 ```R
+library(furrr)
+library(future)
 
 plan(sequential)
 
@@ -194,6 +196,7 @@ Called in parallel using the _**furrr**_ and _**future**_ packages, the process 
 
 ```R
 library(furrr)
+library(future)
 
 plan(multisession, workers = 16)
 system.time(future_map2(.x = df$scan1..R.THUMB,.y = df$scan2..R.THUMB.2,.f = fingerprint.score))
@@ -204,15 +207,15 @@ user   system  elapsed
 ```
 Processing n templates using the parallel approach (16 cores) took
 
-| n   |Cores| time (s) | time/call (s)|
-|-----|-----|----------|--------------|
-|200  | 1   | 68.6     | 0.343        |
-|400  | 1   | 140.2    | 0.350        |
-|200  | 8   | 16.5     | 0.083        |
-|400  | 16  | 30.86    | 0.077        |
-|1000 | 16  | 25.0     | 0.025        | 
-|2000 | 16  | 69.7     | 0.034        |
-|10000| 16  | 773.4    | 0.077        |
+| <sub>n</sub>   |<sub>Cores</sub>| <sub>time (s)</sub> | <sub>time/call (s)</sub> |
+|----------------|----------------|---------------------|--------------------------|
+|<sub>200</sub>  | <sub>1</sub>   | <sub>68.6</sub>     | <sub>0.343</sub>         |
+|<sub>400</sub>  | <sub>1</sub>   | <sub>140.2</sub>    | <sub>0.350</sub>         |
+|<sub>200</sub>  | <sub>16</sub>  | <sub>16.5</sub>     | <sub>0.083</sub>         |
+|<sub>400</sub>  | <sub>16</sub>  | <sub>30.86</sub>    | <sub>0.077</sub>         |
+|<sub>1000</sub> | <sub>16</sub>  | <sub>25.0</sub>     | <sub>0.025</sub>         | 
+|<sub>2000</sub> | <sub>16</sub>  | <sub>69.7</sub>     | <sub>0.034</sub>         |
+|<sub>10000</sub>| <sub>16</sub>  | <sub>773.4</sub>    | <sub>0.077</sub>         |
 
 
 ## Creating an Android release
