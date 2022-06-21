@@ -146,6 +146,33 @@ Threshold (score) to be used to determine whether templates are a match or misma
 Show this message and exit`
 
 
+## Controlling the Keppel CLI with R
+
+[R](https://www.r-project.org/) is our favourite application for data munging, analysis and statistics. R plays nicely with system tools and can be used to control the Keppel API. .
+
+In R, we created a very simple wrapper function that runs the Keppel CLI and returns a match score. As with any R function, this can be applied to lists, arrays and tibbles (data frames) to perform batch actions. On an off-the-shelf MacBook Pro with 2.3 GHz 8-Core Intel Core i9 and 32 GB RAM, it took approximately 94 seconds to process 200 template matching calls.
+
+
+```r
+##########################################################################
+#Define a function that gets the match score between scans.
+##########################################################################
+
+fingerprint.score<-function(print1,print2)
+{
+
+  if(!is.na(print1) & !is.na(print2)){
+    c<-system(
+      command = str_c("keppel match -p ",print1," ",print2),
+      intern = TRUE
+    )}
+
+  if(is.na(print1) | is.na(print2)){ c<-NA}
+  message(c)
+  c
+}
+```
+
 
 
   
