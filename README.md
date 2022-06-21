@@ -33,12 +33,13 @@ If you're collecting any personal information using ODK it would be a good idea 
 
 ### Install the Keppel App on your Android phone or tablet
 
+Download the [latest release](https://github.com/LSHTM-ORK/ODK_Biometrics/releases/latest) and sideload the APK file on to your Android device
 
-
-
-### Scanning fingerprints in forms
+### Scanning fingerprints in ODK XLSform format
 
 To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example [XML form](Example_ODK_form/form.xml) and [XLS Form](Example_ODK_form/XLS Form) are provided.
+
+Forms should be added to your ODK system as usual, via ODK Central. 
 
 To capture all the fingers of one hand, your XLS form would look like this.
 
@@ -52,31 +53,70 @@ The images below show how this looks in ODK Collect. Clicking 'launch' in ODK Co
   <img src="imgs/keppel_app_ss_3.png" width="200" /> 
 </p>
 
+### ODK data downloads
+
+When you download your data CSV file from ODK Central, your fingerprint templates will be stored as plain text in line with other data from the form. From here you can either test them one at a time, or use a script to automate batch processing. 
+
+| <sub>SubmissionDate</sub>         | <sub>ID</sub> | <sub>scan1.-R.THUMB</sub>                     |  <sub>UUID</sub>                                  |
+|------------------------|----|------------------------------------|-----------------------------------------|  
+|<sub>2021-12-21T18:19:36.622Z</sub>|<sub>001</sub> |<sub>464d520020323000000000f60000013c016200c500c5010000006424808b00ca7664...</sub>|<sub>uuid:4f1f19e2-846a-42d7-aef2-0574474a993b</sub>|
+|<sub>2021-12-21T19:25:32.123Z</sub>|<sub>002</sub> |<sub>464d5200203230000000009c0000013c016200c500c5010000003415408c00e0874c...</sub>|<sub>uuid:2382975e-52bb-4a6b-880f-49bc5c27e787</sub>|
+|<sub>2021-12-22T09:14:09.431Z</sub>|<sub>003</sub> |<sub>464d520020323000000000ae0000013c016200c500c5010000006418409200cb7b...</sub>|<sub>uuid:f7a0ab80-9d46-423a-9e64-28a0b3fb7076</sub>|
+|<sub>2021-12-22T12:00:11.682Z</sub>|<sub>004</sub> |<sub>464d520020323000000000d80000013c016200c500c501000000461f807f00eed71...</sub>|<sub>uuid:9d55c0a9-901a-4908-b553-8a43a0b4037e</sub>|
+
+
+
+### Install the Keppel CLI on your workstation 
+
+Unzip the keppel-cli.zip. Open a terminal and do the following to copy all required applications and libraries to your /usr/local/bin folder
+
+
+```console
+foo@bar:~$ cd keppel-cli
+foo@bar:~$ ./install.sh 
+```
+
+Test the installation with
+
+```console
+foo@bar:~$ keppel
+```
+you should see the help dialog
+
+```console
+foo@bar:~$ keppel
+
+Usage: keppel [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  -h, --help  Show this message and exit
+
+Commands:
+  match  Match two hex encoded ISO fingerprint templates. Threshold used for
+         matching is 40.0.
+
+```
 
 
 ### Matching fingerprints
 
-You can install the command line interface from matching fingerprints [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). 
-
-To install the CLI, download the latest release zip file, unzip and then run
-
-```./install.sh```
-
-This will copy all required applications and libraries to your /usr/local/bin folder
-
 To match two (hex encoded) fingerprint templates run:
 
-```bash
-keppel match /path/to/first_template /path/to/second_template
+```console
+foo@bar:~$ keppel match /path/to/first_template /path/to/second_template
+
+15.386568130470566
 ```
-The core function requires that each template is stored in a single line of its own text file. 
+The core function requires that each template is stored in a single line of its own text file. The default behaviour is to return the matching score for the two templates
 
 
 #### Other commands
 
 To see available commands type 
 
-```keppel match -h```
+```console
+foo@bar:~$ keppel match -h
+```
 
 From version 0.3, the following options are available
 
@@ -87,7 +127,11 @@ This option is very useful for scripted analysis
 
 Example [templates truncated] 
 
-```keppel match -p 464d520020323000000001080000013c016200c500c5... 464d520020323000000000f00000013c016200c500c...```
+```console
+foo@bar:~$ keppel match -p 464d520020323000000001080000013c016200c500c5... 464d520020323000000000f00000013c016200c500c...
+
+15.386568130470566
+```
   
 **-ms**     
 Return whether templates match along with score like "match_210.124"
@@ -107,6 +151,8 @@ Show this message and exit`
   
 
 ## Creating an Android release
+
+Hopefully the current release will continue to work with future versions of ODK Collect. At present we are passively updating the app as needed. Collaborators are welcome to continue to develop the app and to create new releases.
 
 **Prerequisites**: You will need to install both a JDK and the Android SDK to build a release. The easiest way to install Android is to download [Android Studio](https://developer.android.com/studio/) and import the project in `Android` into it. This takes care of downloading the correct Android dependencies for you.
 
