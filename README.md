@@ -1,10 +1,20 @@
 ![](Android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
 
 # Keppel
-
 [![CLI](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/workflows/CLI/badge.svg)](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/actions?query=workflow%3ACLI)
 
 Allows fingerprints to be scanned as part of an [ODK Collect](https://opendatakit.org/software/odk/#odk-collect) form.
+
+
+## System design
+
+The novel biometrics system consists of two components. The first component is “Keppel”, a smartphone app designed to run on Google Android operating systems. This app provides an I/O interface between the ODK Collect app and an ANSI INCITS 378-2004 compliant electronic fingerprint reader/sensor device. The app has to be sideloaded (it isn't on play store yet).
+
+A really important point here is that the system is not simply taking photographs of fingerprints. The data are stored as concise code which has a very 'lite' impact on the size of the data stored in ODK and also requires no use of attachments. The fingerprint data are captured as plain text that is stored and encrypted along with other ODK data.
+
+The Keppel Smartphone app was designed using [Android Studio and Software Development Kit (SDK)](https://developer.android.com/studio). The initial version of the app works only with the low cost (<£50) Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
+
+![photo of the Mantra MFS100 device](imgs/mantra_img.jpeg)
 
 ## Security and Privacy
 
