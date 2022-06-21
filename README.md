@@ -150,7 +150,7 @@ Show this message and exit`
 
 [R](https://www.r-project.org/) is our favourite application for data munging, analysis and statistics. R plays nicely with system tools and can be used to control the Keppel API. .
 
-In R, we created a very simple wrapper function that runs the Keppel CLI and returns a match score. As with any R function, this can be applied to lists, arrays and tibbles (data frames) to perform batch actions. On an off-the-shelf MacBook Pro with 2.3 GHz 8-Core Intel Core i9 and 32 GB RAM, it took approximately 94 seconds to process 200 template matching calls.
+In R, we created a very simple wrapper function that runs the Keppel CLI and returns a match score. As with any R function, this can be applied to lists, arrays and tibbles (data frames) to perform batch actions. 
 
 
 ```r
@@ -173,9 +173,47 @@ fingerprint.score<-function(print1,print2)
 }
 ```
 
+On an off-the-shelf MacBook Pro with 2.3 GHz 8-Core Intel Core i9 and 32 GB RAM, it took approximately 71 seconds to process 200 template matching calls sequentially. 
 
+```R
 
-  
+plan(sequential)
+
+system.time(future_map2(
+  .x = df$scan1,
+  .y = df$scan2,
+  .f = fingerprint.score))
+
+user     system  elapsed 
+101.276  16.056  71.427 
+```
+
+>   
+
+Called in parallel using the _**furrr**_ and _**future**_ packages, the process is much faster
+
+```R
+library(furrr)
+
+plan(multisession, workers = 16)
+system.time(future_map2(.x = df$scan1..R.THUMB,.y = df$scan2..R.THUMB.2,.f = fingerprint.score))
+
+user   system  elapsed 
+1.261  0.059   16.467 
+
+```
+Processing n templates using the parallel approach (16 cores) took
+
+| n   |Cores| time (s) | time/call (s)|
+|-----|-----|----------|--------------|
+|200  | 1   | 68.6     | 0.343        |
+|400  | 1   | 140.2    | 0.350        |
+|200  | 8   | 16.5     | 0.083        |
+|400  | 16  | 30.86    | 0.077        |
+|1000 | 16  | 25.0     | 0.025        | 
+|2000 | 16  | 69.7     | 0.034        |
+|10000| 16  | 773.4    | 0.077        |
+
 
 ## Creating an Android release
 
