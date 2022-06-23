@@ -5,8 +5,17 @@
 
 This project provides a simple Android app that interfaces with mobile data collection software to allow fingerprint templates to be scanned as part of an [XLSForm](https://xlsform.org/). We also provide a second app, designed to be run on a computer workstation, which can compare two fingerprint templates and return a matching score. 
 
-We have tested that this works with 
-[ODK](getodk.org) and [KoBoToolbox](https://www.kobotoolbox.org/)
+
+## Compatibility
+This platform should work with all platforms that are based on ODK. 
+
+| <sub>Platform</sub> | <sub>App & version</sub> | <sub>Compatibility</sub>
+|-------|-----------|------------------|
+|<sub>ODK</sub>|<sub>ODK Collect v2022.3</sub>|<sub>YES</sub>|
+|<sub>KoBoToolbox</sub>|<sub>KoboCollect v2022.1.2</sub>|<sub>YES</sub>|
+|<sub>SurveyCTO</sub>|<sub>SurveyCTO Collect v2.72</sub>|<sub>YES</sub>|
+|<sub>CommCare</sub>|<sub>CommCare v8</sub>|<sub>Only with Advanced Plan or higher</sub>|
+|<sub>Ona</sub>|<sub>ODK COllect v2022.3</sub>|<sub>YES</sub>
 
 
 
