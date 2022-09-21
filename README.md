@@ -306,7 +306,3 @@ This work was funded by the UK Department of Health and Social Care using UK Aid
   <img src="imgs/NIHR.png" width="250" /> 
   <img src="/imgs/DHSC.png" width="70" />
 </p>
-
-## License
-
-MIT license
