@@ -275,11 +275,6 @@ To create a release:
 1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
 1. Set the "Release title", attach the `.zip` package and hit "Publish release" 🚢
 
-
-### Why the name? 
-
-This project was created by researchers at the London School of Hygiene & Tropical Medicine. Our mission is to improve health and health equity in the UK and worldwide; working in partnership to achieve excellence in public and global health research, education and translation of knowledge into policy and practice. LSHTM's main building is situated on Keppel Street in London's Bloomsbury district. The Keppel App and CLI are named after the street where you will find us and not after any (no doubt problematic) historical figures who may have given their name to the street.
-
 ## Supported devices
 
 ### Mantra MFS100
@@ -303,7 +298,14 @@ This project was created by researchers at the London School of Hygiene & Tropic
 * Supports operating system plaforms like Windows 98 SE, Me, 2000, XP, Windows7, windows vista, windows server(2003/2007/2008) and Linux.
 * SDK, Libraries and drivers support across all mentioned platforms. (32 bit/64 bit) Easy integration into product servers and application support
 
-### Funding & Ethics
+
+## Why the name? 
+
+This project was created by researchers at the London School of Hygiene & Tropical Medicine. Our mission is to improve health and health equity in the UK and worldwide; working in partnership to achieve excellence in public and global health research, education and translation of knowledge into policy and practice. LSHTM's main building is situated on Keppel Street in London's Bloomsbury district. The Keppel App and CLI are named after the street where you will find us and not after any (no doubt problematic) historical figures who may have given their name to the street.
+
+
+
+## Funding & Ethics
 
 This work was funded by the UK Department of Health and Social Care using UK Aid funding managed by the NIHR (PR-OD-1017-20001). Ethical permission for elements of the work that handled fingerprint templates from living humans was granted by the London School of Hygiene & Tropical Medicine Observational Research Ethics Committee (Ref. 22562).
 
@@ -311,6 +313,3 @@ This work was funded by the UK Department of Health and Social Care using UK Aid
   <img src="imgs/NIHR.png" width="250" /> 
   <img src="/imgs/DHSC.png" width="70" />
 </p>
-
-### License
-
