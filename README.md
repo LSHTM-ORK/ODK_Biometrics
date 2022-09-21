@@ -309,3 +309,4 @@ This work was funded by the UK Department of Health and Social Care using UK Aid
 
 ## License
 
+MIT license
