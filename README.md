@@ -270,12 +270,35 @@ To create a release:
 1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
 1. Set the "Release title", attach the `.zip` package and hit "Publish release" 🚢
 
+## Supported devices
 
-### Why the name? 
+### Mantra MFS100
+
+#### Mantra Softech India Private Limited
+
+* Mantra is a leading manufacturer and developer of Biometric devices, software and solutions from 2006 onwards.
+* The biometric-based technology offers a dependable, helpful, and authentic way of verifying/identifying an individual's identity utilizing latest Biometric fingerprint scanner.
+* Fingerprint scanners are being used broadly for enrollment, identification & verification in varied projects where the identity of people is required.
+* Mantra's biometric fingerprint devices offer superior execution, accuracy, and continuance.
+* Our wide ranges of fingerprint scanner devices deliver quick personality verification with a high level of security in a consistent way for various Citizen or Person identity ventures.
+
+#### Mantra’s MFS100 - Biometric Fingerprint Scanner
+
+* FBI and STQC certified single finger scanner MFS100 is high quality USB fingerprint sensor for fingerprint authentication in desktop or network security.
+* MFS100 is based on optical sensing technology which efficiently recognizes poor quality fingerprints also.
+* MFS100 can be used for authentication, identification and verification functions that let your fingerprint act like digital passwords that cannot be lost, forgotten or stolen.
+* Hard optical sensor is resistant to scratches, impact, vibration and electrostatic shock.
+* Lowest FAR and FRR NIST complied interoperable template format standards (ANSI378 /ISO19794-2). Compatibility with ISO 19794-4 and ISO 19794-2 for fingerprint capture and verification.
+* Apart from FBI and STQC, MFS100 is CE, FCC, RoHS, WHQL, CB 60950 approved. Equivalent to FBI PIV certification.
+* Supports operating system plaforms like Windows 98 SE, Me, 2000, XP, Windows7, windows vista, windows server(2003/2007/2008) and Linux.
+* SDK, Libraries and drivers support across all mentioned platforms. (32 bit/64 bit) Easy integration into product servers and application support
+
+
+## Why the name? 
 
 This project was created by researchers at the London School of Hygiene & Tropical Medicine. Our mission is to improve health and health equity in the UK and worldwide; working in partnership to achieve excellence in public and global health research, education and translation of knowledge into policy and practice. LSHTM's main building is situated on Keppel Street in London's Bloomsbury district. The Keppel App and CLI are named after the street where you will find us and not after any (no doubt problematic) historical figures who may have given their name to the street.
 
-### Funding & Ethics
+## Funding & Ethics
 
 This work was funded by the UK Department of Health and Social Care using UK Aid funding managed by the NIHR (PR-OD-1017-20001). Ethical permission for elements of the work that handled fingerprint templates from living humans was granted by the London School of Hygiene & Tropical Medicine Observational Research Ethics Committee (Ref. 22562).
 
@@ -284,5 +307,5 @@ This work was funded by the UK Department of Health and Social Care using UK Aid
   <img src="/imgs/DHSC.png" width="70" />
 </p>
 
-### License
+## License
 
