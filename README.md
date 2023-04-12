@@ -64,10 +64,12 @@ To capture all the fingers of one hand, your XLS form would look like this.
 
 The images below show how this looks in ODK Collect. Clicking 'launch' in ODK Collect opens the external app. Pressing 'capture' activates the scanner. Once the template has been captured, the data are returned to ODK Collect as plain text (N.B. Here I'm using the dummy scanner)
 <p float="left">
-  <img src="/imgs/form_five_fingers_odk_collect.png" width="200" />
+
+  <img src="imgs/keppel_app_ss_0.png" width="200" /> 
   <img src="imgs/keppel_app_ss_1.png" width="200" /> 
   <img src="imgs/keppel_app_ss_2.png" width="200" />
   <img src="imgs/keppel_app_ss_3.png" width="200" /> 
+
 </p>
 
 ### ODK data downloads
