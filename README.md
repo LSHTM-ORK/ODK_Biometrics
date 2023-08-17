@@ -151,7 +151,20 @@ foo@bar:~$ keppel match -p 464d520020323000000001080000013c016200c500c5... 464d5
 
 15.386568130470566
 ```
-  
+
+**-i**         
+Treats TEMPLATE_ONE and TEMPLATE_TWO as two image files (PNG, JPEG, WSQ, etc.)
+This option is very useful for testing images directly without needing to convert
+to templates first.
+
+Example
+
+```console
+foo@bar:~$ keppel match -i one.wsq two.wsq
+
+15.386568130470566
+```
+
 **-ms**     
 Return whether templates match along with score like "match_210.124"
 
