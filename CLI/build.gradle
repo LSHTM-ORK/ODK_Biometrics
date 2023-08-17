@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.machinezoo.sourceafis:sourceafis:3.8.1'
+    implementation 'com.machinezoo.sourceafis:sourceafis:3.17.1'
     implementation 'commons-codec:commons-codec:1.14'
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
