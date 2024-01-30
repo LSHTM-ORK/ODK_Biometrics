@@ -22,8 +22,8 @@ android {
         applicationId "uk.ac.lshtm.keppel.android"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 3
-        versionName "0.4a2"
+        versionCode 40
+        versionName "0.4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
