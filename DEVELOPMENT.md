@@ -96,9 +96,9 @@ To create a release:
    1. Click "Create new..."
    1. Enter the details for the keystore making sure you take a note of the password, the key alias and the key password
    1. Click "OK" and then "Cancel" the signing process (this flow is just the easiest way to generate a keystore)
-   1. Create a `secrets.properties` in the root of the project wtih the keystore details:
+   1. Create a `secrets.properties` in `Android` with the keystore details:
       ```
-      KEYSTORE=<path to keystore>
+      KEYSTORE=<path to keystore relative to `Android/app`>
       KEYSTORE_PASSWORD=<keystore password>
       KEY_ALIAS=<key alias>
       KEY_PASSWORD=<key password>
