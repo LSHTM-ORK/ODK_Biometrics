@@ -7,5 +7,7 @@ interface ScannerFactory {
 
     val name: String
 
+    val isAvailable: Boolean
+
     fun create(context: Context): Scanner
 }

@@ -14,10 +14,10 @@ class ScannerViewModel(
 ) : ViewModel() {
 
     private val _scannerState = MutableLiveData(DISCONNECTED)
-    private val _fingerTemplate = MutableLiveData<String>(null)
+    private val _fingerTemplate = MutableLiveData<String?>(null)
 
     val scannerState: LiveData<ScannerState> = _scannerState
-    val fingerTemplate: LiveData<String> = _fingerTemplate
+    val fingerTemplate: LiveData<String?> = _fingerTemplate
 
     init {
         scanner.connect {

@@ -6,15 +6,15 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
-import uk.ac.lshtm.keppel.android.tasks.ThreadTaskRunner
-import uk.ac.lshtm.keppel.core.TaskRunner
 import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.DemoScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.MFS100ScannerFactory
+import uk.ac.lshtm.keppel.android.tasks.IODispatcherTaskRunner
+import uk.ac.lshtm.keppel.core.TaskRunner
 
 class Keppel : Application() {
 
-    var taskRunner: TaskRunner = ThreadTaskRunner()
+    var taskRunner: TaskRunner = IODispatcherTaskRunner()
 
     var availableScanners: List<ScannerFactory> = listOf(
         BioMiniScannerFactory(),
@@ -36,8 +36,9 @@ class Keppel : Application() {
     }
 
     fun configureDefaultScanner(override: Boolean) {
-        val sharedPreference = getDefaultSharedPreferences(this)
+        availableScanners = availableScanners.filter { it.isAvailable }
 
+        val sharedPreference = getDefaultSharedPreferences(this)
         if (override || !sharedPreference.contains("scanner")) {
             sharedPreference.edit {
                 putString("scanner", availableScanners[0].name)

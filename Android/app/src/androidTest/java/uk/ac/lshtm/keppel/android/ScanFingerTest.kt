@@ -8,17 +8,20 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import uk.ac.lshtm.keppel.android.scanning.ScanActivity
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
+import uk.ac.lshtm.keppel.android.support.TaskRunnerIdlingResource
 import uk.ac.lshtm.keppel.core.Scanner
 
 @RunWith(AndroidJUnit4::class)
@@ -29,9 +32,21 @@ class ScanFingerTest {
 
     @get:Rule
     val rule = object : ActivityTestRule<ScanActivity>(ScanActivity::class.java) {
+
+        private val application = getApplicationContext<Keppel>()
+        private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
+
         override fun beforeActivityLaunched() {
-            getApplicationContext<Keppel>().availableScanners = listOf(fakeScannerFactory)
-            getApplicationContext<Keppel>().configureDefaultScanner(override = true)
+            application.availableScanners = listOf(fakeScannerFactory)
+            application.configureDefaultScanner(override = true)
+
+            application.taskRunner = taskRunnerIdlingResource.also {
+                IdlingRegistry.getInstance().register(it)
+            }
+        }
+        
+        override fun afterActivityFinished() {
+            IdlingRegistry.getInstance().unregister(taskRunnerIdlingResource)
         }
     }
 
@@ -46,6 +61,7 @@ class ScanFingerTest {
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
 
     override val name = "Fake"
+    override val isAvailable: Boolean = true
 
     override fun create(context: Context): Scanner {
         return fakeScanner

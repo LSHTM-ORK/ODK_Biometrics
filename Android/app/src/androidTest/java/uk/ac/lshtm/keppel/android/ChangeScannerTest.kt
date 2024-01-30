@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -26,14 +27,15 @@ class ChangeScannerTest {
         override fun beforeActivityLaunched() {
             getApplicationContext<Keppel>().availableScanners = listOf(
                 scannerFactory1,
-                scannerFactory2
+                scannerFactory2,
+                unavailableScannerFactory
             )
             getApplicationContext<Keppel>().configureDefaultScanner(override = true)
         }
     }
 
     @Test
-    fun clickingCapture_capturesPlacedFingerprintsISOTemplate_fromScanner() {
+    fun canChangeScanner() {
         onView(withText("Scanner 1")).check(matches(isDisplayed()))
         onView(withText(R.string.change_scanner)).perform(click())
 
@@ -45,9 +47,18 @@ class ChangeScannerTest {
         assertThat(scannerPref, equalTo("Scanner 2"))
     }
 
+    @Test
+    fun unavailableScannersAreNotShown() {
+        onView(withText("Scanner 1")).check(matches(isDisplayed()))
+        onView(withText(R.string.change_scanner)).perform(click())
+
+        onView(withText("Unavailable")).check(doesNotExist())
+    }
+
     private val scannerFactory1 = object : ScannerFactory {
 
         override val name: String = "Scanner 1"
+        override val isAvailable: Boolean = true
 
         override fun create(context: Context): Scanner {
             TODO("Not yet implemented")
@@ -57,6 +68,17 @@ class ChangeScannerTest {
     private val scannerFactory2 = object : ScannerFactory {
 
         override val name: String = "Scanner 2"
+        override val isAvailable: Boolean = true
+
+        override fun create(context: Context): Scanner {
+            TODO("Not yet implemented")
+        }
+    }
+
+    private val unavailableScannerFactory = object : ScannerFactory {
+
+        override val name: String = "Unavailable"
+        override val isAvailable: Boolean = false
 
         override fun create(context: Context): Scanner {
             TODO("Not yet implemented")

@@ -5,8 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.activity_scan.*
-import uk.ac.lshtm.keppel.android.R
+import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.scannerFactory
 import uk.ac.lshtm.keppel.android.taskRunner
 
@@ -16,7 +15,9 @@ class ScanActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_scan)
+
+        val binding = ActivityScanBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         viewModel = ViewModelProvider(
             this, ScannerViewModelFactory(
@@ -28,21 +29,21 @@ class ScanActivity : AppCompatActivity() {
         viewModel.scannerState.observe(this, Observer { state ->
             when (state) {
                 ScannerState.DISCONNECTED -> {
-                    connect_progress_bar.visibility = View.VISIBLE
-                    capture_button.visibility = View.GONE
-                    capture_progress_bar.visibility = View.GONE
+                    binding.connectProgressBar.visibility = View.VISIBLE
+                    binding.captureButton.visibility = View.GONE
+                    binding.captureProgressBar.visibility = View.GONE
                 }
 
                 ScannerState.CONNECTED -> {
-                    connect_progress_bar.visibility = View.GONE
-                    capture_button.visibility = View.VISIBLE
-                    capture_progress_bar.visibility = View.GONE
+                    binding.connectProgressBar.visibility = View.GONE
+                    binding.captureButton.visibility = View.VISIBLE
+                    binding.captureProgressBar.visibility = View.GONE
                 }
 
                 ScannerState.SCANNING -> {
-                    connect_progress_bar.visibility = View.GONE
-                    capture_button.visibility = View.GONE
-                    capture_progress_bar.visibility = View.VISIBLE
+                    binding.connectProgressBar.visibility = View.GONE
+                    binding.captureButton.visibility = View.GONE
+                    binding.captureProgressBar.visibility = View.VISIBLE
                 }
 
                 else -> {
@@ -59,7 +60,7 @@ class ScanActivity : AppCompatActivity() {
             }
         })
 
-        capture_button.setOnClickListener {
+        binding.captureButton.setOnClickListener {
             viewModel.capture()
         }
     }

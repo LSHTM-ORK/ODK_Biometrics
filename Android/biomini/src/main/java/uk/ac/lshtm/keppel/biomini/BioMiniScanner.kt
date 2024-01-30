@@ -131,8 +131,9 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
                     var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
                     if (android.os.Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
-                        FLAG_MUTABLE = 33554432
+                        FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
                     }
+
                     mPermissionIntent = PendingIntent.getBroadcast(
                         context,
                         0,

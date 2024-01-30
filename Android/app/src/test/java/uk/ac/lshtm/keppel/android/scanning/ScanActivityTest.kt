@@ -3,7 +3,6 @@ package uk.ac.lshtm.keppel.android.scanning
 import android.content.Context
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import kotlinx.android.synthetic.main.activity_scan.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Before
@@ -17,6 +16,7 @@ import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.LooperMode
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.android.R
 
 @RunWith(RobolectricTestRunner::class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -37,19 +37,19 @@ class ScanActivityTest {
 
     @Test
     fun whenScannerDisconnected_showsConnectProgressBar() {
-        assertThat(activity.capture_button.visibility, equalTo(View.GONE))
-        assertThat(activity.capture_progress_bar.visibility, equalTo(View.GONE))
-        assertThat(activity.connect_progress_bar.visibility, equalTo(View.VISIBLE))
+        assertThat(activity.findViewById<View>(R.id.capture_button).visibility, equalTo(View.GONE))
+        assertThat(activity.findViewById<View>(R.id.capture_progress_bar).visibility, equalTo(View.GONE))
+        assertThat(activity.findViewById<View>(R.id.connect_progress_bar).visibility, equalTo(View.VISIBLE))
     }
 
     @Test
     fun whenScannerConnected_clickingCapture_showsProgressBar() {
         fakeScanner.connect()
 
-        activity.capture_button.performClick()
-        assertThat(activity.capture_button.visibility, equalTo(View.GONE))
-        assertThat(activity.capture_progress_bar.visibility, equalTo(View.VISIBLE))
-        assertThat(activity.connect_progress_bar.visibility, equalTo(View.GONE))
+        activity.findViewById<View>(R.id.capture_button).performClick()
+        assertThat(activity.findViewById<View>(R.id.capture_button).visibility, equalTo(View.GONE))
+        assertThat(activity.findViewById<View>(R.id.capture_progress_bar).visibility, equalTo(View.VISIBLE))
+        assertThat(activity.findViewById<View>(R.id.connect_progress_bar).visibility, equalTo(View.GONE))
     }
 
     @Test
@@ -57,9 +57,9 @@ class ScanActivityTest {
         fakeScanner.connect()
         fakeScanner.disconnect()
 
-        assertThat(activity.capture_button.visibility, equalTo(View.GONE))
-        assertThat(activity.capture_progress_bar.visibility, equalTo(View.GONE))
-        assertThat(activity.connect_progress_bar.visibility, equalTo(View.VISIBLE))
+        assertThat(activity.findViewById<View>(R.id.capture_button).visibility, equalTo(View.GONE))
+        assertThat(activity.findViewById<View>(R.id.capture_progress_bar).visibility, equalTo(View.GONE))
+        assertThat(activity.findViewById<View>(R.id.connect_progress_bar).visibility, equalTo(View.VISIBLE))
     }
 
     @Test
@@ -72,6 +72,7 @@ class ScanActivityTest {
 class FakeScannerFactory(private val fakeScanner: FakeScanner) : ScannerFactory {
 
     override val name: String = "Fake"
+    override val isAvailable: Boolean = true
 
     override fun create(context: Context): Scanner = fakeScanner
 }

@@ -1,7 +1,10 @@
 package uk.ac.lshtm.keppel.android.scanning
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
@@ -9,8 +12,11 @@ import org.robolectric.RobolectricTestRunner
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class ScannerViewModelTest {
+
+    @get:Rule
+    val instanceTaskExecutorRule = InstantTaskExecutorRule()
 
     @Test
     fun capture_whenResultIsNull_resetsStateToConnected() {

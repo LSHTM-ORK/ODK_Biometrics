@@ -8,3 +8,4 @@
 .externalNativeBuild
 Keystore
 secrets.properties
+.envrc
