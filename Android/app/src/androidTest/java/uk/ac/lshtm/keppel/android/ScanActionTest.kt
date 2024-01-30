@@ -12,6 +12,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
+import uk.ac.lshtm.keppel.core.toHexString
 import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
@@ -30,7 +31,10 @@ class ScanActionTest {
         onView(withText(R.string.capture)).perform(click())
         assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = scenario.result.resultData.extras!!
-        assertThat(extras.getString(Actions.Scan.EXTRA_ODK_RETURN_VALUE), equalTo("ISO TEMPLATE"))
+        assertThat(
+            extras.getString(Actions.EXTRA_ODK_RETURN_VALUE),
+            equalTo("ISO TEMPLATE".toHexString())
+        )
     }
 
     @Test
@@ -44,7 +48,10 @@ class ScanActionTest {
         onView(withText(R.string.capture)).perform(click())
         assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = scenario.result.resultData.extras!!
-        assertThat(extras.get(Actions.Scan.EXTRA_ISO_TEMPLATE), equalTo("ISO TEMPLATE"))
+        assertThat(
+            extras.get(Actions.Scan.EXTRA_ISO_TEMPLATE),
+            equalTo("ISO TEMPLATE".toHexString())
+        )
         assertThat(extras.get(Actions.Scan.EXTRA_NFIQ), equalTo(17))
     }
 

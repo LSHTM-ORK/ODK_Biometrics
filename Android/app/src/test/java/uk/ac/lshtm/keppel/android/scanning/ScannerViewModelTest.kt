@@ -21,7 +21,7 @@ class ScannerViewModelTest {
     @Test
     fun capture_whenResultIsNull_resetsStateToConnected() {
         val scanner = mock(Scanner::class.java)
-        val viewModel = ScannerViewModel(scanner, InstantTaskRunner())
+        val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
         val state = viewModel.scannerState
 
         `when`(scanner.capture()).thenReturn(null)
@@ -32,7 +32,7 @@ class ScannerViewModelTest {
     @Test
     fun onCleared_disconnectsScanner() {
         val scanner = mock(Scanner::class.java)
-        val viewModel = ScannerViewModel(scanner, InstantTaskRunner())
+        val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
 
         viewModel.onCleared()
         verify(scanner).disconnect()
@@ -41,7 +41,7 @@ class ScannerViewModelTest {
     @Test
     fun onCleared_stopsScannerCapture() {
         val scanner = mock(Scanner::class.java)
-        val viewModel = ScannerViewModel(scanner, InstantTaskRunner())
+        val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
 
         viewModel.onCleared()
         verify(scanner).stopCapture()

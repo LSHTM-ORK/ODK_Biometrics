@@ -5,12 +5,15 @@ import android.app.Application
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
+import uk.ac.lshtm.keppel.android.matching.SourceAFISMatcher
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.DemoScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.MFS100ScannerFactory
 import uk.ac.lshtm.keppel.android.tasks.IODispatcherTaskRunner
+import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
+import javax.xml.transform.Source
 
 class Keppel : Application() {
 
@@ -22,6 +25,9 @@ class Keppel : Application() {
         MFS100ScannerFactory(),
         DemoScannerFactory()
     )
+        private set
+
+    var matcher: Matcher = SourceAFISMatcher()
         private set
 
     val scannerFactory: ScannerFactory
@@ -38,14 +44,21 @@ class Keppel : Application() {
     }
 
     fun setDependencies(
-        availableScanners: List<ScannerFactory> = listOf(
-            MFS100ScannerFactory(),
-            DemoScannerFactory()
-        ),
-        taskRunner: TaskRunner = IODispatcherTaskRunner()
+        availableScanners: List<ScannerFactory>? = null,
+        matcher: Matcher? = null,
+        taskRunner: TaskRunner? = null
     ) {
-        this.availableScanners = availableScanners
-        this.taskRunner = taskRunner
+        if (availableScanners != null) {
+            this.availableScanners = availableScanners
+        }
+
+        if (matcher != null) {
+            this.matcher = matcher
+        }
+
+        if (taskRunner != null) {
+            this.taskRunner = taskRunner
+        }
     }
 
     fun configureDefaultScanner(override: Boolean) {
@@ -66,6 +79,10 @@ fun Activity.scannerFactory(): ScannerFactory {
 
 fun Activity.taskRunner(): TaskRunner {
     return (this.application as Keppel).taskRunner
+}
+
+fun Activity.matcher(): Matcher {
+    return (this.application as Keppel).matcher
 }
 
 fun Fragment.availableScanners(): List<ScannerFactory> {

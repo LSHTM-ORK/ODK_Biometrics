@@ -6,7 +6,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import uk.ac.lshtm.keppel.android.Actions
+import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
+import uk.ac.lshtm.keppel.android.matcher
 import uk.ac.lshtm.keppel.android.scannerFactory
 import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.CaptureResult
@@ -24,6 +26,7 @@ class ScanActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(
             this, ScannerViewModelFactory(
                 scannerFactory().create(this),
+                matcher(),
                 taskRunner()
             )
         )[ScannerViewModel::class.java]
@@ -54,14 +57,22 @@ class ScanActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.fingerData.observe(this) { capture ->
-            if (capture != null) {
-                returnCapture(capture)
+        viewModel.fingerData.observe(this) { result ->
+            if (result != null) {
+                returnResult(result)
             }
         }
 
         binding.captureButton.setOnClickListener {
-            viewModel.capture()
+            if (intent.action == Actions.Match.ID) {
+                viewModel.capture(intent.extras!!.getString(Actions.Match.EXTRA_ISO_TEMPLATE))
+            } else {
+                viewModel.capture()
+            }
+        }
+
+        if (intent.action == Actions.Match.ID) {
+            binding.captureButton.setText(R.string.match)
         }
     }
 
@@ -70,22 +81,36 @@ class ScanActivity : AppCompatActivity() {
         viewModel.stopCapture()
     }
 
-    private fun returnCapture(capture: CaptureResult) {
-        val returnIntent = Intent().also {
-            if (intent.extras?.containsKey(Actions.EXTRA_ODK_INPUT_VALUE) == false) {
-                if (intent.hasExtra(Actions.Scan.EXTRA_ISO_TEMPLATE)) {
-                    it.putExtra(Actions.Scan.EXTRA_ISO_TEMPLATE, capture.isoTemplate)
-                }
-
-                if (intent.hasExtra(Actions.Scan.EXTRA_NFIQ)) {
-                    it.putExtra(Actions.Scan.EXTRA_NFIQ, capture.nfiq)
-                }
-            } else {
-                it.putExtra(Actions.Scan.EXTRA_ODK_RETURN_VALUE, capture.isoTemplate)
-            }
+    private fun returnResult(result: ScannerViewModel.Result) {
+        val returnIntent = when (result) {
+            is ScannerViewModel.Result.Match -> buildMatchReturn(result.score)
+            is ScannerViewModel.Result.Scan -> buildScanReturn(intent, result.captureResult)
         }
 
         setResult(RESULT_OK, returnIntent)
         finish()
+    }
+
+    private fun buildScanReturn(inputIntent: Intent, capture: CaptureResult): Intent {
+        val intent = Intent()
+
+        if (inputIntent.extras?.containsKey(Actions.EXTRA_ODK_INPUT_VALUE) == false) {
+            if (inputIntent.hasExtra(Actions.Scan.EXTRA_ISO_TEMPLATE)) {
+                intent.putExtra(Actions.Scan.EXTRA_ISO_TEMPLATE, capture.isoTemplate)
+            }
+
+            if (inputIntent.hasExtra(Actions.Scan.EXTRA_NFIQ)) {
+                intent.putExtra(Actions.Scan.EXTRA_NFIQ, capture.nfiq)
+            }
+        } else {
+            intent.putExtra(Actions.EXTRA_ODK_RETURN_VALUE, capture.isoTemplate)
+        }
+
+        return intent
+    }
+
+    private fun buildMatchReturn(score: Double): Intent {
+        intent.putExtra(Actions.EXTRA_ODK_RETURN_VALUE, score)
+        return intent
     }
 }

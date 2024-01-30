@@ -32,6 +32,11 @@
                 <action android:name="uk.ac.lshtm.keppel.android.SCAN" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="uk.ac.lshtm.keppel.android.MATCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>

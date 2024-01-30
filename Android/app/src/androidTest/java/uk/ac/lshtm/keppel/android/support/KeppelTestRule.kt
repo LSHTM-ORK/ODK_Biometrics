@@ -11,10 +11,12 @@ import org.junit.rules.ExternalResource
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.settings.SettingsActivity
+import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
 
 class KeppelTestRule(
-    private val scanners: List<ScannerFactory> = listOf(FakeScannerFactory())
+    private val scanners: List<ScannerFactory> = listOf(FakeScannerFactory()),
+    private val matcher: Matcher = FakeMatcher()
 ) : ExternalResource() {
 
     private val application = ApplicationProvider.getApplicationContext<Keppel>()
@@ -32,6 +34,7 @@ class KeppelTestRule(
     override fun before() {
         application.setDependencies(
             availableScanners = scanners,
+            matcher = matcher,
             taskRunner = taskRunnerIdlingResource
         )
         application.configureDefaultScanner(true)
