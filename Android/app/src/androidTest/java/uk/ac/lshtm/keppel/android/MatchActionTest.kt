@@ -36,8 +36,8 @@ class MatchActionTest {
             96.0
         )
 
-        val intent = Intent(Actions.Match.ID).also {
-            it.putExtra(Actions.Match.EXTRA_ISO_TEMPLATE, "blah".toHexString())
+        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, "blah".toHexString())
         }
         val scenario = rule.launchAction(intent)
 
@@ -49,7 +49,7 @@ class MatchActionTest {
 
         val extras = scenario.result.resultData.extras!!
         assertThat(
-            extras.getDouble(Actions.EXTRA_ODK_RETURN_VALUE),
+            extras.getDouble(OdkExternal.PARAM_RETURN_VALUE),
             equalTo(96.0)
         )
     }

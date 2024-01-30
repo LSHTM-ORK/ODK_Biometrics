@@ -13,7 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.core.toHexString
-import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
 class ScanActionTest {
@@ -23,8 +22,8 @@ class ScanActionTest {
 
     @Test
     fun clickingCapture_capturesAndReturnsIsoTemplate() {
-        val intent = Intent(Actions.Scan.ID).also {
-            it.putExtra(Actions.EXTRA_ODK_INPUT_VALUE, "foo")
+        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
         val scenario = rule.launchAction(intent)
 
@@ -32,16 +31,16 @@ class ScanActionTest {
         assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = scenario.result.resultData.extras!!
         assertThat(
-            extras.getString(Actions.EXTRA_ODK_RETURN_VALUE),
+            extras.getString(OdkExternal.PARAM_RETURN_VALUE),
             equalTo("ISO TEMPLATE".toHexString())
         )
     }
 
     @Test
     fun clickingCapture_whenReturnValuesSpecified_capturesAndReturnsThoseValues_fromScanner() {
-        val intent = Intent(Actions.Scan.ID).also {
-            it.putExtra(Actions.Scan.EXTRA_ISO_TEMPLATE, null as Serializable?)
-            it.putExtra(Actions.Scan.EXTRA_NFIQ, null as Serializable?)
+        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
+            it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
         }
         val scenario = rule.launchAction(intent)
 
@@ -49,16 +48,16 @@ class ScanActionTest {
         assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = scenario.result.resultData.extras!!
         assertThat(
-            extras.get(Actions.Scan.EXTRA_ISO_TEMPLATE),
+            extras.get("my_iso_template"),
             equalTo("ISO TEMPLATE".toHexString())
         )
-        assertThat(extras.get(Actions.Scan.EXTRA_NFIQ), equalTo(17))
+        assertThat(extras.get("my_nfiq"), equalTo(17))
     }
 
     @Test
     fun clickingCapture_whenOnlyOneReturnValueSpecified_capturesAndReturnsThatValue_fromScanner() {
-        val intent = Intent(Actions.Scan.ID).also {
-            it.putExtra(Actions.Scan.EXTRA_NFIQ, null as Serializable?)
+        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
         }
         val scenario = rule.launchAction(intent)
 
@@ -66,6 +65,6 @@ class ScanActionTest {
         assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = scenario.result.resultData.extras!!
         assertThat(extras.size(), equalTo(1))
-        assertThat(extras.get(Actions.Scan.EXTRA_NFIQ), equalTo(17))
+        assertThat(extras.get("my_nfiq"), equalTo(17))
     }
 }
