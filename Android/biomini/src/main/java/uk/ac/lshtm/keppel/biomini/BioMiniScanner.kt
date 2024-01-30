@@ -348,7 +348,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
         if (tmp != null && tmp.data != null) {
             Log.d(TAG, tmp.data.size.toString())
             Log.d(TAG, tmp.data.toHexString())
-            return CaptureResult(mFpQuality.toString() + "," + tmp.data.toHexString(), 0)
+            return CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
         }
         // TODO error handling
         return CaptureResult("no-template", 0)
