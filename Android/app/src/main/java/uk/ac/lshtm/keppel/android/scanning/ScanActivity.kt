@@ -11,6 +11,7 @@ import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.matcher
 import uk.ac.lshtm.keppel.android.scannerFactory
 import uk.ac.lshtm.keppel.android.taskRunner
+import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
 
 class ScanActivity : AppCompatActivity() {
@@ -89,6 +90,8 @@ class ScanActivity : AppCompatActivity() {
 
         setResult(RESULT_OK, returnIntent)
         finish()
+
+        Analytics.log("return_result")
     }
 
     private fun buildScanReturn(inputIntent: Intent, capture: CaptureResult): Intent {

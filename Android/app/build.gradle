@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
+if (file("./google-services.json").exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
 def secretsFile = file('../secrets.properties')
 def secrets = new Properties()
 if (secretsFile.exists()) {
@@ -42,6 +46,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "ANALYTICS_CLASS", "null"
+        }
+
         release {
             if (secrets.getProperty('KEYSTORE')) {
                 signingConfig signingConfigs.release
@@ -49,6 +57,12 @@ android {
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            if (file("google-services.json").exists()) {
+                buildConfigField "String", "ANALYTICS_CLASS", "\"uk.ac.lshtm.keppel.firebaseanalytics.FirebaseAnalytics\""
+            } else {
+                buildConfigField "String", "ANALYTICS_CLASS", "null"
+            }
         }
     }
 
@@ -86,6 +100,10 @@ dependencies {
 
     if (file("../biomini-aar/libBioMini.aar").exists()) {
         implementation project(':biomini')
+    }
+
+    if (file("./google-services.json").exists()) {
+        implementation project(':firebase-analytics')
     }
 
     testImplementation 'junit:junit:4.13.2'

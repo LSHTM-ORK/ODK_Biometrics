@@ -106,6 +106,12 @@ To create a release:
 1. Run `./import-device-sdks.sh` and follow any instructions to make sure device SDKs are setup correctly
 1. Run `./build-android-release.sh` to build the signed release APK
 
+### Adding analytics
+
+The app can optionally log analytics events if needed using Firebase Analytics. By default, the build does not include this integratin however. To set it up, create a new Firebase project and download the `google-services.json` file to `Android/app`. The `firebase-analytics` dependency will then be included in release builds.
+
+You can log an event by calling `Analyitcs.log` from anywhere in the code.
+
 ## Creating a CLI release
 
 **Prerequisites**: You will need to install a JDK

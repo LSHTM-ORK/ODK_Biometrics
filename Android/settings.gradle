@@ -10,3 +10,7 @@ if (file("./biomini-aar/libBioMini.aar").exists()) {
     include ':biomini'
     include ':biomini-aar'
 }
+
+if (file("./app/google-services.json").exists()) {
+    include ':firebase-analytics'
+}

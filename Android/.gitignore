@@ -9,3 +9,4 @@
 Keystore
 secrets.properties
 .envrc
+app/google-services.json

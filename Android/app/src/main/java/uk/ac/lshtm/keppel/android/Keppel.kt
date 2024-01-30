@@ -2,6 +2,7 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.app.Application
+import android.os.Build
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
@@ -11,6 +12,7 @@ import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.DemoScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.MFS100ScannerFactory
 import uk.ac.lshtm.keppel.android.tasks.IODispatcherTaskRunner
+import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
 import javax.xml.transform.Source
@@ -41,6 +43,7 @@ class Keppel : Application() {
     override fun onCreate() {
         super.onCreate()
         configureDefaultScanner(false)
+        configureAnalytics()
     }
 
     fun setDependencies(
@@ -69,6 +72,16 @@ class Keppel : Application() {
             sharedPreference.edit {
                 putString("scanner", availableScanners[0].name)
             }
+        }
+    }
+
+    private fun configureAnalytics() {
+        if (BuildConfig.ANALYTICS_CLASS != null) {
+            val analyticsClass = Class.forName(BuildConfig.ANALYTICS_CLASS)
+            val instance =
+                analyticsClass.getConstructor(Application::class.java)
+                    .newInstance(this) as Analytics
+            Analytics.setInstance(instance)
         }
     }
 }
