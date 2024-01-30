@@ -68,38 +68,55 @@ Depending on your setup, you may need to customize the script to wrap `assets/in
 
 Hopefully the current release will continue to work with future versions of ODK Collect. At present we are passively updating the app as needed. Collaborators are welcome to continue to develop the app and to create new releases.
 
-**Prerequisites**: You will need to install both a JDK and the Android SDK to build a release. The easiest way to install Android is to download [Android Studio](https://developer.android.com/studio/) and import the project in `Android` into it. This takes care of downloading the correct Android dependencies for you.
-
 To create a release:
 
 1. Update the `versionCode` and `versionName` in `Android/app/build.gradle` for the release. `versionCode` should be any number higher than the current value.
 1. Commit the changes:
-```bash
-git add Android/app/build.gradle
-git commit -m "Update versionName and versionCode"
-```
+   ```bash
+   git add Android/app/build.gradle
+   git commit -m "Update versionName and versionCode"
+   ```
 1. Tag the latest commit and push the changes:
-```bash
-git tag <versionName>
+   ```bash
+   git tag <versionName>
    git push
    git push --tags
    ```
-   1. Run `./import-device-sdks.sh` and follow any instructions to make sure device SDKs are setup correctly
-   1. Run `./build-android-release.sh` to build the signed release APK
-   1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
-   1. Set the `versionName` as the "Release title", attach the signed release APK and hit "Publish release" 🚢
+1. [Build a release APK](#buiding-a-signed-apk)
+1. Navigate to https://github.com/LSHTM-ORK/ODK_Biometrics/tags, click your new tag, click "Edit tag"
+1. Set the `versionName` as the "Release title", attach the signed release APK and hit "Publish release" 🚢
 
-   ## Creating a CLI release
+### Builing a signed APK
 
-   **Prerequisites**: You will need to install a JDK
+**Prerequisites**: You will need to install both the Android SDK to build a release. The easiest way to install Android is to download [Android Studio](https://developer.android.com/studio/) and import the project in `Android` into it. This takes care of downloading the correct Android dependencies for you.
 
-   To create a release:
-
-   1. Tag the latest commit and push:
-   ```bash
-   git tag <versionName>
-      git push --tags
+1. Make sure you have the project keystore and a `secrets.properties` set up. If you need to create new ones:
+   1. Open Android Studio and click "Build" > "Generate Signed Bundle / APK"
+   1. Choose APK and click "Next"
+   1. Click "Create new..."
+   1. Enter the details for the keystore making sure you take a note of the password, the key alias and the key password
+   1. Click "OK" and then "Cancel" the signing process (this flow is just the easiest way to generate a keystore)
+   1. Create a `secrets.properties` in the root of the project wtih the keystore details:
       ```
-      1. Run `./build-cli-release.sh` to package the CLI
-      1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
-      1. Set the "Release title", attach the `.zip` package and hit "Publish release" 🚢
+      KEYSTORE=<path to keystore>
+      KEYSTORE_PASSWORD=<keystore password>
+      KEY_ALIAS=<key alias>
+      KEY_PASSWORD=<key password>
+      ```
+1. Run `./import-device-sdks.sh` and follow any instructions to make sure device SDKs are setup correctly
+1. Run `./build-android-release.sh` to build the signed release APK
+
+## Creating a CLI release
+
+**Prerequisites**: You will need to install a JDK
+
+To create a release:
+
+1. Tag the latest commit and push:
+```bash
+git tag <versionName>
+   git push --tags
+   ```
+   1. Run `./build-cli-release.sh` to package the CLI
+   1. Navigate to https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/tags, click your new tag, click "Edit tag"
+   1. Set the "Release title", attach the `.zip` package and hit "Publish release" 🚢
