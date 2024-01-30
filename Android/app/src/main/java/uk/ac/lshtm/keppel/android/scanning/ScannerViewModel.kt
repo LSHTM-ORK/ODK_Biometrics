@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import uk.ac.lshtm.keppel.android.scanning.ScannerState.*
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -14,10 +15,10 @@ class ScannerViewModel(
 ) : ViewModel() {
 
     private val _scannerState = MutableLiveData(DISCONNECTED)
-    private val _fingerTemplate = MutableLiveData<String?>(null)
+    private val _fingerData = MutableLiveData<CaptureResult?>(null)
 
     val scannerState: LiveData<ScannerState> = _scannerState
-    val fingerTemplate: LiveData<String?> = _fingerTemplate
+    val fingerData: LiveData<CaptureResult?> = _fingerData
 
     init {
         scanner.connect {
@@ -33,9 +34,9 @@ class ScannerViewModel(
         _scannerState.value = SCANNING
 
         taskRunner.execute {
-            val isoTemplate = scanner.captureISOTemplate()
+            val capture = scanner.capture()
             _scannerState.postValue(CONNECTED)
-            _fingerTemplate.postValue(isoTemplate)
+            _fingerData.postValue(capture)
         }
     }
 

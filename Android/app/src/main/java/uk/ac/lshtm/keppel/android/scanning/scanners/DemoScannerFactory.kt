@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 
 class DemoScannerFactory : ScannerFactory {
@@ -26,9 +27,9 @@ private class DemoScanner : Scanner {
 
     }
 
-    override fun captureISOTemplate(): String {
+    override fun capture(): CaptureResult? {
         Thread.sleep(3000)
-        return "demo-finger-print-iso-template"
+        return CaptureResult("demo-finger-print-iso-template", 0)
     }
 
     override fun stopCapture() {

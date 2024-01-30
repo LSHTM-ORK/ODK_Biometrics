@@ -15,12 +15,14 @@ import uk.ac.lshtm.keppel.core.TaskRunner
 class Keppel : Application() {
 
     var taskRunner: TaskRunner = IODispatcherTaskRunner()
+        private set
 
     var availableScanners: List<ScannerFactory> = listOf(
         BioMiniScannerFactory(),
         MFS100ScannerFactory(),
         DemoScannerFactory()
     )
+        private set
 
     val scannerFactory: ScannerFactory
         get() {
@@ -33,6 +35,17 @@ class Keppel : Application() {
     override fun onCreate() {
         super.onCreate()
         configureDefaultScanner(false)
+    }
+
+    fun setDependencies(
+        availableScanners: List<ScannerFactory> = listOf(
+            MFS100ScannerFactory(),
+            DemoScannerFactory()
+        ),
+        taskRunner: TaskRunner = IODispatcherTaskRunner()
+    ) {
+        this.availableScanners = availableScanners
+        this.taskRunner = taskRunner
     }
 
     fun configureDefaultScanner(override: Boolean) {

@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
-import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
@@ -17,6 +16,7 @@ import com.suprema.BioMiniFactory
 import com.suprema.CaptureResponder
 import com.suprema.IBioMiniDevice
 import com.suprema.IUsbEventHandler
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.toHexString
 import java.util.concurrent.CountDownLatch
@@ -339,7 +339,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
     }
 
-    override fun captureISOTemplate(): String {
+    override fun capture(): CaptureResult {
         val latch = CountDownLatch(1)
         setTemplateType()
         doSingleCapture(latch)
@@ -348,10 +348,10 @@ class BioMiniScanner(private val context: Context) : Scanner {
         if (tmp != null && tmp.data != null) {
             Log.d(TAG, tmp.data.size.toString())
             Log.d(TAG, tmp.data.toHexString())
-            return mFpQuality.toString() + "," + tmp.data.toHexString()
+            return CaptureResult(mFpQuality.toString() + "," + tmp.data.toHexString(), 0)
         }
         // TODO error handling
-        return "no-template"
+        return CaptureResult("no-template", 0)
     }
 
     override fun stopCapture() {

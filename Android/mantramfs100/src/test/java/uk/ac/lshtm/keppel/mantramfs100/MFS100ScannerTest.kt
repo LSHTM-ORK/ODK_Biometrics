@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(RobolectricTestRunner::class)
@@ -107,7 +108,7 @@ class MFS100ScannerTest {
     }
 
     @Test
-    fun captureISOTemplate_whenCaptureSuccessful_returnsHexEncodedTemplate() {
+    fun capture_whenCaptureSuccessful_returnsResults() {
         val mfs100 = mock(MFS100::class.java)
         val mfSScanner = MFS100Scanner(context) { mfs100 }
 
@@ -121,20 +122,24 @@ class MFS100ScannerTest {
             val templateField = FingerData::class.java.getDeclaredField("_ISOTemplate")
             templateField.isAccessible = true
 
+            val nfiqField = FingerData::class.java.getDeclaredField("_Nfiq")
+            nfiqField.isAccessible = true
+
             val fingerData = it.arguments[0] as FingerData
             templateField.set(fingerData, "finger-template".toByteArray())
+            nfiqField.set(fingerData, 11)
 
             0
         }
 
         assertThat(
-            mfSScanner.captureISOTemplate(),
-            equalTo("finger-template".toByteArray().toHexString())
+            mfSScanner.capture(),
+            equalTo(CaptureResult("finger-template".toByteArray().toHexString(), 11))
         )
     }
 
     @Test
-    fun captureISOTemplate_whenCaptureNotSuccessful_returnsNull() {
+    fun capture_whenCaptureNotSuccessful_returnsNull() {
         val mfs100 = mock(MFS100::class.java)
         val mfSScanner = MFS100Scanner(context) { mfs100 }
 
@@ -146,7 +151,7 @@ class MFS100ScannerTest {
             )
         ).thenReturn(-1140)
 
-        assertThat(mfSScanner.captureISOTemplate(), nullValue())
+        assertThat(mfSScanner.capture(), nullValue())
     }
 
     @Test

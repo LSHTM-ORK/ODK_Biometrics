@@ -15,8 +15,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.LooperMode
 import uk.ac.lshtm.keppel.android.Keppel
-import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.android.R
+import uk.ac.lshtm.keppel.core.CaptureResult
+import uk.ac.lshtm.keppel.core.Scanner
 
 @RunWith(RobolectricTestRunner::class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -28,9 +29,10 @@ class ScanActivityTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Keppel>().availableScanners =
-            listOf(FakeScannerFactory(fakeScanner))
+        ApplicationProvider.getApplicationContext<Keppel>()
+            .setDependencies(availableScanners = listOf(FakeScannerFactory(fakeScanner)))
         ApplicationProvider.getApplicationContext<Keppel>().configureDefaultScanner(override = true)
+
         activityController = Robolectric.buildActivity(ScanActivity::class.java)
         activity = activityController.setup().get()
     }
@@ -95,8 +97,8 @@ open class FakeScanner : Scanner {
         this.onDisconnected = onDisconnected
     }
 
-    override fun captureISOTemplate(): String {
-        return ""
+    override fun capture(): CaptureResult? {
+        return CaptureResult("", 0)
     }
 
     override fun stopCapture() {

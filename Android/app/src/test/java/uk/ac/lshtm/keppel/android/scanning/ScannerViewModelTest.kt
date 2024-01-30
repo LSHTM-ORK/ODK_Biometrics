@@ -24,7 +24,7 @@ class ScannerViewModelTest {
         val viewModel = ScannerViewModel(scanner, InstantTaskRunner())
         val state = viewModel.scannerState
 
-        `when`(scanner.captureISOTemplate()).thenReturn(null)
+        `when`(scanner.capture()).thenReturn(null)
         viewModel.capture()
         assertThat(state.value, equalTo(ScannerState.CONNECTED))
     }
