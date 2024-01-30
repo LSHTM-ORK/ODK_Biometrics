@@ -7,5 +7,5 @@
     <string name="open_source_libraries_description">المكتبات المستخدمة لبناء كيبل وتراخيصها</string>
     <string name="change_scanner">تغيير الماسح الضوئي</string>
     <string name="app_version">نسخة التطبيق</string>
-    <string name="match">يؤكد</string>
+    <string name="match">مطابقة</string>
 </resources>
