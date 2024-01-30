@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.tasks.ThreadTaskRunner
 import uk.ac.lshtm.keppel.core.TaskRunner
+import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.DemoScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.MFS100ScannerFactory
 
@@ -16,6 +17,7 @@ class Keppel : Application() {
     var taskRunner: TaskRunner = ThreadTaskRunner()
 
     var availableScanners: List<ScannerFactory> = listOf(
+        BioMiniScannerFactory(),
         MFS100ScannerFactory(),
         DemoScannerFactory()
     )

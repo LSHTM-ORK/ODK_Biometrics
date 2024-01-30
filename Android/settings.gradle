@@ -1,4 +1,6 @@
 rootProject.name='Keppel'
 include ':app'
 include ':core'
+include ':biomini'
+include ':biomini-aar'
 include ':mantramfs100'

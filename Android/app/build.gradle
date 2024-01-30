@@ -19,7 +19,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 3
-        versionName "0.3"
+        versionName "0.4a2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -60,6 +60,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
 }
 
 dependencies {
@@ -73,6 +77,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
     implementation 'androidx.preference:preference:1.1.1'
     implementation project(':core')
+    implementation project(':biomini')
     implementation project(':mantramfs100')
 
     testImplementation 'junit:junit:4.13'
