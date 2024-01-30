@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+
+if (file("./google-services.json").exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
 
 def secretsFile = file('../secrets.properties')
 def secrets = new Properties()
@@ -10,16 +13,17 @@ if (secretsFile.exists()) {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "29.0.2"
+    namespace "uk.ac.lshtm.keppel.android"
+
+    compileSdkVersion 34
     ndkVersion "21.3.6528147"
 
     defaultConfig {
         applicationId "uk.ac.lshtm.keppel.android"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 3
-        versionName "0.3"
+        targetSdkVersion 34
+        versionCode 42
+        versionName "0.4.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -42,6 +46,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "ANALYTICS_CLASS", "null"
+        }
+
         release {
             if (secrets.getProperty('KEYSTORE')) {
                 signingConfig signingConfigs.release
@@ -49,40 +57,64 @@ android {
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            if (file("google-services.json").exists()) {
+                buildConfigField "String", "ANALYTICS_CLASS", "\"uk.ac.lshtm.keppel.firebaseanalytics.FirebaseAnalytics\""
+            } else {
+                buildConfigField "String", "ANALYTICS_CLASS", "null"
+            }
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
+
+    packagingOptions {
+        pickFirst '**/*.so'
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.core:core-ktx:1.3.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'com.machinezoo.sourceafis:sourceafis:3.8.1'
     implementation project(':core')
-    implementation project(':mantramfs100')
 
-    testImplementation 'junit:junit:4.13'
-    testImplementation 'androidx.test.ext:junit:1.1.1'
-    testImplementation 'androidx.test:core:1.2.0'
-    testImplementation 'org.robolectric:robolectric:4.3.1'
-    testImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    testImplementation 'org.mockito:mockito-core:3.3.3'
+    if (file("../mantramfs100/libs/mantra.mfs100.jar").exists()) {
+        implementation project(':mantramfs100')
+    }
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    if (file("../biomini-aar/libBioMini.aar").exists()) {
+        implementation project(':biomini')
+    }
+
+    if (file("./google-services.json").exists()) {
+        implementation project(':firebase-analytics')
+    }
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.test.ext:junit:1.1.5'
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation 'org.mockito:mockito-core:5.4.0'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
 }

@@ -2,12 +2,15 @@ package uk.ac.lshtm.keppel.android.scanning.scanners
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 
 class DemoScannerFactory : ScannerFactory {
 
     override val name: String = "Demo Scanner"
+    override val isAvailable: Boolean = true
 
     override fun create(context: Context): Scanner =
         DemoScanner()
@@ -16,7 +19,7 @@ class DemoScannerFactory : ScannerFactory {
 private class DemoScanner : Scanner {
 
     override fun connect(onConnected: () -> Unit): Scanner {
-        Handler().postDelayed(onConnected, 3000)
+        Handler(Looper.getMainLooper()).postDelayed(onConnected, 3000)
         return this
     }
 
@@ -24,9 +27,9 @@ private class DemoScanner : Scanner {
 
     }
 
-    override fun captureISOTemplate(): String {
+    override fun capture(): CaptureResult? {
         Thread.sleep(3000)
-        return "demo-finger-print-iso-template"
+        return CaptureResult("demo-finger-print-iso-template", 0)
     }
 
     override fun stopCapture() {

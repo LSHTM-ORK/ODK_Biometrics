@@ -1,4 +1,16 @@
 rootProject.name='Keppel'
 include ':app'
 include ':core'
-include ':mantramfs100'
+
+if (file("./mantramfs100/libs/mantra.mfs100.jar").exists()) {
+    include ':mantramfs100'
+}
+
+if (file("./biomini-aar/libBioMini.aar").exists()) {
+    include ':biomini'
+    include ':biomini-aar'
+}
+
+if (file("./app/google-services.json").exists()) {
+    include ':firebase-analytics'
+}

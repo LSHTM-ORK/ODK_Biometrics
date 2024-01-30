@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">كيبل</string>
+    <string name="capture">إلتقاط</string>
+    <string name="place_finger">ضع إصبعك على الماسح الضوئي</string>
+    <string name="connect_scanner">قم بتوصيل الماسح الضوئي</string>
+    <string name="open_source_libraries">المكتبات مفتوحة المصدر</string>
+    <string name="open_source_libraries_description">المكتبات المستخدمة لبناء كيبل وتراخيصها</string>
+    <string name="change_scanner">تغيير الماسح الضوئي</string>
+    <string name="app_version">نسخة التطبيق</string>
+    <string name="match">مطابقة</string>
+</resources>
