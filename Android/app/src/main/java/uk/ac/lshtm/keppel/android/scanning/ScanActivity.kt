@@ -11,6 +11,7 @@ import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.matcher
 import uk.ac.lshtm.keppel.android.scannerFactory
+import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
@@ -35,26 +36,22 @@ class ScanActivity : AppCompatActivity() {
 
         viewModel.scannerState.observe(this) { state ->
             when (state) {
-                ScannerState.DISCONNECTED -> {
+                ScannerState.Disconnected -> {
                     binding.connectProgressBar.visibility = View.VISIBLE
                     binding.captureButton.visibility = View.GONE
                     binding.captureProgressBar.visibility = View.GONE
                 }
 
-                ScannerState.CONNECTED -> {
+                ScannerState.Connected -> {
                     binding.connectProgressBar.visibility = View.GONE
                     binding.captureButton.visibility = View.VISIBLE
                     binding.captureProgressBar.visibility = View.GONE
                 }
 
-                ScannerState.SCANNING -> {
+                ScannerState.Scanning -> {
                     binding.connectProgressBar.visibility = View.GONE
                     binding.captureButton.visibility = View.GONE
                     binding.captureProgressBar.visibility = View.VISIBLE
-                }
-
-                else -> {
-                    // Ignore null case - not expected
                 }
             }
         }

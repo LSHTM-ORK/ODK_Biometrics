@@ -8,7 +8,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
-import org.robolectric.RobolectricTestRunner
+import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -26,7 +26,7 @@ class ScannerViewModelTest {
 
         `when`(scanner.capture()).thenReturn(null)
         viewModel.capture()
-        assertThat(state.value, equalTo(ScannerState.CONNECTED))
+        assertThat(state.value, equalTo(ScannerState.Connected))
     }
 
     @Test
