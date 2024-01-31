@@ -3,8 +3,9 @@ package uk.ac.lshtm.keppel.android.scanning
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.R
@@ -18,21 +19,19 @@ import uk.ac.lshtm.keppel.core.CaptureResult
 
 class ScanActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ScannerViewModel
+    private val viewModelFactory = viewModelFactory {
+        addInitializer(ScannerViewModel::class) {
+            ScannerViewModel(scannerFactory().create(this@ScanActivity), matcher(), taskRunner())
+        }
+    }
+
+    private val viewModel: ScannerViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this, ScannerViewModelFactory(
-                scannerFactory().create(this),
-                matcher(),
-                taskRunner()
-            )
-        )[ScannerViewModel::class.java]
 
         viewModel.scannerState.observe(this) { state ->
             when (state) {
@@ -86,14 +85,16 @@ class ScanActivity : AppCompatActivity() {
             is ScannerViewModel.Result.Match -> {
                 returnResult(buildMatchReturn(result.score))
             }
+
             is ScannerViewModel.Result.Scan -> {
                 returnResult(buildScanReturn(this.intent, result.captureResult))
             }
+
             else -> {
                 MaterialAlertDialogBuilder(this)
-                        .setMessage(R.string.input_hex_error)
-                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                        .show()
+                    .setMessage(R.string.input_hex_error)
+                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                    .show()
             }
         }
     }

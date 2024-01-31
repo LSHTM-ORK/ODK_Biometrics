@@ -79,16 +79,3 @@ class ScannerViewModel(
         object Scanning : ScannerState()
     }
 }
-
-class ScannerViewModelFactory(
-    private val scanner: Scanner,
-    private val matcher: Matcher,
-    private val taskRunner: TaskRunner
-) :
-    ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ScannerViewModel(scanner, matcher, taskRunner) as T
-    }
-}
