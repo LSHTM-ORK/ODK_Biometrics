@@ -8,4 +8,6 @@
     <string name="change_scanner">Change scanner</string>
     <string name="app_version">App version</string>
     <string name="match">Match</string>
+    <string name="input_hex_error">Input template is not hex encoded!</string>
+    <string name="ok">Ok</string>
 </resources>

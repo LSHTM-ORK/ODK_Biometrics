@@ -35,13 +35,13 @@ class ScannerViewModel(
         }
     }
 
-    fun capture(inputTemplate: String? = null) {
+    fun capture(inputTemplate: ByteArray? = null) {
         _scannerState.value = SCANNING
 
         taskRunner.execute {
             val capture = scanner.capture()
             if (inputTemplate != null && capture != null) {
-                val score = matcher.match(inputTemplate.fromHex(), capture.isoTemplate.fromHex())
+                val score = matcher.match(inputTemplate, capture.isoTemplate.fromHex()!!)
                 _fingerData.postValue(Result.Match(score))
             } else if (capture != null) {
                 _fingerData.postValue(Result.Scan(capture))
