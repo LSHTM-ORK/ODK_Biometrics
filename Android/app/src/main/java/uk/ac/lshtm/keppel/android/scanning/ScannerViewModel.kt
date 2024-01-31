@@ -20,10 +20,10 @@ class ScannerViewModel(
 ) : ViewModel() {
 
     private val _scannerState = MutableLiveData(DISCONNECTED)
-    private val _fingerData = MutableLiveData<Result?>(null)
+    private val _result = MutableLiveData<Result?>(null)
 
     val scannerState: LiveData<ScannerState> = _scannerState
-    val fingerData: LiveData<Result?> = _fingerData
+    val result: LiveData<Result?> = _result
 
     init {
         scanner.connect {
@@ -35,18 +35,23 @@ class ScannerViewModel(
         }
     }
 
-    fun capture(inputTemplate: ByteArray? = null) {
+    fun capture(inputTemplate: String? = null) {
         _scannerState.value = SCANNING
 
         taskRunner.execute {
             val capture = scanner.capture()
             if (inputTemplate != null && capture != null) {
-                val score = matcher.match(inputTemplate, capture.isoTemplate.fromHex()!!)
-                _fingerData.postValue(Result.Match(score))
+                val decodedInputTemplate = inputTemplate.fromHex()
+                if (decodedInputTemplate != null) {
+                    val score = matcher.match(decodedInputTemplate, capture.isoTemplate.fromHex()!!)
+                    _result.postValue(Result.Match(score))
+                } else {
+                    _result.postValue(Result.Error)
+                }
             } else if (capture != null) {
-                _fingerData.postValue(Result.Scan(capture))
+                _result.postValue(Result.Scan(capture))
             } else {
-                _fingerData.postValue(null)
+                _result.postValue(null)
             }
 
             _scannerState.postValue(CONNECTED)
@@ -65,6 +70,7 @@ class ScannerViewModel(
     sealed class Result {
         data class Scan(val captureResult: CaptureResult) : Result()
         data class Match(val score: Double) : Result()
+        object Error : Result()
     }
 }
 

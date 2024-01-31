@@ -14,7 +14,6 @@ import uk.ac.lshtm.keppel.android.scannerFactory
 import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
-import uk.ac.lshtm.keppel.core.fromHex
 
 class ScanActivity : AppCompatActivity() {
 
@@ -60,25 +59,16 @@ class ScanActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.fingerData.observe(this) { result ->
+        viewModel.result.observe(this) { result ->
             if (result != null) {
-                returnResult(result)
+                processResult(result)
             }
         }
 
         binding.captureButton.setOnClickListener {
             if (intent.action == OdkExternal.ACTION_MATCH) {
                 val inputTemplate = intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE)
-                val decodedInputTemplate = inputTemplate!!.fromHex()
-
-                if (decodedInputTemplate != null) {
-                    viewModel.capture(decodedInputTemplate)
-                } else {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(R.string.input_hex_error)
-                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                        .show()
-                }
+                viewModel.capture(inputTemplate)
             } else {
                 viewModel.capture()
             }
@@ -94,15 +84,26 @@ class ScanActivity : AppCompatActivity() {
         viewModel.stopCapture()
     }
 
-    private fun returnResult(result: ScannerViewModel.Result) {
-        val returnIntent = when (result) {
-            is ScannerViewModel.Result.Match -> buildMatchReturn(result.score)
-            is ScannerViewModel.Result.Scan -> buildScanReturn(intent, result.captureResult)
+    private fun processResult(result: ScannerViewModel.Result) {
+        when (result) {
+            is ScannerViewModel.Result.Match -> {
+                returnResult(buildMatchReturn(result.score))
+            }
+            is ScannerViewModel.Result.Scan -> {
+                returnResult(buildScanReturn(this.intent, result.captureResult))
+            }
+            else -> {
+                MaterialAlertDialogBuilder(this)
+                        .setMessage(R.string.input_hex_error)
+                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                        .show()
+            }
         }
+    }
 
-        setResult(RESULT_OK, returnIntent)
+    private fun returnResult(intent: Intent) {
+        setResult(RESULT_OK, intent)
         finish()
-
         Analytics.log("return_result")
     }
 
