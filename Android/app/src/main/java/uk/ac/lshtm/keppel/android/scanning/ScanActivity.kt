@@ -70,6 +70,10 @@ class ScanActivity : AppCompatActivity() {
             }
         }
 
+        binding.cancelButton.setOnClickListener {
+            finish()
+        }
+
         if (intent.action == OdkExternal.ACTION_MATCH) {
             binding.captureButton.setText(R.string.match)
         }

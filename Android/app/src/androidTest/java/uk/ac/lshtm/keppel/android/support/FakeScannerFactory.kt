@@ -20,6 +20,9 @@ class FakeScannerFactory(
 class FakeScanner : Scanner {
 
     var returnTemplate: String = "ISO TEMPLATE"
+    var neverCapture = false
+
+    private var capturing = false
 
     override fun connect(onConnected: () -> Unit): Scanner {
         onConnected()
@@ -30,12 +33,22 @@ class FakeScanner : Scanner {
 
     }
 
-    override fun capture(): CaptureResult {
-        return CaptureResult(returnTemplate.toHexString(), 17)
+    override fun capture(): CaptureResult? {
+        capturing = true
+
+        val result = if (!neverCapture) {
+            CaptureResult(returnTemplate.toHexString(), 17)
+        } else {
+            while (capturing) { Thread.sleep(1) }
+            null
+        }
+
+        capturing = false
+        return result
     }
 
     override fun stopCapture() {
-
+        capturing = false
     }
 
     override fun disconnect() {

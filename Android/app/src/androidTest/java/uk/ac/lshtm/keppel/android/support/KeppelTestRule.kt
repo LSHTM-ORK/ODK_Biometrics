@@ -2,7 +2,6 @@ package uk.ac.lshtm.keppel.android.support
 
 import android.app.Activity
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
@@ -20,7 +19,8 @@ class KeppelTestRule(
 ) : ExternalResource() {
 
     private val application = ApplicationProvider.getApplicationContext<Keppel>()
-    private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
+
+    val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
 
     private var activityScenario: ActivityScenario<*>? = null
         set (value) {
@@ -59,8 +59,10 @@ class KeppelTestRule(
     }
 }
 
-private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
+class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
     IdlingResource {
+
+    var enabled = true
 
     private var tasks = 0
     private var idleTransitionCallback: IdlingResource.ResourceCallback? = null
@@ -82,7 +84,11 @@ private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : Task
     }
 
     override fun isIdleNow(): Boolean {
-        return tasks == 0
+        return if (enabled) {
+            tasks == 0
+        } else {
+            true
+        }
     }
 
     private fun increment() {
