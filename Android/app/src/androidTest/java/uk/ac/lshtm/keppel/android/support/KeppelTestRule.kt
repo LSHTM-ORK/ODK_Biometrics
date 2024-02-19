@@ -18,9 +18,14 @@ class KeppelTestRule(
     private val matcher: Matcher = FakeMatcher()
 ) : ExternalResource() {
 
-    private val application = ApplicationProvider.getApplicationContext<Keppel>()
+    var waitForBackgroundTasks = true
+        set (value) {
+            field = value
+            taskRunnerIdlingResource.enabled = value
+        }
 
-    val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
+    private val application = ApplicationProvider.getApplicationContext<Keppel>()
+    private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
 
     private var activityScenario: ActivityScenario<*>? = null
         set (value) {
@@ -59,7 +64,7 @@ class KeppelTestRule(
     }
 }
 
-class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
+private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
     IdlingResource {
 
     var enabled = true

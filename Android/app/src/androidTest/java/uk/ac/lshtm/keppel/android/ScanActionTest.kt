@@ -80,7 +80,7 @@ class ScanActionTest {
         val scenario = rule.launchAction(intent)
 
         fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
-        rule.taskRunnerIdlingResource.enabled = false // Allow task to run while interacting with UI
+        rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
         onView(withText(R.string.capture)).perform(click())
         onView(withText(R.string.cancel)).perform(click())
 
