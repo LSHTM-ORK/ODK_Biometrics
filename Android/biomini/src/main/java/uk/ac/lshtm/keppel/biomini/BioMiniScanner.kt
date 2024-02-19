@@ -305,19 +305,18 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
     }
 
-    override fun capture(): CaptureResult {
+    override fun capture(): CaptureResult? {
         val latch = CountDownLatch(1)
         setTemplateType()
         doSingleCapture(latch)
         latch.await()
+
         val tmp = mTemplateData
-        if (tmp?.data != null) {
-            Log.d(TAG, tmp.data.size.toString())
-            Log.d(TAG, tmp.data.toHexString())
-            return CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+        return if (tmp?.data != null) {
+            CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+        } else {
+            null
         }
-        // TODO error handling
-        return CaptureResult("no-template", 0)
     }
 
     override fun stopCapture() {
