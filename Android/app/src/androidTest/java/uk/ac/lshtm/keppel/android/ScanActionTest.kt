@@ -11,14 +11,18 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.ac.lshtm.keppel.android.support.FakeScanner
+import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
 class ScanActionTest {
 
+    private val fakeScanner = FakeScanner()
+
     @get:Rule
-    val rule = KeppelTestRule()
+    val rule = KeppelTestRule(scanners = listOf(FakeScannerFactory(fakeScanner)))
 
     @Test
     fun clickingCapture_capturesAndReturnsIsoTemplate() {
@@ -66,5 +70,21 @@ class ScanActionTest {
         val extras = scenario.result.resultData.extras!!
         assertThat(extras.size(), equalTo(1))
         assertThat(extras.get("my_nfiq"), equalTo(17))
+    }
+
+    @Test
+    fun clickingCapture_andThenCancel_returnsCancelledResult() {
+        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+        }
+        val scenario = rule.launchAction(intent)
+
+        fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
+        rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
+        onView(withText(R.string.capture)).perform(click())
+        onView(withText(R.string.cancel)).perform(click())
+
+        assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_CANCELED))
+        assertThat(scenario.result.resultData, equalTo(null))
     }
 }

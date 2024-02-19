@@ -23,30 +23,7 @@ import java.util.concurrent.CountDownLatch
 
 private const val TAG = "KeppelBioMiniScanner"
 
-fun getDeviceName(): String? {
-    val manufacturer: String = Build.MANUFACTURER
-    val model: String = Build.MODEL
-    return if (model.lowercase(java.util.Locale.getDefault())
-            .startsWith(manufacturer.lowercase(java.util.Locale.getDefault()))
-    ) {
-        capitalize(model)
-    } else {
-        capitalize(manufacturer) + " " + model
-    }
-}
-
-private fun capitalize(s: String?): String {
-    if (s == null || s.length == 0) {
-        return ""
-    }
-    val first = s[0]
-    return if (java.lang.Character.isUpperCase(first)) {
-        s
-    } else {
-        first.uppercaseChar().toString() + s.substring(1)
-    }
-}
-
+@Suppress("unused")
 class BioMiniScanner(private val context: Context) : Scanner {
 
     private val BASE_EVENT = 3000
@@ -67,7 +44,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
     private var mUsbManager: UsbManager? = null
     private var mBioMiniFactory: BioMiniFactory? = null
     var mCurrentDevice: IBioMiniDevice? = null
-    var mWakeLock: PowerManager.WakeLock? = null
     private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
     private lateinit var onConnected: () -> Unit
     private var mPermissionIntent: PendingIntent? = null
@@ -77,14 +53,14 @@ class BioMiniScanner(private val context: Context) : Scanner {
     private var onDisconnected: (() -> Unit)? = null
 
     private val mUsbReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: android.content.Context, intent: Intent) {
+        override fun onReceive(context: Context, intent: Intent) {
             val action: String? = intent.getAction()
             when (action) {
                 ACTION_USB_PERMISSION -> {
                     Log.d(TAG, "ACTION_USB_PERMISSION")
                     val hasUsbPermission: Boolean =
                         intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
-                    var usbDevice = mUsbDevice
+                    val usbDevice = mUsbDevice
                     if (hasUsbPermission && usbDevice != null) {
                         Log.d(TAG, usbDevice.getDeviceName() + " is acquire the usb permission. activate this device.")
                         mHandler.sendEmptyMessage(ACTIVATE_USB_DEVICE)
@@ -130,7 +106,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     Log.d(TAG, "got REQUEST_USB_PERMISSION")
                     // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
                     var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
-                    if (android.os.Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
+                    if (Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
                         FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
                     }
 
@@ -140,23 +116,15 @@ class BioMiniScanner(private val context: Context) : Scanner {
                         Intent(ACTION_USB_PERMISSION),
                         FLAG_MUTABLE,
                     )
-                    mUsbManager?.let { it.requestPermission(mUsbDevice, mPermissionIntent) }
+                    mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
                 }
             }
         }
     }
 
-    private fun requestWakeLock(context: Context) {
-        Log.d(TAG, "START! requestWakeLock")
-        val powerManager: PowerManager =
-            context.getSystemService(android.content.Context.POWER_SERVICE) as PowerManager
-        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, ":BioMini WakeLock")
-        mWakeLock?.let { it.acquire() }
-    }
-
     fun initUsbDevice() {
         Log.d("TAG", "start!")
-        var usbManager = mUsbManager
+        val usbManager = mUsbManager
         if (usbManager == null) {
             Log.d(TAG, "mUsbManager is null")
             return
@@ -191,7 +159,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
 
     private fun removeDevice() {
         Log.d(TAG, "ACTION_USB_DEVICE_DETACHED")
-        var factory = mBioMiniFactory
+        val factory = mBioMiniFactory
         if (factory != null) {
             factory.removeDevice(mUsbDevice)
             factory.close()
@@ -201,17 +169,17 @@ class BioMiniScanner(private val context: Context) : Scanner {
     }
 
     private fun createBioMiniDevice() {
-        mBioMiniFactory?.let { it.close() }
+        mBioMiniFactory?.close()
         mBioMiniFactory = object : BioMiniFactory(context, mUsbManager) {
             override fun onDeviceChange(event: IUsbEventHandler.DeviceChangeEvent, dev: Any?) {
                 Log.d(TAG, "onDeviceChange : $event")
             }
         }
         Log.d(TAG, "new BioMiniFactory( ) : $mBioMiniFactory")
-        mBioMiniFactory?.let { it.setTransferMode(IBioMiniDevice.TransferMode.MODE2) }
-        val _result: Boolean? = mBioMiniFactory?.let { it.addDevice(mUsbDevice) }
+        mBioMiniFactory?.setTransferMode(IBioMiniDevice.TransferMode.MODE2)
+        val _result: Boolean? = mBioMiniFactory?.addDevice(mUsbDevice)
         if (_result == true) {
-            mCurrentDevice = mBioMiniFactory?.let { it.getDevice(0) }
+            mCurrentDevice = mBioMiniFactory?.getDevice(0)
             if (mCurrentDevice != null) {
                 onConnected()
                 Log.d(TAG, "mCurrentDevice attached : $mCurrentDevice")
@@ -224,9 +192,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
     }
 
     override fun connect(onConnected: () -> Unit): Scanner {
-        getDeviceName()?.let { Log.d(TAG, "Device name: $it") }
-        // TODO: Keep device from sleeping
-        // requestWakeLock(context)
+        getDeviceName().let { Log.d(TAG, "Device name: $it") }
         this.onConnected = onConnected
         // ** NOTE **
         // The call to setIoStatus() may need to be commented out when using an external USB reader.
@@ -239,7 +205,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
         if (mUsbManager == null) {
             mUsbManager =
-                context.getSystemService(android.content.Context.USB_SERVICE) as UsbManager
+                context.getSystemService(Context.USB_SERVICE) as UsbManager
         }
         initUsbListener()
         initUsbDevice()
@@ -264,7 +230,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 fingerState: IBioMiniDevice.FingerState?,
             ): Boolean {
                 Log.d(TAG, "START! : " + mCaptureOption.captureFuntion.toString())
-                var currentDevice = mCurrentDevice
+                val currentDevice = mCurrentDevice
                 if (capturedTemplate != null) {
                     Log.d(TAG, "TemplateData is not null!")
                     mTemplateData = capturedTemplate
@@ -315,7 +281,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
         mCaptureOption.extractParam.captureTemplate = true
         mCaptureOption.extractParam.maxTemplateSize =
             IBioMiniDevice.MaxTemplateSize.MAX_TEMPLATE_1024
-        var device = mCurrentDevice
+        val device = mCurrentDevice
         if (device != null) {
             val result: Boolean = device.captureSingle(
                 mCaptureOption,
@@ -327,9 +293,9 @@ class BioMiniScanner(private val context: Context) : Scanner {
     }
 
     private fun setTemplateType() {
-        var currentDevice = mCurrentDevice
+        val currentDevice = mCurrentDevice
         if (currentDevice != null) {
-            var tmp_type = IBioMiniDevice.TemplateType.ISO19794_2.value()
+            val tmp_type = IBioMiniDevice.TemplateType.ISO19794_2.value()
             currentDevice.setParameter(
                 IBioMiniDevice.Parameter(
                     IBioMiniDevice.ParameterType.TEMPLATE_TYPE,
@@ -339,23 +305,22 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
     }
 
-    override fun capture(): CaptureResult {
+    override fun capture(): CaptureResult? {
         val latch = CountDownLatch(1)
         setTemplateType()
         doSingleCapture(latch)
         latch.await()
-        var tmp = mTemplateData
-        if (tmp != null && tmp.data != null) {
-            Log.d(TAG, tmp.data.size.toString())
-            Log.d(TAG, tmp.data.toHexString())
-            return CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+
+        val tmp = mTemplateData
+        return if (tmp?.data != null) {
+            CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+        } else {
+            null
         }
-        // TODO error handling
-        return CaptureResult("no-template", 0)
     }
 
     override fun stopCapture() {
-        var device = mCurrentDevice
+        val device = mCurrentDevice
         if (device != null) {
             if (!device.isCapturing()) {
                 mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
@@ -371,17 +336,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
 
     override fun disconnect() {
         var result = 0
-        var device = mCurrentDevice // avoid null errors
-        var factory = mBioMiniFactory // avoid null errors
-        if (device != null) {
-            if (device.isCapturing()) {
-                // TODO: Figure out if we need to call this here, or if Keppel does it for us
-                // doAbortCapture()
-                // while (device.isCapturing()) {
-                //     android.os.SystemClock.sleep(10)
-                // }
-            }
-        }
+        val factory = mBioMiniFactory // avoid null errors
         if (factory != null) {
             if (mUsbDevice != null) result = factory.removeDevice(mUsbDevice)
             if (result == IBioMiniDevice.ErrorCode.OK.value() || result == IBioMiniDevice.ErrorCode.ERR_NO_DEVICE.value()) {
@@ -393,19 +348,29 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
 
         removeDevice()
+    }
+}
 
-        // This code powers down the BioMini. Powering it up again each time takes awhile,
-        // so leaving this commented out for now to provide a faster UX during testing.
-        // Decide later if/when we should power down.
-//        if (getDeviceName() == "EACRUGGED RG80") {
-//            Log.d(TAG, "Calling setIoStatus() in disconnect")
-//            IoControl.getInstance().setIoStatus(
-//                IoControl.USBFP_PATH,
-//                IoControl.IOSTATUS.DISABLE
-//            )
-//        }
-        // TODO: release wake lock
-        // var wakeLock = mWakeLock
-        // if (wakeLock != null && wakeLock.isHeld()) wakeLock.release()
+fun getDeviceName(): String {
+    val manufacturer: String = Build.MANUFACTURER
+    val model: String = Build.MODEL
+    return if (model.lowercase(java.util.Locale.getDefault())
+            .startsWith(manufacturer.lowercase(java.util.Locale.getDefault()))
+    ) {
+        capitalize(model)
+    } else {
+        capitalize(manufacturer) + " " + model
+    }
+}
+
+private fun capitalize(s: String?): String {
+    if (s == null || s.length == 0) {
+        return ""
+    }
+    val first = s[0]
+    return if (Character.isUpperCase(first)) {
+        s
+    } else {
+        first.uppercaseChar().toString() + s.substring(1)
     }
 }
