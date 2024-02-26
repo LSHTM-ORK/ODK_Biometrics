@@ -31,4 +31,20 @@ object OdkExternal {
             it.putExtra(PARAM_RETURN_VALUE, string)
         }
     }
+
+    fun buildMultipleReturnResult(inputIntent: Intent, results: Map<String, Any>): Intent {
+        return Intent().also {
+            results.forEach { (key, value) ->
+                if (inputIntent.hasExtra(key)) {
+                    val returnExtra = inputIntent.getStringExtra(key)
+
+                    when (value) {
+                        is Double -> it.putExtra(returnExtra, value)
+                        is Int -> it.putExtra(returnExtra, value)
+                        else -> it.putExtra(returnExtra, value as String)
+                    }
+                }
+            }
+        }
+    }
 }

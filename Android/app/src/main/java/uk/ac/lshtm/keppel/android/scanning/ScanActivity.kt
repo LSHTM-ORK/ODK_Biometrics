@@ -113,44 +113,30 @@ class ScanActivity : AppCompatActivity() {
         return if (OdkExternal.isSingleReturn(inputIntent)) {
             OdkExternal.buildSingleReturnIntent(capture.isoTemplate)
         } else {
-            Intent().also {
-                if (inputIntent.hasExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE)) {
-                    it.putExtra(
-                        inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE),
-                        capture.isoTemplate
-                    )
-                }
-
-                if (inputIntent.hasExtra(OdkExternal.PARAM_RETURN_NFIQ)) {
-                    it.putExtra(
-                        inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_NFIQ),
-                        capture.nfiq
-                    )
-                }
-            }
+            OdkExternal.buildMultipleReturnResult(
+                inputIntent, mapOf(
+                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
+                )
+            )
         }
     }
 
-    private fun buildMatchReturn(inputIntent: Intent, score: Double, capture: CaptureResult): Intent {
+    private fun buildMatchReturn(
+        inputIntent: Intent,
+        score: Double,
+        capture: CaptureResult
+    ): Intent {
         return if (OdkExternal.isSingleReturn(inputIntent)) {
             OdkExternal.buildSingleReturnIntent(score)
         } else {
-            Intent().also {
-                it.putExtra(
-                    inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_SCORE),
-                    score
+            OdkExternal.buildMultipleReturnResult(
+                inputIntent, mapOf(
+                    OdkExternal.PARAM_RETURN_SCORE to score,
+                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
                 )
-
-                it.putExtra(
-                    inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE),
-                    capture.isoTemplate
-                )
-
-                it.putExtra(
-                    inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_NFIQ),
-                    capture.nfiq
-                )
-            }
+            )
         }
     }
 }
