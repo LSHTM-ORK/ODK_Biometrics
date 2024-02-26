@@ -44,7 +44,7 @@ class ScannerViewModel(
                 val decodedInputTemplate = inputTemplate.fromHex()
                 if (decodedInputTemplate != null) {
                     val score = matcher.match(decodedInputTemplate, capture.isoTemplate.fromHex()!!)
-                    _result.postValue(Result.Match(score))
+                    _result.postValue(Result.Match(score, capture))
                 } else {
                     _result.postValue(Result.Error)
                 }
@@ -69,7 +69,7 @@ class ScannerViewModel(
 
     sealed class Result {
         data class Scan(val captureResult: CaptureResult) : Result()
-        data class Match(val score: Double) : Result()
+        data class Match(val score: Double, val captureResult: CaptureResult) : Result()
         object Error : Result()
     }
 
