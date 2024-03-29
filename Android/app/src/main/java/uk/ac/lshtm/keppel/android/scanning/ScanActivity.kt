@@ -87,7 +87,7 @@ class ScanActivity : AppCompatActivity() {
     private fun processResult(result: ScannerViewModel.Result) {
         when (result) {
             is ScannerViewModel.Result.Match -> {
-                returnResult(buildMatchReturn(result.score))
+                returnResult(buildMatchReturn(this.intent, result.score, result.captureResult))
             }
 
             is ScannerViewModel.Result.Scan -> {
@@ -110,31 +110,33 @@ class ScanActivity : AppCompatActivity() {
     }
 
     private fun buildScanReturn(inputIntent: Intent, capture: CaptureResult): Intent {
-        val intent = Intent()
-
-        if (inputIntent.extras?.containsKey(OdkExternal.PARAM_INPUT_VALUE) == false) {
-            if (inputIntent.hasExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE)) {
-                intent.putExtra(
-                    inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE),
-                    capture.isoTemplate
-                )
-            }
-
-            if (inputIntent.hasExtra(OdkExternal.PARAM_RETURN_NFIQ)) {
-                intent.putExtra(
-                    inputIntent.getStringExtra(OdkExternal.PARAM_RETURN_NFIQ),
-                    capture.nfiq
-                )
-            }
+        return if (OdkExternal.isSingleReturn(inputIntent)) {
+            OdkExternal.buildSingleReturnIntent(capture.isoTemplate)
         } else {
-            intent.putExtra(OdkExternal.PARAM_RETURN_VALUE, capture.isoTemplate)
+            OdkExternal.buildMultipleReturnResult(
+                inputIntent, mapOf(
+                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
+                )
+            )
         }
-
-        return intent
     }
 
-    private fun buildMatchReturn(score: Double): Intent {
-        intent.putExtra(OdkExternal.PARAM_RETURN_VALUE, score)
-        return intent
+    private fun buildMatchReturn(
+        inputIntent: Intent,
+        score: Double,
+        capture: CaptureResult
+    ): Intent {
+        return if (OdkExternal.isSingleReturn(inputIntent)) {
+            OdkExternal.buildSingleReturnIntent(score)
+        } else {
+            OdkExternal.buildMultipleReturnResult(
+                inputIntent, mapOf(
+                    OdkExternal.PARAM_RETURN_SCORE to score,
+                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
+                )
+            )
+        }
     }
 }
