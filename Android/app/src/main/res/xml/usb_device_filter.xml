@@ -2,4 +2,7 @@
 <resources>
     <!-- BioMini Slim 3 -->
     <usb-device vendor-id="5841" product-id="1059"/>
+
+    <!-- Mantra MFS100 -->
+    <usb-device vendor-id="11279" product-id="4101"/>
 </resources>
