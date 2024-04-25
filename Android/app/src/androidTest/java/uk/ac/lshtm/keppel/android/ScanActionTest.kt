@@ -2,9 +2,6 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.content.Intent
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -14,6 +11,7 @@ import org.junit.runner.RunWith
 import uk.ac.lshtm.keppel.android.support.FakeScanner
 import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
+import uk.ac.lshtm.keppel.android.support.pages.CapturePage
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
@@ -29,11 +27,13 @@ class ScanActionTest {
         val intent = Intent(OdkExternal.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
-        val scenario = rule.launchAction(intent)
 
-        onView(withText(R.string.capture)).perform(click())
-        assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
-        val extras = scenario.result.resultData.extras!!
+        val result = rule.launchAction(intent, CapturePage()) {
+            it.clickCapture()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+        val extras = result.resultData.extras!!
         assertThat(
             extras.getString(OdkExternal.PARAM_RETURN_VALUE),
             equalTo("ISO TEMPLATE".toHexString())
@@ -46,11 +46,13 @@ class ScanActionTest {
             it.putExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
             it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
         }
-        val scenario = rule.launchAction(intent)
 
-        onView(withText(R.string.capture)).perform(click())
-        assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_OK))
-        val extras = scenario.result.resultData.extras!!
+        val result = rule.launchAction(intent, CapturePage()) {
+            it.clickCapture()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+        val extras = result.resultData.extras!!
         assertThat(
             extras.get("my_iso_template"),
             equalTo("ISO TEMPLATE".toHexString())
@@ -63,14 +65,16 @@ class ScanActionTest {
         val intent = Intent(OdkExternal.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
-        val scenario = rule.launchAction(intent)
 
-        fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
-        rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
-        onView(withText(R.string.capture)).perform(click())
-        onView(withText(R.string.cancel)).perform(click())
+        val result = rule.launchAction(intent, CapturePage()) {
+            fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
+            rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
 
-        assertThat(scenario.result.resultCode, equalTo(Activity.RESULT_CANCELED))
-        assertThat(scenario.result.resultData, equalTo(null))
+            it.clickCapture()
+            it.clickCancel()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
+        assertThat(result.resultData, equalTo(null))
     }
 }
