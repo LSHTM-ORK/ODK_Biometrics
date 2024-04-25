@@ -12,6 +12,7 @@ import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.settings.SettingsActivity
 import uk.ac.lshtm.keppel.android.support.pages.Page
+import uk.ac.lshtm.keppel.android.support.pages.SettingsPage
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -53,16 +54,12 @@ class KeppelTestRule(
         IdlingRegistry.getInstance().unregister(taskRunnerIdlingResource)
     }
 
-    fun launchApp() {
+    fun launchApp(): SettingsPage {
         ActivityScenario.launch(SettingsActivity::class.java).also {
             activityScenario = it
         }
-    }
 
-    fun launchAction(intent: Intent): ActivityScenario<Activity> {
-        return ActivityScenario.launchActivityForResult<Activity>(intent).also {
-            activityScenario = it
-        }
+        return SettingsPage().assert()
     }
 
     fun <T : Page<T>> launchAction(
@@ -73,6 +70,12 @@ class KeppelTestRule(
         val scenario = launchAction(intent)
         block(page.assert())
         return scenario.result
+    }
+
+    private fun launchAction(intent: Intent): ActivityScenario<Activity> {
+        return ActivityScenario.launchActivityForResult<Activity>(intent).also {
+            activityScenario = it
+        }
     }
 }
 
