@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.android.support
 
 import android.app.Activity
+import android.app.Instrumentation
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -10,6 +11,7 @@ import org.junit.rules.ExternalResource
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.settings.SettingsActivity
+import uk.ac.lshtm.keppel.android.support.pages.Page
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -19,7 +21,7 @@ class KeppelTestRule(
 ) : ExternalResource() {
 
     var waitForBackgroundTasks = true
-        set (value) {
+        set(value) {
             field = value
             taskRunnerIdlingResource.enabled = value
         }
@@ -28,7 +30,7 @@ class KeppelTestRule(
     private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
 
     private var activityScenario: ActivityScenario<*>? = null
-        set (value) {
+        set(value) {
             if (field != null) {
                 throw IllegalStateException("ActivityScenario already launched!")
             }
@@ -61,6 +63,16 @@ class KeppelTestRule(
         return ActivityScenario.launchActivityForResult<Activity>(intent).also {
             activityScenario = it
         }
+    }
+
+    fun <T : Page<T>> launchAction(
+        intent: Intent,
+        page: T,
+        block: (T) -> Unit
+    ): Instrumentation.ActivityResult {
+        val scenario = launchAction(intent)
+        block(page.assert())
+        return scenario.result
     }
 }
 
