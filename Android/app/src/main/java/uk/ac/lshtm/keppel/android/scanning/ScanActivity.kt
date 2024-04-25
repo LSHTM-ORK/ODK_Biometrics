@@ -33,6 +33,19 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (intent.action == OdkExternal.ACTION_MATCH) {
+            if (intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE) == null) {
+                val error = getString(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
+
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(error)
+                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                    .show()
+
+                return
+            }
+        }
+
         viewModel.scannerState.observe(this) { state ->
             when (state) {
                 ScannerState.Disconnected -> {
@@ -96,7 +109,7 @@ class ScanActivity : AppCompatActivity() {
 
             else -> {
                 MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_hex_error)
+                    .setMessage(R.string.input_format_error)
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .show()
             }
