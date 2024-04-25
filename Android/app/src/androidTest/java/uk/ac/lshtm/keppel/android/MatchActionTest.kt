@@ -1,7 +1,9 @@
 package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -28,6 +30,24 @@ class MatchActionTest {
         scanners = listOf(FakeScannerFactory(fakeScanner)),
         matcher = fakeMatcher
     )
+
+    @Test
+    fun whenNoTemplateIsSupplied_showsError() {
+        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra("blah", "blah")
+        }
+
+        val scenario = rule.launchAction(intent)
+
+        val errorString = ApplicationProvider.getApplicationContext<Application>().getString(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
+        onView(withText(errorString)).inRoot(isDialog()).check(matches(isDisplayed()))
+        onView(withText(R.string.ok)).inRoot(isDialog()).perform(click())
+        assertThat(
+            scenario.result.resultCode,
+            equalTo(Activity.RESULT_CANCELED)
+        )
+    }
 
     @Test
     fun clickingMatch_capturesAndReturnsMatchScore() {
