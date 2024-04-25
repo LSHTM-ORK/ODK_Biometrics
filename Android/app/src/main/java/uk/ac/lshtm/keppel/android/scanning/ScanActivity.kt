@@ -109,7 +109,7 @@ class ScanActivity : AppCompatActivity() {
 
             else -> {
                 MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_hex_error)
+                    .setMessage(R.string.input_format_error)
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .show()
             }

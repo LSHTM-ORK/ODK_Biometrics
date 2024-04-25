@@ -84,7 +84,29 @@ class MatchActionTest {
         }
 
         val result = rule.launchAction(intent, MatchPage()) {
-            it.clickMatch(ErrorDialogPage(R.string.input_hex_error))
+            it.clickMatch(ErrorDialogPage(R.string.input_format_error))
+                .clickOk()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
+    }
+
+    @Test
+    fun clickingMatch_whenMatchFails_showsAnError() {
+        val existingTemplate = "blah"
+        fakeMatcher.addScore(
+            existingTemplate,
+            fakeScanner.returnTemplate,
+            null
+        )
+
+        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+        }
+
+        val result = rule.launchAction(intent, MatchPage()) {
+            it.clickMatch(ErrorDialogPage(R.string.input_format_error))
                 .clickOk()
         }
 
