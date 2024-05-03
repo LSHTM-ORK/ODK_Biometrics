@@ -55,9 +55,13 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.Connected -> {
-                    binding.connectProgressBar.visibility = View.GONE
-                    binding.captureButton.visibility = View.VISIBLE
-                    binding.captureProgressBar.visibility = View.GONE
+                    if (intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true) {
+                        capture()
+                    } else {
+                        binding.connectProgressBar.visibility = View.GONE
+                        binding.captureButton.visibility = View.VISIBLE
+                        binding.captureProgressBar.visibility = View.GONE
+                    }
                 }
 
                 ScannerState.Scanning -> {
@@ -84,10 +88,6 @@ class ScanActivity : AppCompatActivity() {
 
         if (intent.action == OdkExternal.ACTION_MATCH) {
             binding.captureButton.setText(R.string.match)
-        }
-
-        if (intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true) {
-            capture()
         }
     }
 

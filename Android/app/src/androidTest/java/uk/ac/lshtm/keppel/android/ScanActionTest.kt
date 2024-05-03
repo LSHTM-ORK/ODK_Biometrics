@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -13,6 +12,7 @@ import uk.ac.lshtm.keppel.android.support.FakeScanner
 import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
+import uk.ac.lshtm.keppel.android.support.pages.CapturingPage
 import uk.ac.lshtm.keppel.android.support.pages.ConnectingPage
 import uk.ac.lshtm.keppel.core.toHexString
 
@@ -78,15 +78,14 @@ class ScanActionTest {
     }
 
     @Test
-    @Ignore
     fun withFastMode_capturesAndReturnsIsoTemplate() {
         val intent = Intent(OdkExternal.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
             it.putExtra(OdkExternal.PARAM_FAST, "true")
         }
 
-        val result = rule.launchAction(intent) {
-            fakeScanner.connect()
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturingPage())
             fakeScanner.returnTemplate("scanned", 1)
         }
 
