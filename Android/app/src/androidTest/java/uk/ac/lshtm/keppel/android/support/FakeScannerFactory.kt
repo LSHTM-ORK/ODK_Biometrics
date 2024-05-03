@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.android.support
 
 import android.content.Context
+import androidx.test.platform.app.InstrumentationRegistry
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
@@ -17,15 +18,18 @@ class FakeScannerFactory(
     }
 }
 
-class FakeScanner() : Scanner {
+class FakeScanner : Scanner {
 
     private var returnTemplate: String? = null
     private var returnNfiq: Int? = null
 
     private var capturing = false
+    private var connected = false
+
+    private var onConnected: () -> Unit = {}
 
     override fun connect(onConnected: () -> Unit): Scanner {
-        onConnected()
+        this.onConnected = onConnected
         return this
     }
 
@@ -34,6 +38,10 @@ class FakeScanner() : Scanner {
     }
 
     override fun capture(): CaptureResult? {
+        if (!connected) {
+            throw IllegalStateException("Scanner not connected!")
+        }
+
         capturing = true
         TaskRunnerIdlingResource.nonBlockingWait { capturing && returnTemplate == null }
 
@@ -52,11 +60,19 @@ class FakeScanner() : Scanner {
     }
 
     override fun disconnect() {
-
+        connected = false
     }
 
     fun returnTemplate(template: String, nfiq: Int) {
         returnTemplate = template
         returnNfiq = nfiq
+    }
+
+    fun connect() {
+        connected = true
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            onConnected()
+        }
     }
 }
