@@ -30,13 +30,14 @@ class ScanActionTest {
 
         val result = rule.launchAction(intent, CapturePage()) {
             it.clickCapture()
+            fakeScanner.returnTemplate("scanned", 1)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
         assertThat(
             extras.getString(OdkExternal.PARAM_RETURN_VALUE),
-            equalTo("ISO TEMPLATE".toHexString())
+            equalTo("scanned".toHexString())
         )
     }
 
@@ -49,14 +50,12 @@ class ScanActionTest {
 
         val result = rule.launchAction(intent, CapturePage()) {
             it.clickCapture()
+            fakeScanner.returnTemplate("scanned", 17)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
-        assertThat(
-            extras.get("my_iso_template"),
-            equalTo("ISO TEMPLATE".toHexString())
-        )
+        assertThat(extras.get("my_iso_template"), equalTo("scanned".toHexString()))
         assertThat(extras.get("my_nfiq"), equalTo(17))
     }
 
@@ -67,9 +66,6 @@ class ScanActionTest {
         }
 
         val result = rule.launchAction(intent, CapturePage()) {
-            fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
-            rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
-
             it.clickCapture()
             it.clickCancel()
         }
@@ -85,13 +81,15 @@ class ScanActionTest {
             it.putExtra(OdkExternal.PARAM_FAST, "true")
         }
 
-        val result = rule.launchAction(intent)
+        val result = rule.launchAction(intent) {
+            fakeScanner.returnTemplate("scanned", 1)
+        }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
         assertThat(
             extras.getString(OdkExternal.PARAM_RETURN_VALUE),
-            equalTo("ISO TEMPLATE".toHexString())
+            equalTo("scanned".toHexString())
         )
     }
 }

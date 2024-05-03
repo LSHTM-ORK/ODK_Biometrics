@@ -13,9 +13,4 @@ class MatchPage : Page<MatchPage> {
     fun clickMatch() {
         clickOn(R.string.match)
     }
-
-    fun <T : Page<T>> clickMatch(page: T): T {
-        clickMatch()
-        return page.assert()
-    }
 }

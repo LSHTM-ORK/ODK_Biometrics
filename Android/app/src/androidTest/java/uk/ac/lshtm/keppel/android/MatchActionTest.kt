@@ -47,7 +47,7 @@ class MatchActionTest {
         val existingTemplate = "blah"
         fakeMatcher.addScore(
             existingTemplate,
-            fakeScanner.returnTemplate,
+            "scanned",
             96.0
         )
 
@@ -58,6 +58,7 @@ class MatchActionTest {
 
         val result = rule.launchAction(intent, MatchPage()) {
             it.clickMatch()
+            fakeScanner.returnTemplate("scanned", 1)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
@@ -74,7 +75,7 @@ class MatchActionTest {
         val existingTemplate = "blah"
         fakeMatcher.addScore(
             existingTemplate,
-            fakeScanner.returnTemplate,
+            "scanned",
             96.0
         )
 
@@ -84,8 +85,9 @@ class MatchActionTest {
         }
 
         val result = rule.launchAction(intent, MatchPage()) {
-            it.clickMatch(ErrorDialogPage(R.string.input_format_error))
-                .clickOk()
+            it.clickMatch()
+            fakeScanner.returnTemplate("scanned", 1)
+            ErrorDialogPage(R.string.input_format_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
@@ -96,7 +98,7 @@ class MatchActionTest {
         val existingTemplate = "blah"
         fakeMatcher.addScore(
             existingTemplate,
-            fakeScanner.returnTemplate,
+            "scanned",
             null
         )
 
@@ -106,8 +108,9 @@ class MatchActionTest {
         }
 
         val result = rule.launchAction(intent, MatchPage()) {
-            it.clickMatch(ErrorDialogPage(R.string.input_format_error))
-                .clickOk()
+            it.clickMatch()
+            fakeScanner.returnTemplate("scanned", 1)
+            ErrorDialogPage(R.string.input_format_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
@@ -118,7 +121,7 @@ class MatchActionTest {
         val existingTemplate = "blah"
         fakeMatcher.addScore(
             existingTemplate,
-            fakeScanner.returnTemplate,
+            "scanned",
             96.0
         )
 
@@ -131,6 +134,7 @@ class MatchActionTest {
 
         val result = rule.launchAction(intent, MatchPage()) {
             it.clickMatch()
+            fakeScanner.returnTemplate("scanned", 17)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
@@ -140,7 +144,7 @@ class MatchActionTest {
         assertThat(extras.getInt("my_nfiq"), equalTo(17))
         assertThat(
             extras.getString("my_iso_template"),
-            equalTo(fakeScanner.returnTemplate.toHexString())
+            equalTo("scanned".toHexString())
         )
     }
 
@@ -149,7 +153,7 @@ class MatchActionTest {
         val existingTemplate = "blah"
         fakeMatcher.addScore(
             existingTemplate,
-            fakeScanner.returnTemplate,
+            "scanned",
             96.0
         )
 
@@ -159,9 +163,11 @@ class MatchActionTest {
             it.putExtra(OdkExternal.PARAM_FAST, "true")
         }
 
-        val result = rule.launchAction(intent)
-        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+        val result = rule.launchAction(intent) {
+            fakeScanner.returnTemplate("scanned", 1)
+        }
 
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
         assertThat(
             extras.getDouble(OdkExternal.PARAM_RETURN_VALUE),

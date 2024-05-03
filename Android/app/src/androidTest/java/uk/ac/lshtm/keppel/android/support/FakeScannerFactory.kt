@@ -9,7 +9,7 @@ import uk.ac.lshtm.keppel.core.toHexString
 class FakeScannerFactory(
     private val scanner: Scanner = FakeScanner(),
     override val isAvailable: Boolean = true,
-    override val name: String = "Fake"
+    override val name: String = "Fake",
 ) : ScannerFactory {
 
     override fun create(context: Context): Scanner {
@@ -17,10 +17,10 @@ class FakeScannerFactory(
     }
 }
 
-class FakeScanner : Scanner {
+class FakeScanner() : Scanner {
 
-    var returnTemplate: String = "ISO TEMPLATE"
-    var neverCapture = false
+    private var returnTemplate: String? = null
+    private var returnNfiq: Int? = null
 
     private var capturing = false
 
@@ -35,16 +35,16 @@ class FakeScanner : Scanner {
 
     override fun capture(): CaptureResult? {
         capturing = true
+        TaskRunnerIdlingResource.nonBlockingWait { capturing && returnTemplate == null }
 
-        val result = if (!neverCapture) {
-            CaptureResult(returnTemplate.toHexString(), 17)
+        if (capturing) {
+            capturing = false
+            val result = CaptureResult(returnTemplate!!.toHexString(), returnNfiq!!)
+            returnTemplate = null
+            return result
         } else {
-            while (capturing) { Thread.sleep(1) }
-            null
+            return null
         }
-
-        capturing = false
-        return result
     }
 
     override fun stopCapture() {
@@ -53,5 +53,10 @@ class FakeScanner : Scanner {
 
     override fun disconnect() {
 
+    }
+
+    fun returnTemplate(template: String, nfiq: Int) {
+        returnTemplate = template
+        returnNfiq = nfiq
     }
 }
