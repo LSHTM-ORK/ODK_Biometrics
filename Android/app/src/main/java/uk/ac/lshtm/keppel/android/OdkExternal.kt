@@ -16,6 +16,8 @@ object OdkExternal {
     const val PARAM_RETURN_SCORE = "$APP_ID.return_score"
     const val PARAM_ISO_TEMPLATE = "$APP_ID.iso_template"
 
+    const val PARAM_FAST = "$APP_ID.fast"
+
     fun isSingleReturn(intent: Intent): Boolean {
         return intent.extras?.containsKey(PARAM_INPUT_VALUE) == true
     }

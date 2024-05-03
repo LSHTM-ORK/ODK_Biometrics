@@ -67,12 +67,19 @@ class KeppelTestRule(
         page: T,
         block: (T) -> Unit
     ): Instrumentation.ActivityResult {
-        val scenario = launchAction(intent)
+        val scenario = launchActivityScenario(intent)
         block(page.assert())
         return scenario.result
     }
 
-    private fun launchAction(intent: Intent): ActivityScenario<Activity> {
+    fun <T : Page<T>> launchAction(
+        intent: Intent
+    ): Instrumentation.ActivityResult {
+        val scenario = launchActivityScenario(intent)
+        return scenario.result
+    }
+
+    private fun launchActivityScenario(intent: Intent): ActivityScenario<Activity> {
         return ActivityScenario.launchActivityForResult<Activity>(intent).also {
             activityScenario = it
         }

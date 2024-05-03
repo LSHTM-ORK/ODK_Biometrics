@@ -143,4 +143,29 @@ class MatchActionTest {
             equalTo(fakeScanner.returnTemplate.toHexString())
         )
     }
+
+    @Test
+    fun withFastMode_capturesAndReturnsMatchScore() {
+        val existingTemplate = "blah"
+        fakeMatcher.addScore(
+            existingTemplate,
+            fakeScanner.returnTemplate,
+            96.0
+        )
+
+        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+            it.putExtra(OdkExternal.PARAM_FAST, "true")
+        }
+
+        val result = rule.launchAction(intent)
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+
+        val extras = result.resultData.extras!!
+        assertThat(
+            extras.getDouble(OdkExternal.PARAM_RETURN_VALUE),
+            equalTo(96.0)
+        )
+    }
 }

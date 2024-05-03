@@ -75,12 +75,7 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.captureButton.setOnClickListener {
-            if (intent.action == OdkExternal.ACTION_MATCH) {
-                val inputTemplate = intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE)
-                viewModel.capture(inputTemplate)
-            } else {
-                viewModel.capture()
-            }
+            capture()
         }
 
         binding.cancelButton.setOnClickListener {
@@ -89,6 +84,19 @@ class ScanActivity : AppCompatActivity() {
 
         if (intent.action == OdkExternal.ACTION_MATCH) {
             binding.captureButton.setText(R.string.match)
+        }
+
+        if (intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true) {
+            capture()
+        }
+    }
+
+    private fun capture() {
+        if (intent.action == OdkExternal.ACTION_MATCH) {
+            val inputTemplate = intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE)
+            viewModel.capture(inputTemplate)
+        } else {
+            viewModel.capture()
         }
     }
 

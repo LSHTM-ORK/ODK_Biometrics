@@ -77,4 +77,21 @@ class ScanActionTest {
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
         assertThat(result.resultData, equalTo(null))
     }
+
+    @Test
+    fun withFastMode_capturesAndReturnsIsoTemplate() {
+        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(OdkExternal.PARAM_FAST, "true")
+        }
+
+        val result = rule.launchAction(intent)
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+        val extras = result.resultData.extras!!
+        assertThat(
+            extras.getString(OdkExternal.PARAM_RETURN_VALUE),
+            equalTo("ISO TEMPLATE".toHexString())
+        )
+    }
 }
