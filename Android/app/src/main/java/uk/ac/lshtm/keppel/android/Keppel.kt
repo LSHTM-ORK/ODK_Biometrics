@@ -2,7 +2,6 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.app.Application
-import android.os.Build
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
@@ -15,7 +14,6 @@ import uk.ac.lshtm.keppel.android.tasks.IODispatcherTaskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
-import javax.xml.transform.Source
 
 class Keppel : Application() {
 

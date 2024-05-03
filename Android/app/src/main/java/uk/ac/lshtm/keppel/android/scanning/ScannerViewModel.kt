@@ -3,7 +3,6 @@ package uk.ac.lshtm.keppel.android.scanning
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState.Connected
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState.Disconnected
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState.Scanning

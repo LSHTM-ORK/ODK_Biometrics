@@ -1,7 +1,6 @@
 package uk.ac.lshtm.keppel.android.settings
 
 import android.content.Intent
-import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withText

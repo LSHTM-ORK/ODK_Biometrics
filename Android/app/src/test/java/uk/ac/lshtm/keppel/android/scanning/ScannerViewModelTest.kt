@@ -7,7 +7,9 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
