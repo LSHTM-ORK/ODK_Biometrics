@@ -162,25 +162,3 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 }
-
-private object IntentParser {
-    fun parse(intent: Intent): Request {
-        return if (intent.action == OdkExternal.ACTION_MATCH) {
-            Request.Match(
-                intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE),
-                intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true
-            )
-        } else {
-            Request.Scan(
-                intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true
-            )
-        }
-    }
-}
-
-private sealed interface Request {
-    val fast: Boolean
-
-    data class Scan(override val fast: Boolean) : Request
-    data class Match(val isoTemplate: String?, override val fast: Boolean) : Request
-}
