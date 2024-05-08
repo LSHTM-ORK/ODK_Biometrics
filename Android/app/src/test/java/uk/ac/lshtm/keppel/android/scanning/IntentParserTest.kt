@@ -14,6 +14,7 @@ class IntentParserTest {
     @Test
     fun `fast is false when param is false string`() {
         val intent = Intent().also {
+            it.action = OdkExternal.ACTION_SCAN
             it.putExtra(OdkExternal.PARAM_FAST, "false")
         }
 
@@ -24,6 +25,7 @@ class IntentParserTest {
     @Test
     fun `fast is false when param is arbitrary string`() {
         val intent = Intent().also {
+            it.action = OdkExternal.ACTION_SCAN
             it.putExtra(OdkExternal.PARAM_FAST, "blah")
         }
 

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import uk.ac.lshtm.keppel.android.OdkExternal
+import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.matcher
@@ -33,10 +34,10 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val action: Request = IntentParser.parse(intent)
+        val request: Request = IntentParser.parse(intent)
 
-        if (action is Request.Match) {
-            if (action.isoTemplate == null) {
+        if (request is Request.Match) {
+            if (request.isoTemplate == null) {
                 val error = getString(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
@@ -57,8 +58,8 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.Connected -> {
-                    if (action.fast) {
-                        capture(action)
+                    if (request.fast) {
+                        capture(request)
                     } else {
                         binding.connectProgressBar.visibility = View.GONE
                         binding.captureButton.visibility = View.VISIBLE
@@ -76,19 +77,19 @@ class ScanActivity : AppCompatActivity() {
 
         viewModel.result.observe(this) { result ->
             if (result != null) {
-                processResult(result)
+                processResult(request, result)
             }
         }
 
         binding.captureButton.setOnClickListener {
-            capture(action)
+            capture(request)
         }
 
         binding.cancelButton.setOnClickListener {
             finish()
         }
 
-        if (action is Request.Match) {
+        if (request is Request.Match) {
             binding.captureButton.setText(R.string.match)
         }
     }
@@ -106,14 +107,20 @@ class ScanActivity : AppCompatActivity() {
         viewModel.stopCapture()
     }
 
-    private fun processResult(result: ScannerViewModel.Result) {
+    private fun processResult(request: Request, result: ScannerViewModel.Result) {
         when (result) {
             is ScannerViewModel.Result.Match -> {
-                returnResult(buildMatchReturn(this.intent, result.score, result.captureResult))
+                returnResult(
+                    buildMatchReturn(
+                        request.odkExternalRequest,
+                        result.score,
+                        result.captureResult
+                    )
+                )
             }
 
             is ScannerViewModel.Result.Scan -> {
-                returnResult(buildScanReturn(this.intent, result.captureResult))
+                returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
             }
 
             else -> {
@@ -125,18 +132,21 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 
-    private fun returnResult(intent: Intent) {
-        setResult(RESULT_OK, intent)
+    private fun returnResult(result: Intent) {
+        setResult(RESULT_OK, result)
         finish()
         Analytics.log("return_result")
     }
 
-    private fun buildScanReturn(inputIntent: Intent, capture: CaptureResult): Intent {
-        return if (OdkExternal.isSingleReturn(inputIntent)) {
+    private fun buildScanReturn(
+        odkExternalRequest: OdkExternalRequest,
+        capture: CaptureResult
+    ): Intent {
+        return if (OdkExternal.isSingleReturn(odkExternalRequest)) {
             OdkExternal.buildSingleReturnIntent(capture.isoTemplate)
         } else {
             OdkExternal.buildMultipleReturnResult(
-                inputIntent, mapOf(
+                odkExternalRequest.params, mapOf(
                     OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
                     OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
                 )
@@ -145,15 +155,15 @@ class ScanActivity : AppCompatActivity() {
     }
 
     private fun buildMatchReturn(
-        inputIntent: Intent,
+        odkExternalRequest: OdkExternalRequest,
         score: Double,
         capture: CaptureResult
     ): Intent {
-        return if (OdkExternal.isSingleReturn(inputIntent)) {
+        return if (OdkExternal.isSingleReturn(odkExternalRequest)) {
             OdkExternal.buildSingleReturnIntent(score)
         } else {
             OdkExternal.buildMultipleReturnResult(
-                inputIntent, mapOf(
+                odkExternalRequest.params, mapOf(
                     OdkExternal.PARAM_RETURN_SCORE to score,
                     OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
                     OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq

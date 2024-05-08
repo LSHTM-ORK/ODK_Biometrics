@@ -18,8 +18,8 @@ object OdkExternal {
 
     const val PARAM_FAST = "$APP_ID.fast"
 
-    fun isSingleReturn(intent: Intent): Boolean {
-        return intent.extras?.containsKey(PARAM_INPUT_VALUE) == true
+    fun isSingleReturn(odkExternalRequest: OdkExternalRequest): Boolean {
+        return odkExternalRequest.inputValue != null
     }
 
     fun buildSingleReturnIntent(double: Double): Intent {
@@ -34,11 +34,14 @@ object OdkExternal {
         }
     }
 
-    fun buildMultipleReturnResult(inputIntent: Intent, results: Map<String, Any>): Intent {
+    fun buildMultipleReturnResult(
+        params:  Map<String, String>,
+        results: Map<String, Any>
+    ): Intent {
         return Intent().also {
             results.forEach { (key, value) ->
-                if (inputIntent.hasExtra(key)) {
-                    val returnExtra = inputIntent.getStringExtra(key)
+                if (params.containsKey(key)) {
+                    val returnExtra = params.get(key)
 
                     when (value) {
                         is Double -> it.putExtra(returnExtra, value)
@@ -49,4 +52,20 @@ object OdkExternal {
             }
         }
     }
+
+    fun parseIntent(intent: Intent): OdkExternalRequest {
+        val params = intent.extras?.keySet()?.associate { Pair(it, intent.getStringExtra(it)!!) }
+
+        return OdkExternalRequest(
+            intent.action!!,
+            intent.getStringExtra(PARAM_INPUT_VALUE),
+            params ?: emptyMap()
+        )
+    }
 }
+
+data class OdkExternalRequest(
+    val action: String,
+    val inputValue: String?,
+    val params: Map<String, String>
+)
