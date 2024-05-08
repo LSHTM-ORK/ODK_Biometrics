@@ -33,8 +33,10 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (intent.action == OdkExternal.ACTION_MATCH) {
-            if (intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE) == null) {
+        val action: Request = IntentParser.parse(intent)
+
+        if (action is Request.Match) {
+            if (action.isoTemplate == null) {
                 val error = getString(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
@@ -55,8 +57,8 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.Connected -> {
-                    if (intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true) {
-                        capture()
+                    if (action.fast) {
+                        capture(action)
                     } else {
                         binding.connectProgressBar.visibility = View.GONE
                         binding.captureButton.visibility = View.VISIBLE
@@ -79,22 +81,21 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.captureButton.setOnClickListener {
-            capture()
+            capture(action)
         }
 
         binding.cancelButton.setOnClickListener {
             finish()
         }
 
-        if (intent.action == OdkExternal.ACTION_MATCH) {
+        if (action is Request.Match) {
             binding.captureButton.setText(R.string.match)
         }
     }
 
-    private fun capture() {
-        if (intent.action == OdkExternal.ACTION_MATCH) {
-            val inputTemplate = intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE)
-            viewModel.capture(inputTemplate)
+    private fun capture(action: Request) {
+        if (action is Request.Match) {
+            viewModel.capture(action.isoTemplate)
         } else {
             viewModel.capture()
         }
@@ -160,4 +161,26 @@ class ScanActivity : AppCompatActivity() {
             )
         }
     }
+}
+
+private object IntentParser {
+    fun parse(intent: Intent): Request {
+        return if (intent.action == OdkExternal.ACTION_MATCH) {
+            Request.Match(
+                intent.extras!!.getString(OdkExternal.PARAM_ISO_TEMPLATE),
+                intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true
+            )
+        } else {
+            Request.Scan(
+                intent.extras?.containsKey(OdkExternal.PARAM_FAST) == true
+            )
+        }
+    }
+}
+
+private sealed interface Request {
+    val fast: Boolean
+
+    data class Scan(override val fast: Boolean) : Request
+    data class Match(val isoTemplate: String?, override val fast: Boolean) : Request
 }
