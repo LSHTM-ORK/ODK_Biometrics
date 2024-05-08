@@ -29,14 +29,14 @@ class MatchActionTest {
 
     @Test
     fun whenNoTemplateIsSupplied_showsError() {
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+        val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
             it.putExtra("blah", "blah")
         }
 
         val result = rule.launchAction(
             intent,
-            ErrorDialogPage(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
+            ErrorDialogPage(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
         ) {
             it.clickOk()
         }
@@ -53,9 +53,9 @@ class MatchActionTest {
             96.0
         )
 
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+        val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+            it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
@@ -81,9 +81,9 @@ class MatchActionTest {
             96.0
         )
 
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+        val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate)
+            it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate)
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
@@ -104,9 +104,9 @@ class MatchActionTest {
             null
         )
 
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+        val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+            it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
@@ -127,11 +127,11 @@ class MatchActionTest {
             96.0
         )
 
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
-            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
-            it.putExtra(OdkExternal.PARAM_RETURN_SCORE, "my_score")
-            it.putExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
-            it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
+        val intent = Intent(External.ACTION_MATCH).also {
+            it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+            it.putExtra(External.PARAM_RETURN_SCORE, "my_score")
+            it.putExtra(External.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
+            it.putExtra(External.PARAM_RETURN_NFIQ, "my_nfiq")
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
@@ -159,10 +159,10 @@ class MatchActionTest {
             96.0
         )
 
-        val intent = Intent(OdkExternal.ACTION_MATCH).also {
+        val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(OdkExternal.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
-            it.putExtra(OdkExternal.PARAM_FAST, "true")
+            it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
+            it.putExtra(External.PARAM_FAST, "true")
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {

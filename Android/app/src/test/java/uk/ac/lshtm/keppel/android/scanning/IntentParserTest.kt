@@ -6,7 +6,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Test
 import org.junit.runner.RunWith
-import uk.ac.lshtm.keppel.android.OdkExternal
+import uk.ac.lshtm.keppel.android.External
 
 @RunWith(AndroidJUnit4::class)
 class IntentParserTest {
@@ -14,8 +14,8 @@ class IntentParserTest {
     @Test
     fun `fast is false when param is false string`() {
         val intent = Intent().also {
-            it.action = OdkExternal.ACTION_SCAN
-            it.putExtra(OdkExternal.PARAM_FAST, "false")
+            it.action = External.ACTION_SCAN
+            it.putExtra(External.PARAM_FAST, "false")
         }
 
         val request = IntentParser.parse(intent)
@@ -25,8 +25,8 @@ class IntentParserTest {
     @Test
     fun `fast is false when param is arbitrary string`() {
         val intent = Intent().also {
-            it.action = OdkExternal.ACTION_SCAN
-            it.putExtra(OdkExternal.PARAM_FAST, "blah")
+            it.action = External.ACTION_SCAN
+            it.putExtra(External.PARAM_FAST, "blah")
         }
 
         val request = IntentParser.parse(intent)

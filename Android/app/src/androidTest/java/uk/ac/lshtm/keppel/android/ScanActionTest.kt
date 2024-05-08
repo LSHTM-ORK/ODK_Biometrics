@@ -26,7 +26,7 @@ class ScanActionTest {
 
     @Test
     fun clickingCapture_capturesAndReturnsIsoTemplate() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+        val intent = Intent(External.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
 
@@ -45,9 +45,9 @@ class ScanActionTest {
 
     @Test
     fun clickingCapture_whenReturnValuesSpecified_capturesAndReturnsThoseValues() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
-            it.putExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
-            it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
+        val intent = Intent(External.ACTION_SCAN).also {
+            it.putExtra(External.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
+            it.putExtra(External.PARAM_RETURN_NFIQ, "my_nfiq")
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
@@ -63,7 +63,7 @@ class ScanActionTest {
 
     @Test
     fun clickingCapture_andThenCancel_returnsCancelledResult() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+        val intent = Intent(External.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
 
@@ -79,9 +79,9 @@ class ScanActionTest {
 
     @Test
     fun withFastMode_capturesAndReturnsIsoTemplate() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+        val intent = Intent(External.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(OdkExternal.PARAM_FAST, "true")
+            it.putExtra(External.PARAM_FAST, "true")
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {

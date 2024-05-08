@@ -12,8 +12,8 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.LooperMode
+import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.Keppel
-import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.core.Scanner
 
 @RunWith(RobolectricTestRunner::class)
@@ -32,7 +32,7 @@ class ScanActivityTest {
 
         activityController = Robolectric.buildActivity(
             ScanActivity::class.java,
-            Intent().also { it.action = OdkExternal.ACTION_SCAN }
+            Intent().also { it.action = External.ACTION_SCAN }
         )
         activity = activityController.setup().get()
     }

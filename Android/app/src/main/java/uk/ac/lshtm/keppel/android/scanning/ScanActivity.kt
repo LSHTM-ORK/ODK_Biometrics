@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
@@ -38,7 +39,7 @@ class ScanActivity : AppCompatActivity() {
 
         if (request is Request.Match) {
             if (request.isoTemplate == null) {
-                val error = getString(R.string.input_missing_error, OdkExternal.PARAM_ISO_TEMPLATE)
+                val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
                     .setMessage(error)
@@ -147,8 +148,8 @@ class ScanActivity : AppCompatActivity() {
         } else {
             OdkExternal.buildMultipleReturnResult(
                 odkExternalRequest.params, mapOf(
-                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
-                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
+                    External.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    External.PARAM_RETURN_NFIQ to capture.nfiq
                 )
             )
         }
@@ -164,9 +165,9 @@ class ScanActivity : AppCompatActivity() {
         } else {
             OdkExternal.buildMultipleReturnResult(
                 odkExternalRequest.params, mapOf(
-                    OdkExternal.PARAM_RETURN_SCORE to score,
-                    OdkExternal.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
-                    OdkExternal.PARAM_RETURN_NFIQ to capture.nfiq
+                    External.PARAM_RETURN_SCORE to score,
+                    External.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
+                    External.PARAM_RETURN_NFIQ to capture.nfiq
                 )
             )
         }
