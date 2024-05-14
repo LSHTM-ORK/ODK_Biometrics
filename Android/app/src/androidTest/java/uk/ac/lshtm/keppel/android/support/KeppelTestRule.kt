@@ -21,12 +21,6 @@ class KeppelTestRule(
     private val matcher: Matcher = FakeMatcher()
 ) : ExternalResource() {
 
-    var waitForBackgroundTasks = true
-        set(value) {
-            field = value
-            taskRunnerIdlingResource.enabled = value
-        }
-
     private val application = ApplicationProvider.getApplicationContext<Keppel>()
     private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
 
@@ -67,22 +61,20 @@ class KeppelTestRule(
         page: T,
         block: (T) -> Unit
     ): Instrumentation.ActivityResult {
-        val scenario = launchAction(intent)
+        val scenario = launchActivityScenario(intent)
         block(page.assert())
         return scenario.result
     }
 
-    private fun launchAction(intent: Intent): ActivityScenario<Activity> {
+    private fun launchActivityScenario(intent: Intent): ActivityScenario<Activity> {
         return ActivityScenario.launchActivityForResult<Activity>(intent).also {
             activityScenario = it
         }
     }
 }
 
-private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
+class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : TaskRunner,
     IdlingResource {
-
-    var enabled = true
 
     private var tasks = 0
     private var idleTransitionCallback: IdlingResource.ResourceCallback? = null
@@ -104,11 +96,7 @@ private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : Task
     }
 
     override fun isIdleNow(): Boolean {
-        return if (enabled) {
-            tasks == 0
-        } else {
-            true
-        }
+        return waiting || tasks == 0
     }
 
     private fun increment() {
@@ -124,6 +112,25 @@ private class TaskRunnerIdlingResource(val wrappedTaskRunner: TaskRunner) : Task
             if (isIdleNow) {
                 idleTransitionCallback?.onTransitionToIdle()
             }
+        }
+    }
+
+    companion object {
+        private var waiting = false
+
+        /**
+         * Wait for condition to be `true` without blocking tests by temporarily disabling
+         * the idling resource checks on running tasks. This allows fake components being called
+         * in the background to signal that the UI can be interacted with/asserted on until some
+         * condition is met (like some fake state is setup).
+         */
+        fun nonBlockingWait(condition: () -> Boolean) {
+            while (condition()) {
+                waiting = true
+                Thread.sleep(1)
+            }
+
+            waiting = false
         }
     }
 }

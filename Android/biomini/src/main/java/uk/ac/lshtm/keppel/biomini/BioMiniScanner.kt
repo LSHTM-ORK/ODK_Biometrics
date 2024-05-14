@@ -10,7 +10,6 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Looper
-import android.os.PowerManager
 import android.util.Log
 import com.suprema.BioMiniFactory
 import com.suprema.CaptureResponder

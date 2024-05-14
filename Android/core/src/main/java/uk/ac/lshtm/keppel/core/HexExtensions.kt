@@ -1,7 +1,5 @@
 package uk.ac.lshtm.keppel.core
 
-import java.lang.NumberFormatException
-
 fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 fun String.toHexString() = this.toByteArray().toHexString()
 fun String.fromHex(): ByteArray? {

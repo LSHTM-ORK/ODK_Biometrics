@@ -12,6 +12,8 @@ import uk.ac.lshtm.keppel.android.support.FakeScanner
 import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
+import uk.ac.lshtm.keppel.android.support.pages.CapturingPage
+import uk.ac.lshtm.keppel.android.support.pages.ConnectingPage
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
@@ -24,57 +26,74 @@ class ScanActionTest {
 
     @Test
     fun clickingCapture_capturesAndReturnsIsoTemplate() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+        val intent = Intent(External.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
 
-        val result = rule.launchAction(intent, CapturePage()) {
-            it.clickCapture()
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturePage()).clickCapture()
+            fakeScanner.returnTemplate("scanned", 1)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
         assertThat(
             extras.getString(OdkExternal.PARAM_RETURN_VALUE),
-            equalTo("ISO TEMPLATE".toHexString())
+            equalTo("scanned".toHexString())
         )
     }
 
     @Test
     fun clickingCapture_whenReturnValuesSpecified_capturesAndReturnsThoseValues() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
-            it.putExtra(OdkExternal.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
-            it.putExtra(OdkExternal.PARAM_RETURN_NFIQ, "my_nfiq")
+        val intent = Intent(External.ACTION_SCAN).also {
+            it.putExtra(External.PARAM_RETURN_ISO_TEMPLATE, "my_iso_template")
+            it.putExtra(External.PARAM_RETURN_NFIQ, "my_nfiq")
         }
 
-        val result = rule.launchAction(intent, CapturePage()) {
-            it.clickCapture()
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturePage()).clickCapture()
+            fakeScanner.returnTemplate("scanned", 17)
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
         val extras = result.resultData.extras!!
-        assertThat(
-            extras.get("my_iso_template"),
-            equalTo("ISO TEMPLATE".toHexString())
-        )
+        assertThat(extras.get("my_iso_template"), equalTo("scanned".toHexString()))
         assertThat(extras.get("my_nfiq"), equalTo(17))
     }
 
     @Test
     fun clickingCapture_andThenCancel_returnsCancelledResult() {
-        val intent = Intent(OdkExternal.ACTION_SCAN).also {
+        val intent = Intent(External.ACTION_SCAN).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
         }
 
-        val result = rule.launchAction(intent, CapturePage()) {
-            fakeScanner.neverCapture = true // Make sure we have a chance to hit "Cancel"
-            rule.waitForBackgroundTasks = false // Allow task to run while interacting with UI
-
-            it.clickCapture()
-            it.clickCancel()
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturePage())
+                .clickCapture()
+                .clickCancel()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
         assertThat(result.resultData, equalTo(null))
+    }
+
+    @Test
+    fun withFastMode_capturesAndReturnsIsoTemplate() {
+        val intent = Intent(External.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(External.PARAM_FAST, "true")
+        }
+
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturingPage())
+            fakeScanner.returnTemplate("scanned", 1)
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_OK))
+        val extras = result.resultData.extras!!
+        assertThat(
+            extras.getString(OdkExternal.PARAM_RETURN_VALUE),
+            equalTo("scanned".toHexString())
+        )
     }
 }
