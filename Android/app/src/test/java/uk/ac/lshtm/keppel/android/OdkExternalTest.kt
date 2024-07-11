@@ -1,13 +1,27 @@
 package uk.ac.lshtm.keppel.android
 
+import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
 class OdkExternalTest {
+
+    @Test
+    fun `parse handles single return intents with null values correctly`() {
+        val intent = Intent().also {
+            it.action = "blah"
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, null as Serializable?)
+        }
+
+        val request = OdkExternal.parseIntent(intent)
+        assertThat(request.isSingleReturn, equalTo(true))
+        assertThat(request.inputValue, equalTo(null))
+    }
 
     @Test
     fun `buildMultipleReturnResult does not include result when key is not in input intent`() {
