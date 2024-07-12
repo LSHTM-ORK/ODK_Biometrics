@@ -143,7 +143,7 @@ class ScanActivity : AppCompatActivity() {
         odkExternalRequest: OdkExternalRequest,
         capture: CaptureResult
     ): Intent {
-        return if (OdkExternal.isSingleReturn(odkExternalRequest)) {
+        return if (odkExternalRequest.isSingleReturn) {
             OdkExternal.buildSingleReturnIntent(capture.isoTemplate)
         } else {
             OdkExternal.buildMultipleReturnResult(
@@ -160,7 +160,7 @@ class ScanActivity : AppCompatActivity() {
         score: Double,
         capture: CaptureResult
     ): Intent {
-        return if (OdkExternal.isSingleReturn(odkExternalRequest)) {
+        return if (odkExternalRequest.isSingleReturn) {
             OdkExternal.buildSingleReturnIntent(score)
         } else {
             OdkExternal.buildMultipleReturnResult(

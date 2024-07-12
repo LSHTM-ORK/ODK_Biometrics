@@ -7,10 +7,6 @@ object OdkExternal {
     const val PARAM_INPUT_VALUE = "value"
     const val PARAM_RETURN_VALUE = "value"
 
-    fun isSingleReturn(odkExternalRequest: OdkExternalRequest): Boolean {
-        return odkExternalRequest.inputValue != null
-    }
-
     fun buildSingleReturnIntent(double: Double): Intent {
         return Intent().also {
             it.putExtra(PARAM_RETURN_VALUE, double)
@@ -24,7 +20,7 @@ object OdkExternal {
     }
 
     fun buildMultipleReturnResult(
-        params:  Map<String, String>,
+        params: Map<String, String>,
         results: Map<String, Any>
     ): Intent {
         return Intent().also {
@@ -43,10 +39,18 @@ object OdkExternal {
     }
 
     fun parseIntent(intent: Intent): OdkExternalRequest {
-        val params = intent.extras?.keySet()?.associate { Pair(it, intent.getStringExtra(it)!!) }
+        val params = intent.extras?.keySet()?.fold(emptyMap<String, String>()) { map, key ->
+            val value = intent.getStringExtra(key)
+            if (value != null) {
+                map + mapOf(key to value)
+            } else {
+                map
+            }
+        }
 
         return OdkExternalRequest(
             intent.action!!,
+            intent.extras?.containsKey(PARAM_INPUT_VALUE) ?: false,
             intent.getStringExtra(PARAM_INPUT_VALUE),
             params ?: emptyMap()
         )
@@ -55,6 +59,7 @@ object OdkExternal {
 
 data class OdkExternalRequest(
     val action: String,
+    val isSingleReturn: Boolean,
     val inputValue: String?,
     val params: Map<String, String>
 )
