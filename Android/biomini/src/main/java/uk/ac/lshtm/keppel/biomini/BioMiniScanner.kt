@@ -194,16 +194,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
             if (_device.getVendorId() == 0x16d1) {
                 Log.d(TAG, "found suprema usb device")
                 mUsbDevice = _device
-                if (usbManager.hasPermission(_device) == false) {
-                    Log.d(TAG, "This device need to Usb Permission!")
-                    mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
-                } else {
-                    Log.d(
-                        TAG,
-                        "This device alread have USB permission! please activate this device.",
-                    )
-                    mHandler.sendEmptyMessage(ACTIVATE_USB_DEVICE)
-                }
+                mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
             } else {
                 Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
             }
