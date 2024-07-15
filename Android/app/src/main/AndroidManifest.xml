@@ -14,6 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Keppel">
 
+
+        <!--  directBootAware is required for USB permission requests to work between boots -->
         <activity
             android:name="uk.ac.lshtm.keppel.android.settings.SettingsActivity"
             android:directBootAware="true"
