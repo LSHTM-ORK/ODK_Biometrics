@@ -37,7 +37,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
     private val MAKE_TOAST = BASE_EVENT + 11
     private val SHOW_CAPTURE_IMAGE_DEVICE = BASE_EVENT + 12
 
-    private val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+    private val ACTION_USB_PERMISSION = "uk.ac.lshtm.keppel.biomini.USB_PERMISSION"
 
     var mUsbDevice: UsbDevice? = null
     private var mUsbManager: UsbManager? = null
@@ -69,7 +69,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 }
                 UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
                     Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED")
-                    initUsbDevice()
+                    findAndRequestPermission()
                 }
                 UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                     Log.d(TAG, "ACTION_USB_DEVICE_DETACHED")
@@ -79,18 +79,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 else -> {}
             }
         }
-    }
-
-    private fun initUsbListener() {
-        Log.d(TAG, "start initUsbListener!")
-        context.registerReceiver(
-            mUsbReceiver,
-            IntentFilter(ACTION_USB_PERMISSION),
-        )
-        val attachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED)
-        context.registerReceiver(mUsbReceiver, attachfilter)
-        val detachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        context.registerReceiver(mUsbReceiver, detachfilter)
     }
 
     var mHandler: android.os.Handler = object : android.os.Handler(Looper.getMainLooper()) {
@@ -117,41 +105,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     )
                     mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
                 }
-            }
-        }
-    }
-
-    fun initUsbDevice() {
-        Log.d("TAG", "start!")
-        val usbManager = mUsbManager
-        if (usbManager == null) {
-            Log.d(TAG, "mUsbManager is null")
-            return
-        }
-        if (mUsbDevice != null) {
-            Log.d(TAG, "usbdevice is not null!")
-            return
-        }
-        val deviceList: java.util.HashMap<String, UsbDevice> = usbManager.getDeviceList()
-        val deviceIter: Iterator<UsbDevice> = deviceList.values.iterator()
-        while (deviceIter.hasNext()) {
-            val _device: UsbDevice = deviceIter.next()
-            Log.d(TAG, "device id" + _device.getVendorId())
-            if (_device.getVendorId() == 0x16d1) {
-                Log.d(TAG, "found suprema usb device")
-                mUsbDevice = _device
-                if (usbManager.hasPermission(_device) == false) {
-                    Log.d(TAG, "This device need to Usb Permission!")
-                    mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
-                } else {
-                    Log.d(
-                        TAG,
-                        "This device alread have USB permission! please activate this device.",
-                    )
-                    mHandler.sendEmptyMessage(ACTIVATE_USB_DEVICE)
-                }
-            } else {
-                Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
             }
         }
     }
@@ -206,9 +159,46 @@ class BioMiniScanner(private val context: Context) : Scanner {
             mUsbManager =
                 context.getSystemService(Context.USB_SERVICE) as UsbManager
         }
-        initUsbListener()
-        initUsbDevice()
+
+        registerBroadcastReceiver()
+        findAndRequestPermission()
         return this
+    }
+
+    private fun registerBroadcastReceiver() {
+        Log.d(TAG, "start initUsbListener!")
+
+        context.registerReceiver(mUsbReceiver, IntentFilter(ACTION_USB_PERMISSION))
+        val attachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+        context.registerReceiver(mUsbReceiver, attachfilter)
+        val detachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        context.registerReceiver(mUsbReceiver, detachfilter)
+    }
+
+    private fun findAndRequestPermission() {
+        Log.d("TAG", "start!")
+        val usbManager = mUsbManager
+        if (usbManager == null) {
+            Log.d(TAG, "mUsbManager is null")
+            return
+        }
+        if (mUsbDevice != null) {
+            Log.d(TAG, "usbdevice is not null!")
+            return
+        }
+        val deviceList: java.util.HashMap<String, UsbDevice> = usbManager.getDeviceList()
+        val deviceIter: Iterator<UsbDevice> = deviceList.values.iterator()
+        while (deviceIter.hasNext()) {
+            val _device: UsbDevice = deviceIter.next()
+            Log.d(TAG, "device id" + _device.getVendorId())
+            if (_device.getVendorId() == 0x16d1) {
+                Log.d(TAG, "found suprema usb device")
+                mUsbDevice = _device
+                mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
+            } else {
+                Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
+            }
+        }
     }
 
     override fun onDisconnect(onDisconnected: () -> Unit) {
