@@ -37,7 +37,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
     private val MAKE_TOAST = BASE_EVENT + 11
     private val SHOW_CAPTURE_IMAGE_DEVICE = BASE_EVENT + 12
 
-    private val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+    private val ACTION_USB_PERMISSION = "uk.ac.lshtm.keppel.biomini.USB_PERMISSION"
 
     var mUsbDevice: UsbDevice? = null
     private var mUsbManager: UsbManager? = null
