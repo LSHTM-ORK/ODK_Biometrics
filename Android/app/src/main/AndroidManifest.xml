@@ -44,7 +44,8 @@
 
         <activity android:name="uk.ac.lshtm.keppel.android.settings.UsbDeviceAttachedActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
