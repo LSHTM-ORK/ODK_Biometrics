@@ -12,4 +12,5 @@
     <string name="input_missing_error">\"%1$s\" is missing!</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="scanner_connected">USB scanner connected</string>
 </resources>
