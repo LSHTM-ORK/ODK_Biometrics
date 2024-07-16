@@ -14,6 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Keppel">
 
+
+        <!--  directBootAware is required for USB permission requests to work between boots -->
         <activity
             android:name="uk.ac.lshtm.keppel.android.settings.SettingsActivity"
             android:directBootAware="true"
@@ -22,12 +24,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/usb_device_filter" />
         </activity>
 
         <activity
@@ -44,6 +40,19 @@
                 <action android:name="uk.ac.lshtm.keppel.android.MATCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+        </activity>
+
+        <activity android:name="uk.ac.lshtm.keppel.android.settings.UsbDeviceAttachedActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/usb_device_filter" />
         </activity>
     </application>
 </manifest>
