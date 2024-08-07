@@ -124,9 +124,16 @@ class ScanActivity : AppCompatActivity() {
                 returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
             }
 
-            else -> {
+            is ScannerViewModel.Result.InputError -> {
                 MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_format_error)
+                    .setMessage(R.string.input_error)
+                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                    .show()
+            }
+
+            is ScannerViewModel.Result.NoCaptureResultError -> {
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.no_capture_result_error)
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .show()
             }

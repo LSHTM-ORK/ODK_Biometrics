@@ -47,15 +47,15 @@ class ScannerViewModel(
                     if (score != null) {
                         _result.postValue(Result.Match(score, capture))
                     } else {
-                        _result.postValue(Result.Error)
+                        _result.postValue(Result.InputError)
                     }
                 } else {
-                    _result.postValue(Result.Error)
+                    _result.postValue(Result.InputError)
                 }
             } else if (capture != null) {
                 _result.postValue(Result.Scan(capture))
             } else {
-                _result.postValue(null)
+                _result.postValue(Result.NoCaptureResultError)
             }
 
             _scannerState.postValue(Connected)
@@ -74,7 +74,8 @@ class ScannerViewModel(
     sealed class Result {
         data class Scan(val captureResult: CaptureResult) : Result()
         data class Match(val score: Double, val captureResult: CaptureResult) : Result()
-        object Error : Result()
+        object InputError : Result()
+        object NoCaptureResultError : Result()
     }
 
     sealed class ScannerState {
