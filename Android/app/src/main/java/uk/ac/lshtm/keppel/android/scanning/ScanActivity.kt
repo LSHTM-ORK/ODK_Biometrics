@@ -21,9 +21,25 @@ import uk.ac.lshtm.keppel.core.CaptureResult
 
 class ScanActivity : AppCompatActivity() {
 
+    private val request: Request by lazy { IntentParser.parse(intent) }
     private val viewModelFactory = viewModelFactory {
         addInitializer(ScannerViewModel::class) {
-            ScannerViewModel(scannerFactory().create(this@ScanActivity), matcher(), taskRunner())
+            if (request is Request.Match) {
+                ScannerViewModel(
+                    scannerFactory().create(this@ScanActivity),
+                    matcher(),
+                    taskRunner(),
+                    (request as Request.Match).isoTemplate,
+                    request.fast
+                )
+            } else {
+                ScannerViewModel(
+                    scannerFactory().create(this@ScanActivity),
+                    matcher(),
+                    taskRunner(),
+                    fast = request.fast
+                )
+            }
         }
     }
 
@@ -35,10 +51,8 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val request: Request = IntentParser.parse(intent)
-
         if (request is Request.Match) {
-            if (request.isoTemplate == null) {
+            if ((request as Request.Match).isoTemplate == null) {
                 val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
@@ -59,13 +73,9 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.Connected -> {
-                    if (request.fast) {
-                        capture(request)
-                    } else {
-                        binding.connectProgressBar.visibility = View.GONE
-                        binding.captureButton.visibility = View.VISIBLE
-                        binding.captureProgressBar.visibility = View.GONE
-                    }
+                    binding.connectProgressBar.visibility = View.GONE
+                    binding.captureButton.visibility = View.VISIBLE
+                    binding.captureProgressBar.visibility = View.GONE
                 }
 
                 ScannerState.Scanning -> {
@@ -83,7 +93,7 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.captureButton.setOnClickListener {
-            capture(request)
+            viewModel.capture()
         }
 
         binding.cancelButton.setOnClickListener {
@@ -92,14 +102,6 @@ class ScanActivity : AppCompatActivity() {
 
         if (request is Request.Match) {
             binding.captureButton.setText(R.string.match)
-        }
-    }
-
-    private fun capture(action: Request) {
-        if (action is Request.Match) {
-            viewModel.capture(action.isoTemplate)
-        } else {
-            viewModel.capture()
         }
     }
 

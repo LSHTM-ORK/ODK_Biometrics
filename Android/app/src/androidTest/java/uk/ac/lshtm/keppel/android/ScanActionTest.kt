@@ -108,7 +108,10 @@ class ScanActionTest {
         val result = rule.launchAction(intent, ConnectingPage()) {
             it.connect(fakeScanner, CapturingPage())
             fakeScanner.failToCapture()
-            ErrorDialogPage(R.string.no_capture_result_error).assert().clickOk()
+
+            val errorDialog = ErrorDialogPage(R.string.no_capture_result_error).assert()
+            assertThat(fakeScanner.capturing, equalTo(false))
+            errorDialog.clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))

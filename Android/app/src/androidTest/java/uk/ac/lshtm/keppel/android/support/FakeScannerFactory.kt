@@ -24,8 +24,9 @@ class FakeScanner : Scanner {
     private var returnNfiq: Int? = null
     private var fail = false
 
-    private var capturing = false
     private var connected = false
+    var capturing = false
+        private set
 
     private var onConnected: () -> Unit = {}
 
