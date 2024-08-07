@@ -243,22 +243,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
             }
 
             override fun onCaptureError(context: Any?, errorCode: Int, error: String) {
-                // TODO error handling
-                //            if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_IS_CAPTURING.value()) {
-                //                setLogInTextView("Other capture function is running. abort capture function first!")
-                //            } else if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_CAPTURE_ABORTED.value()) {
-                //                Log.d(TAG, "CTRL_ERR_CAPTURE_ABORTED occured.")
-                //            } else if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_FAKE_FINGER.value()) {
-                //                setLogInTextView("Fake Finger Detected")
-                //                if (mCurrentDevice != null && mCurrentDevice.getLfdLevel() > 0) {
-                //                    setLogInTextView("LFD SCORE : " + mCurrentDevice.getLfdScoreFromCapture())
-                //                }
-                //            } else {
-                //                setLogInTextView(mCaptureOption.captureFuntion.name() + " is fail by " + error)
-                //                setLogInTextView("Please try again.")
-                //            }
-                //            mViewPager.setUserInputEnabled(true)
-                //            setUiClickable(true)
+                latch.countDown()
             }
         }
     }
