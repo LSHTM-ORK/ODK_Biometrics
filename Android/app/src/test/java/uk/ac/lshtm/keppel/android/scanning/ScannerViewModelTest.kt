@@ -7,10 +7,11 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.kotlin.mock
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
+import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -22,7 +23,7 @@ class ScannerViewModelTest {
 
     @Test
     fun capture_whenResultIsNull_resetsStateToConnected() {
-        val scanner = mock(Scanner::class.java)
+        val scanner = mock<Scanner>()
         val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
         val state = viewModel.scannerState
 
@@ -33,7 +34,7 @@ class ScannerViewModelTest {
 
     @Test
     fun onCleared_disconnectsScanner() {
-        val scanner = mock(Scanner::class.java)
+        val scanner = mock<Scanner>()
         val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
 
         viewModel.onCleared()
@@ -42,11 +43,21 @@ class ScannerViewModelTest {
 
     @Test
     fun onCleared_stopsScannerCapture() {
-        val scanner = mock(Scanner::class.java)
+        val scanner = mock<Scanner>()
         val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner())
 
         viewModel.onCleared()
         verify(scanner).stopCapture()
+    }
+
+    @Test
+    fun whenFastMode_whenScannerConnected_startsCapturing() {
+        val scanner = MockScanner()
+        val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner(), fast = true)
+        assertThat(scanner.captures, equalTo(0))
+
+        scanner.connect()
+        assertThat(scanner.captures, equalTo(1))
     }
 }
 
@@ -54,5 +65,40 @@ private class InstantTaskRunner : TaskRunner {
 
     override fun execute(runnable: () -> Unit) {
         runnable()
+    }
+}
+
+private class MockScanner : Scanner {
+
+    var captures: Int = 0
+        private set
+
+    private var onConnected: (() -> Unit)? = null
+    private var onDisconnected: (() -> Unit)? = null
+
+    override fun connect(onConnected: () -> Unit): Scanner {
+        this.onConnected = onConnected
+        return this
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+        this.onDisconnected = onDisconnected
+    }
+
+    override fun capture(): CaptureResult? {
+        captures += 1
+        return null
+    }
+
+    override fun stopCapture() {
+
+    }
+
+    override fun disconnect() {
+        onDisconnected?.invoke()
+    }
+
+    fun connect() {
+        onConnected?.invoke()
     }
 }

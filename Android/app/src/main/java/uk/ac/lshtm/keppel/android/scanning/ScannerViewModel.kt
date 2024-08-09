@@ -15,7 +15,9 @@ import uk.ac.lshtm.keppel.core.fromHex
 class ScannerViewModel(
     private val scanner: Scanner,
     private val matcher: Matcher,
-    private val taskRunner: TaskRunner
+    private val taskRunner: TaskRunner,
+    private val inputTemplate: String? = null,
+    private val fast: Boolean = false
 ) : ViewModel() {
 
     private val _scannerState = MutableLiveData<ScannerState>(Disconnected)
@@ -27,6 +29,10 @@ class ScannerViewModel(
     init {
         scanner.connect {
             _scannerState.value = Connected
+
+            if (fast) {
+                capture()
+            }
         }
 
         scanner.onDisconnect {
@@ -34,7 +40,7 @@ class ScannerViewModel(
         }
     }
 
-    fun capture(inputTemplate: String? = null) {
+    fun capture() {
         _scannerState.value = Scanning
 
         taskRunner.execute {
@@ -47,15 +53,15 @@ class ScannerViewModel(
                     if (score != null) {
                         _result.postValue(Result.Match(score, capture))
                     } else {
-                        _result.postValue(Result.Error)
+                        _result.postValue(Result.InputError)
                     }
                 } else {
-                    _result.postValue(Result.Error)
+                    _result.postValue(Result.InputError)
                 }
             } else if (capture != null) {
                 _result.postValue(Result.Scan(capture))
             } else {
-                _result.postValue(null)
+                _result.postValue(Result.NoCaptureResultError)
             }
 
             _scannerState.postValue(Connected)
@@ -74,7 +80,8 @@ class ScannerViewModel(
     sealed class Result {
         data class Scan(val captureResult: CaptureResult) : Result()
         data class Match(val score: Double, val captureResult: CaptureResult) : Result()
-        object Error : Result()
+        object InputError : Result()
+        object NoCaptureResultError : Result()
     }
 
     sealed class ScannerState {

@@ -22,9 +22,11 @@ class FakeScanner : Scanner {
 
     private var returnTemplate: String? = null
     private var returnNfiq: Int? = null
+    private var fail = false
 
-    private var capturing = false
     private var connected = false
+    var capturing = false
+        private set
 
     private var onConnected: () -> Unit = {}
 
@@ -43,13 +45,20 @@ class FakeScanner : Scanner {
         }
 
         capturing = true
-        TaskRunnerIdlingResource.nonBlockingWait { capturing && returnTemplate == null }
+        TaskRunnerIdlingResource.nonBlockingWait {
+            capturing && returnTemplate == null && !fail
+        }
 
         if (capturing) {
             capturing = false
-            val result = CaptureResult(returnTemplate!!.toHexString(), returnNfiq!!)
-            returnTemplate = null
-            return result
+            if (!fail) {
+                val result = CaptureResult(returnTemplate!!.toHexString(), returnNfiq!!)
+                returnTemplate = null
+                return result
+            } else {
+                fail = false
+                return null
+            }
         } else {
             return null
         }
@@ -66,6 +75,10 @@ class FakeScanner : Scanner {
     fun returnTemplate(template: String, nfiq: Int) {
         returnTemplate = template
         returnNfiq = nfiq
+    }
+
+    fun failToCapture() {
+        fail = true
     }
 
     fun connect() {

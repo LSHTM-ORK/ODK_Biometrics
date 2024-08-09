@@ -243,22 +243,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
             }
 
             override fun onCaptureError(context: Any?, errorCode: Int, error: String) {
-                // TODO error handling
-                //            if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_IS_CAPTURING.value()) {
-                //                setLogInTextView("Other capture function is running. abort capture function first!")
-                //            } else if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_CAPTURE_ABORTED.value()) {
-                //                Log.d(TAG, "CTRL_ERR_CAPTURE_ABORTED occured.")
-                //            } else if (errorCode == IBioMiniDevice.ErrorCode.CTRL_ERR_FAKE_FINGER.value()) {
-                //                setLogInTextView("Fake Finger Detected")
-                //                if (mCurrentDevice != null && mCurrentDevice.getLfdLevel() > 0) {
-                //                    setLogInTextView("LFD SCORE : " + mCurrentDevice.getLfdScoreFromCapture())
-                //                }
-                //            } else {
-                //                setLogInTextView(mCaptureOption.captureFuntion.name() + " is fail by " + error)
-                //                setLogInTextView("Please try again.")
-                //            }
-                //            mViewPager.setUserInputEnabled(true)
-                //            setUiClickable(true)
+                latch.countDown()
             }
         }
     }
@@ -281,30 +266,35 @@ class BioMiniScanner(private val context: Context) : Scanner {
         }
     }
 
-    private fun setTemplateType() {
-        val currentDevice = mCurrentDevice
-        if (currentDevice != null) {
-            val tmp_type = IBioMiniDevice.TemplateType.ISO19794_2.value()
-            currentDevice.setParameter(
-                IBioMiniDevice.Parameter(
-                    IBioMiniDevice.ParameterType.TEMPLATE_TYPE,
-                    tmp_type.toLong(),
-                ),
+    private fun setParameters(iBioMiniDevice: IBioMiniDevice) {
+        iBioMiniDevice.setParameter(
+            IBioMiniDevice.Parameter(
+                IBioMiniDevice.ParameterType.TEMPLATE_TYPE,
+                IBioMiniDevice.TemplateType.ISO19794_2.value().toLong(),
+            ),
+        )
+
+        iBioMiniDevice.setParameter(
+            IBioMiniDevice.Parameter(
+                IBioMiniDevice.ParameterType.TIMEOUT,
+                30000 // 30 seconds
             )
-        }
+        )
     }
 
     override fun capture(): CaptureResult? {
-        val latch = CountDownLatch(1)
-        setTemplateType()
-        doSingleCapture(latch)
-        latch.await()
+        return mCurrentDevice?.let {
+            val latch = CountDownLatch(1)
+            setParameters(it)
+            doSingleCapture(latch)
+            latch.await()
 
-        val tmp = mTemplateData
-        return if (tmp?.data != null) {
-            CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
-        } else {
-            null
+            val tmp = mTemplateData
+            return if (tmp?.data != null) {
+                CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+            } else {
+                null
+            }
         }
     }
 

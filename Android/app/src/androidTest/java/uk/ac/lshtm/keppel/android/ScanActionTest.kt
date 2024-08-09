@@ -14,6 +14,7 @@ import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
 import uk.ac.lshtm.keppel.android.support.pages.CapturingPage
 import uk.ac.lshtm.keppel.android.support.pages.ConnectingPage
+import uk.ac.lshtm.keppel.android.support.pages.ErrorDialogPage
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
@@ -95,5 +96,24 @@ class ScanActionTest {
             extras.getString(OdkExternal.PARAM_RETURN_VALUE),
             equalTo("scanned".toHexString())
         )
+    }
+
+    @Test
+    fun withFastMode_whenCapturingFails_showsAnError() {
+        val intent = Intent(External.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(External.PARAM_FAST, "true")
+        }
+
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.connect(fakeScanner, CapturingPage())
+            fakeScanner.failToCapture()
+
+            val errorDialog = ErrorDialogPage(R.string.no_capture_result_error).assert()
+            assertThat(fakeScanner.capturing, equalTo(false))
+            errorDialog.clickOk()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
     }
 }

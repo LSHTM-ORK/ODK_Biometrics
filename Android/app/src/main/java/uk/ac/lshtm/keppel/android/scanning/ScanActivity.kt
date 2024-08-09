@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternal
@@ -18,16 +20,21 @@ import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
+import uk.ac.lshtm.keppel.core.Matcher
+import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.core.TaskRunner
 
 class ScanActivity : AppCompatActivity() {
 
-    private val viewModelFactory = viewModelFactory {
-        addInitializer(ScannerViewModel::class) {
-            ScannerViewModel(scannerFactory().create(this@ScanActivity), matcher(), taskRunner())
-        }
+    private val request: Request by lazy { IntentParser.parse(intent) }
+    private val viewModel: ScannerViewModel by viewModels {
+        ScanViewModelFactory(
+            scannerFactory().create(this@ScanActivity),
+            matcher(),
+            taskRunner(),
+            request
+        )
     }
-
-    private val viewModel: ScannerViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +42,8 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val request: Request = IntentParser.parse(intent)
-
         if (request is Request.Match) {
-            if (request.isoTemplate == null) {
+            if ((request as Request.Match).isoTemplate == null) {
                 val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
@@ -59,13 +64,9 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.Connected -> {
-                    if (request.fast) {
-                        capture(request)
-                    } else {
-                        binding.connectProgressBar.visibility = View.GONE
-                        binding.captureButton.visibility = View.VISIBLE
-                        binding.captureProgressBar.visibility = View.GONE
-                    }
+                    binding.connectProgressBar.visibility = View.GONE
+                    binding.captureButton.visibility = View.VISIBLE
+                    binding.captureProgressBar.visibility = View.GONE
                 }
 
                 ScannerState.Scanning -> {
@@ -83,7 +84,7 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.captureButton.setOnClickListener {
-            capture(request)
+            viewModel.capture()
         }
 
         binding.cancelButton.setOnClickListener {
@@ -92,14 +93,6 @@ class ScanActivity : AppCompatActivity() {
 
         if (request is Request.Match) {
             binding.captureButton.setText(R.string.match)
-        }
-    }
-
-    private fun capture(action: Request) {
-        if (action is Request.Match) {
-            viewModel.capture(action.isoTemplate)
-        } else {
-            viewModel.capture()
         }
     }
 
@@ -124,9 +117,16 @@ class ScanActivity : AppCompatActivity() {
                 returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
             }
 
-            else -> {
+            is ScannerViewModel.Result.InputError -> {
                 MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_format_error)
+                    .setMessage(R.string.input_error)
+                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                    .show()
+            }
+
+            is ScannerViewModel.Result.NoCaptureResultError -> {
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.no_capture_result_error)
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .show()
             }
@@ -171,5 +171,32 @@ class ScanActivity : AppCompatActivity() {
                 )
             )
         }
+    }
+}
+
+private class ScanViewModelFactory(
+    private val scanner: Scanner,
+    private val matcher: Matcher,
+    private val taskRunner: TaskRunner,
+    private val request: Request
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+        val inputTemplate = request.let {
+            if (it is Request.Match) {
+                it.isoTemplate
+            } else {
+                null
+            }
+        }
+
+        return ScannerViewModel(
+            scanner,
+            matcher,
+            taskRunner,
+            inputTemplate,
+            request.fast
+        ) as T
     }
 }

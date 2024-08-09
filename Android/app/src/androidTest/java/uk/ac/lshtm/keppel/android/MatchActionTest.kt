@@ -89,7 +89,7 @@ class MatchActionTest {
         val result = rule.launchAction(intent, ConnectingPage()) {
             it.connect(fakeScanner, MatchPage()).clickMatch()
             fakeScanner.returnTemplate("scanned", 1)
-            ErrorDialogPage(R.string.input_format_error).assert().clickOk()
+            ErrorDialogPage(R.string.input_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
@@ -112,7 +112,7 @@ class MatchActionTest {
         val result = rule.launchAction(intent, ConnectingPage()) {
             it.connect(fakeScanner, MatchPage()).clickMatch()
             fakeScanner.returnTemplate("scanned", 1)
-            ErrorDialogPage(R.string.input_format_error).assert().clickOk()
+            ErrorDialogPage(R.string.input_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
