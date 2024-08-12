@@ -20,6 +20,8 @@ fi
 if [ -f "BioMiniSDK for Android_v2.1.0.380.zip" ]; then
   unzip "BioMiniSDK for Android_v2.1.0.380.zip" -d sdks/biomini
   cp "sdks/biomini/BioMiniSDK for Android_v2.1.0.380/sample/Suprema380/libBioMini/libBioMini.aar" Android/biomini-aar/
+elif [ -f "libBioMini-v2.1.0.380.aar" ]; then
+  cp "libBioMini-v2.1.0.380.aar" Android/biomini-aar/libBioMini.aar
 fi
 
 
