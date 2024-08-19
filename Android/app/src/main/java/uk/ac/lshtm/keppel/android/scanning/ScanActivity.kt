@@ -43,7 +43,7 @@ class ScanActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (request is Request.Match) {
-            if ((request as Request.Match).isoTemplate == null) {
+            if ((request as Request.Match).isoTemplates.isEmpty()) {
                 val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
                 MaterialAlertDialogBuilder(this)
@@ -183,11 +183,11 @@ private class ScanViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val inputTemplate = request.let {
+        val inputTemplates = request.let {
             if (it is Request.Match) {
-                it.isoTemplate
+                it.isoTemplates
             } else {
-                null
+                emptyList()
             }
         }
 
@@ -195,7 +195,7 @@ private class ScanViewModelFactory(
             scanner,
             matcher,
             taskRunner,
-            inputTemplate,
+            inputTemplates,
             request.fast
         ) as T
     }

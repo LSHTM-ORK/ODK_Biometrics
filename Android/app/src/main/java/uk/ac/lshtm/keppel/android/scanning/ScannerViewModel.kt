@@ -16,7 +16,7 @@ class ScannerViewModel(
     private val scanner: Scanner,
     private val matcher: Matcher,
     private val taskRunner: TaskRunner,
-    private val inputTemplate: String? = null,
+    private val inputTemplates: List<String> = emptyList(),
     private val fast: Boolean = false
 ) : ViewModel() {
 
@@ -45,16 +45,27 @@ class ScannerViewModel(
 
         taskRunner.execute {
             val capture = scanner.capture()
-            if (inputTemplate != null && capture != null) {
-                val decodedInputTemplate = inputTemplate.fromHex()
-                if (decodedInputTemplate != null) {
-                    val score = matcher.match(decodedInputTemplate, capture.isoTemplate.fromHex()!!)
+            if (inputTemplates.isNotEmpty() && capture != null) {
+                val scores = inputTemplates.fold(emptyList<Double>()) { scores, template ->
+                    val decodedInputTemplate = template.fromHex()
+                    if (decodedInputTemplate != null) {
+                        val score = matcher.match(
+                            decodedInputTemplate,
+                            capture.isoTemplate.fromHex()!!
+                        )
 
-                    if (score != null) {
-                        _result.postValue(Result.Match(score, capture))
+                        if (score != null) {
+                            scores + score
+                        } else {
+                            scores
+                        }
                     } else {
-                        _result.postValue(Result.InputError)
+                        scores
                     }
+                }
+
+                if (scores.isNotEmpty()) {
+                    _result.postValue(Result.Match(scores.max(), capture))
                 } else {
                     _result.postValue(Result.InputError)
                 }
