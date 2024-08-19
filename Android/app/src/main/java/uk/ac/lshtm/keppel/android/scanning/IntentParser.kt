@@ -13,26 +13,24 @@ object IntentParser {
         return if (odkExternalRequest.action == External.ACTION_MATCH) {
             val isoTemplate = odkExternalRequest.params[External.PARAM_ISO_TEMPLATE]
 
-            if (isoTemplate != null) {
-                Request.Match(
-                    listOf(isoTemplate),
-                    fast,
-                    odkExternalRequest
-                )
-            } else {
-                var index = 1
-                val isoTemplates = mutableListOf<String>()
-                while (odkExternalRequest.params.containsKey(External.paramIsoTemplate(index))) {
-                    isoTemplates.add(odkExternalRequest.params[External.paramIsoTemplate(index)]!!)
-                    index += 1
-                }
-
-                Request.Match(
-                    isoTemplates,
-                    fast,
-                    odkExternalRequest
-                )
+            Request.Match(
+                isoTemplate?.let { listOf(isoTemplate) } ?: emptyList(),
+                fast,
+                odkExternalRequest
+            )
+        } else if (odkExternalRequest.action == External.ACTION_MULTI_MATCH) {
+            var index = 1
+            val isoTemplates = mutableListOf<String>()
+            while (odkExternalRequest.params.containsKey(External.paramIsoTemplate(index))) {
+                isoTemplates.add(odkExternalRequest.params[External.paramIsoTemplate(index)]!!)
+                index += 1
             }
+
+            Request.Match(
+                isoTemplates,
+                fast,
+                odkExternalRequest
+            )
         } else {
             Request.Scan(
                 fast,

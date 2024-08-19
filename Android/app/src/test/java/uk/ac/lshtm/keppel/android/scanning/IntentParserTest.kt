@@ -35,9 +35,9 @@ class IntentParserTest {
     }
 
     @Test
-    fun `isoTemplates is empty when list of templates does not start at 1`() {
+    fun `isoTemplates is empty when list of MULTI_MATCH templates does not start at 1`() {
         val intent = Intent().also {
-            it.action = External.ACTION_MATCH
+            it.action = External.ACTION_MULTI_MATCH
             it.putExtra(External.paramIsoTemplate(2), "blah")
         }
 
@@ -46,9 +46,9 @@ class IntentParserTest {
     }
 
     @Test
-    fun `isoTemplates does not parse gaps`() {
+    fun `isoTemplates does not parse gaps for MULTI_MATCH`() {
         val intent = Intent().also {
-            it.action = External.ACTION_MATCH
+            it.action = External.ACTION_MULTI_MATCH
             it.putExtra(External.paramIsoTemplate(1), "blah1")
             it.putExtra(External.paramIsoTemplate(3), "blah3")
         }
