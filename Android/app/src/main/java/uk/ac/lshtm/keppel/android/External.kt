@@ -10,6 +10,7 @@ object External {
     const val PARAM_RETURN_NFIQ = "$APP_ID.return_nfiq"
     const val PARAM_RETURN_SCORE = "$APP_ID.return_score"
     const val PARAM_ISO_TEMPLATE = "$APP_ID.iso_template"
+    fun paramIsoTemplate(index: Int) = "$APP_ID.iso_template_$index"
 
     const val PARAM_FAST = "$APP_ID.fast"
 }

@@ -166,9 +166,9 @@ class MatchActionTest {
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
-            it.putExtra(External.PARAM_ISO_TEMPLATE + "_1", "blah1".toHexString())
-            it.putExtra(External.PARAM_ISO_TEMPLATE + "_2", "blah2".toHexString())
-            it.putExtra(External.PARAM_ISO_TEMPLATE + "_3", "blah3".toHexString())
+            it.putExtra(External.paramIsoTemplate(1), "blah1".toHexString())
+            it.putExtra(External.paramIsoTemplate(2), "blah2".toHexString())
+            it.putExtra(External.paramIsoTemplate(3) + "_3", "blah3".toHexString())
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {

@@ -22,8 +22,8 @@ object IntentParser {
             } else {
                 var index = 1
                 val isoTemplates = mutableListOf<String>()
-                while (odkExternalRequest.params.containsKey(External.PARAM_ISO_TEMPLATE + "_$index")) {
-                    isoTemplates.add(odkExternalRequest.params[External.PARAM_ISO_TEMPLATE + "_$index"]!!)
+                while (odkExternalRequest.params.containsKey(External.paramIsoTemplate(index))) {
+                    isoTemplates.add(odkExternalRequest.params[External.paramIsoTemplate(index)]!!)
                     index += 1
                 }
 
