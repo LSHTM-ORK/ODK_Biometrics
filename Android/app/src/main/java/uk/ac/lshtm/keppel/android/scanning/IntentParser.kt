@@ -22,7 +22,11 @@ object IntentParser {
             var index = 1
             val isoTemplates = mutableListOf<String>()
             while (odkExternalRequest.params.containsKey(External.paramIsoTemplate(index))) {
-                isoTemplates.add(odkExternalRequest.params[External.paramIsoTemplate(index)]!!)
+                val paramValue = odkExternalRequest.params[External.paramIsoTemplate(index)]
+                if (paramValue!!.isNotBlank()) {
+                    isoTemplates.add(paramValue)
+                }
+
                 index += 1
             }
 

@@ -56,4 +56,16 @@ class IntentParserTest {
         val request = IntentParser.parse(intent)
         assertThat((request as Request.Match).isoTemplates, containsInAnyOrder("blah1"))
     }
+
+    @Test
+    fun `isoTemplates that are blank are filtered out`() {
+        val intent = Intent().also {
+            it.action = External.ACTION_MULTI_MATCH
+            it.putExtra(External.paramIsoTemplate(1), "")
+            it.putExtra(External.paramIsoTemplate(2), "blah2")
+        }
+
+        val request = IntentParser.parse(intent)
+        assertThat((request as Request.Match).isoTemplates, containsInAnyOrder("blah2"))
+    }
 }
