@@ -72,6 +72,8 @@ The images below show how this looks in ODK Collect. Clicking 'launch' in ODK Co
 
 </p>
 
+For a full list of actions that Keppel supports, see [here](ACTIONS.md).
+
 ### ODK data downloads
 
 When you download your data CSV file from ODK Central, your fingerprint templates will be stored as plain text in line with other data from the form. From here you can either test them one at a time, or use a script to automate batch processing. 

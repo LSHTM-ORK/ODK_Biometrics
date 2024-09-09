@@ -5,11 +5,13 @@ object External {
 
     const val ACTION_SCAN = "$APP_ID.SCAN"
     const val ACTION_MATCH = "$APP_ID.MATCH"
+    const val ACTION_MULTI_MATCH = "$APP_ID.MULTI_MATCH"
 
     const val PARAM_RETURN_ISO_TEMPLATE = "$APP_ID.return_iso_template"
     const val PARAM_RETURN_NFIQ = "$APP_ID.return_nfiq"
     const val PARAM_RETURN_SCORE = "$APP_ID.return_score"
     const val PARAM_ISO_TEMPLATE = "$APP_ID.iso_template"
+    fun paramIsoTemplate(index: Int) = "$APP_ID.iso_template_$index"
 
     const val PARAM_FAST = "$APP_ID.fast"
 }

@@ -47,11 +47,7 @@ class MatchActionTest {
     @Test
     fun clickingMatch_capturesAndReturnsMatchScore() {
         val existingTemplate = "blah"
-        fakeMatcher.addScore(
-            existingTemplate,
-            "scanned",
-            96.0
-        )
+        fakeMatcher.addScore(existingTemplate, "scanned", 96.0)
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
@@ -75,11 +71,7 @@ class MatchActionTest {
     @Test
     fun clickingMatch_whenExistingTemplateIsNotHexEncoded_showsAnError() {
         val existingTemplate = "blah"
-        fakeMatcher.addScore(
-            existingTemplate,
-            "scanned",
-            96.0
-        )
+        fakeMatcher.addScore(existingTemplate, "scanned", 96.0)
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
@@ -98,11 +90,7 @@ class MatchActionTest {
     @Test
     fun clickingMatch_whenMatchFails_showsAnError() {
         val existingTemplate = "blah"
-        fakeMatcher.addScore(
-            existingTemplate,
-            "scanned",
-            null
-        )
+        fakeMatcher.addScore(existingTemplate, "scanned", null)
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
@@ -121,11 +109,7 @@ class MatchActionTest {
     @Test
     fun clickingMatch_whenReturnValuesSpecified_capturesAndReturnsThoseValues() {
         val existingTemplate = "blah"
-        fakeMatcher.addScore(
-            existingTemplate,
-            "scanned",
-            96.0
-        )
+        fakeMatcher.addScore(existingTemplate, "scanned", 96.0)
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(External.PARAM_ISO_TEMPLATE, existingTemplate.toHexString())
@@ -153,11 +137,7 @@ class MatchActionTest {
     @Test
     fun withFastMode_capturesAndReturnsMatchScore() {
         val existingTemplate = "blah"
-        fakeMatcher.addScore(
-            existingTemplate,
-            "scanned",
-            96.0
-        )
+        fakeMatcher.addScore(existingTemplate, "scanned", 96.0)
 
         val intent = Intent(External.ACTION_MATCH).also {
             it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")

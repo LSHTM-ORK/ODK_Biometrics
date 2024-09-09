@@ -11,8 +11,27 @@ object IntentParser {
         val fast = odkExternalRequest.params[External.PARAM_FAST] == "true"
 
         return if (odkExternalRequest.action == External.ACTION_MATCH) {
+            val isoTemplate = odkExternalRequest.params[External.PARAM_ISO_TEMPLATE]
+
             Request.Match(
-                intent.extras!!.getString(External.PARAM_ISO_TEMPLATE),
+                isoTemplate?.let { listOf(isoTemplate) } ?: emptyList(),
+                fast,
+                odkExternalRequest
+            )
+        } else if (odkExternalRequest.action == External.ACTION_MULTI_MATCH) {
+            var index = 1
+            val isoTemplates = mutableListOf<String>()
+            while (odkExternalRequest.params.containsKey(External.paramIsoTemplate(index))) {
+                val paramValue = odkExternalRequest.params[External.paramIsoTemplate(index)]
+                if (paramValue!!.isNotBlank()) {
+                    isoTemplates.add(paramValue)
+                }
+
+                index += 1
+            }
+
+            Request.Match(
+                isoTemplates,
                 fast,
                 odkExternalRequest
             )
@@ -36,7 +55,7 @@ sealed interface Request {
     ) : Request
 
     data class Match(
-        val isoTemplate: String?, override val fast: Boolean,
+        val isoTemplates: List<String>, override val fast: Boolean,
         override val odkExternalRequest: OdkExternalRequest
     ) : Request
 }
