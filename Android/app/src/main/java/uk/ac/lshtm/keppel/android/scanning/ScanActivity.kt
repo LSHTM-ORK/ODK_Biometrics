@@ -42,16 +42,24 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (request is Request.Match) {
-            if ((request as Request.Match).isoTemplates.isEmpty()) {
-                val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
+        when (request) {
+            is Request.Match -> {
+                Analytics.log("start_match")
 
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
+                if ((request as Request.Match).isoTemplates.isEmpty()) {
+                    val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
-                return
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(error)
+                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                        .show()
+
+                    return
+                }
+            }
+
+            is Request.Scan -> {
+                Analytics.log("start_scan")
             }
         }
 
