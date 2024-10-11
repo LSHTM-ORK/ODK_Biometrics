@@ -148,7 +148,6 @@ class ScanActivity : AppCompatActivity() {
     private fun returnResult(result: Intent) {
         setResult(RESULT_OK, result)
         finish()
-        Analytics.log("return_result")
     }
 
     private fun buildScanReturn(
