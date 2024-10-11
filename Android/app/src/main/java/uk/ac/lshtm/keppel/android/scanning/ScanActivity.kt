@@ -44,7 +44,7 @@ class ScanActivity : AppCompatActivity() {
 
         when (request) {
             is Request.Match -> {
-                Analytics.log("start_match")
+                Analytics.log("match_start")
 
                 if ((request as Request.Match).isoTemplates.isEmpty()) {
                     val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
@@ -59,7 +59,7 @@ class ScanActivity : AppCompatActivity() {
             }
 
             is Request.Scan -> {
-                Analytics.log("start_scan")
+                Analytics.log("scan_start")
             }
         }
 
