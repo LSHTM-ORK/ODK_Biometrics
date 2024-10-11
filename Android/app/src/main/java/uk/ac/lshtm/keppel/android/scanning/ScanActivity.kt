@@ -88,6 +88,7 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.cancelButton.setOnClickListener {
+            Analytics.log("cancel")
             finish()
         }
 
@@ -104,6 +105,8 @@ class ScanActivity : AppCompatActivity() {
     private fun processResult(request: Request, result: ScannerViewModel.Result) {
         when (result) {
             is ScannerViewModel.Result.Match -> {
+                Analytics.log("match_return")
+
                 returnResult(
                     buildMatchReturn(
                         request.odkExternalRequest,
@@ -114,6 +117,7 @@ class ScanActivity : AppCompatActivity() {
             }
 
             is ScannerViewModel.Result.Scan -> {
+                Analytics.log("scan_return")
                 returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
             }
 
