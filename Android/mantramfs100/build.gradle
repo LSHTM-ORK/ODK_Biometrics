@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace "uk.ac.lshtm.keppel.mantramfs100"
-    compileSdk 34
-    ndkVersion "21.3.6528147"
+    compileSdk rootProject.ext.compileSdkVersion
+    ndkVersion rootProject.ext.ndkVersion
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 

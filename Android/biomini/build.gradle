@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace "uk.ac.lshtm.keppel.biomini"
-    compileSdk 34
+    compileSdk rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
