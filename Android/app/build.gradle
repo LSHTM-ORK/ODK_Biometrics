@@ -75,14 +75,16 @@ android {
         buildConfig = true
         viewBinding = true
     }
-
     packagingOptions {
-        pickFirst '**/*.so'
+        jniLibs {
+            pickFirsts += ['**/*.so']
+        }
     }
-
-    lintOptions {
+    lint {
         disable 'MissingTranslation'
     }
+
+
 }
 
 dependencies {
