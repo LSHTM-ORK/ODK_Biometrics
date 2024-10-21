@@ -7,7 +7,6 @@ For Android:
 - Android Studio
 - SDK files (if not included)
 - JDK 17
-   - For Android development, it's often simplest to use the JDK included in Android Studio. The easiest way to do this is to set your `JAVA_HOME` to the JDK location (which is `/Applications/Android\ Studio.app/Contents/jbr/Contents/Home/` on macOS for example).
 
 For CLI development:
 
@@ -22,7 +21,7 @@ For CLI development:
    sh ./import-device-sdks.sh
    ```
 
-   The script will raise an error if the necessary SDK(s) cannot be found. Place the SDK zip files in the root of the repository, if needed.
+The script will raise an error if the necessary SDK(s) cannot be found. Place the SDK zip files in the root of the repository, if needed.
 
 2. Open the `Android/` directory in Android Studio.
 
