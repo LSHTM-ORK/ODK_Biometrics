@@ -1,0 +1,26 @@
+[versions]
+lifecycle = "2.6.2"
+espresso = "3.5.1"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.9.0" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
+androidx-test-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
+androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version = "1.5.0" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
+hamcrest = { module = "org.hamcrest:hamcrest", version = "2.2" }
+junit = { module = "junit:junit", version = "4.13.2" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version = "1.8.22" }
+material = { module = "com.google.android.material:material", version = "1.10.0" }
+mockito-core = { module = "org.mockito:mockito-core", version= "3.3.3" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.4.0" }
+play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
+robolectric = { module = "org.robolectric:robolectric", version = "4.9" }
+sourceafis = { module = "com.machinezoo.sourceafis:sourceafis", version = "3.8.1" }
+
+[plugins]
