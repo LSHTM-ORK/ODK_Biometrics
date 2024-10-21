@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace "uk.ac.lshtm.keppel.mantramfs100"
-    compileSdk 34
-    ndkVersion "21.3.6528147"
+    compileSdk rootProject.ext.compileSdkVersion
+    ndkVersion rootProject.ext.ndkVersion
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 34
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -37,14 +37,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.core.ktx
     implementation project(':core')
 
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'androidx.test:core:1.5.0'
-    testImplementation 'org.robolectric:robolectric:4.9'
-    testImplementation 'org.mockito:mockito-core:5.4.0'
-    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation libs.junit
+    testImplementation libs.androidx.test.core.ktx
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.hamcrest
 }
