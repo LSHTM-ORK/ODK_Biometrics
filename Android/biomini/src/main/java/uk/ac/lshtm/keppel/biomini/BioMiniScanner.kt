@@ -11,6 +11,7 @@ import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
 import com.suprema.CaptureResponder
 import com.suprema.IBioMiniDevice
@@ -168,11 +169,24 @@ class BioMiniScanner(private val context: Context) : Scanner {
     private fun registerBroadcastReceiver() {
         Log.d(TAG, "start initUsbListener!")
 
-        context.registerReceiver(mUsbReceiver, IntentFilter(ACTION_USB_PERMISSION))
-        val attachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED)
-        context.registerReceiver(mUsbReceiver, attachfilter)
-        val detachfilter = IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        context.registerReceiver(mUsbReceiver, detachfilter)
+        ContextCompat.registerReceiver(
+            context,
+            mUsbReceiver,
+            IntentFilter(ACTION_USB_PERMISSION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        ContextCompat.registerReceiver(
+            context,
+            mUsbReceiver,
+            IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        ContextCompat.registerReceiver(
+            context,
+            mUsbReceiver,
+            IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     private fun findAndRequestPermission() {
