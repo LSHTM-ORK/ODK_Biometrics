@@ -42,16 +42,24 @@ class ScanActivity : AppCompatActivity() {
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (request is Request.Match) {
-            if ((request as Request.Match).isoTemplates.isEmpty()) {
-                val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
+        when (request) {
+            is Request.Match -> {
+                Analytics.log("match_start")
 
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
+                if ((request as Request.Match).isoTemplates.isEmpty()) {
+                    val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
 
-                return
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(error)
+                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                        .show()
+
+                    return
+                }
+            }
+
+            is Request.Scan -> {
+                Analytics.log("scan_start")
             }
         }
 
@@ -88,6 +96,7 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.cancelButton.setOnClickListener {
+            Analytics.log("cancel")
             finish()
         }
 
@@ -104,6 +113,8 @@ class ScanActivity : AppCompatActivity() {
     private fun processResult(request: Request, result: ScannerViewModel.Result) {
         when (result) {
             is ScannerViewModel.Result.Match -> {
+                Analytics.log("match_return")
+
                 returnResult(
                     buildMatchReturn(
                         request.odkExternalRequest,
@@ -114,6 +125,7 @@ class ScanActivity : AppCompatActivity() {
             }
 
             is ScannerViewModel.Result.Scan -> {
+                Analytics.log("scan_return")
                 returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
             }
 
@@ -136,7 +148,6 @@ class ScanActivity : AppCompatActivity() {
     private fun returnResult(result: Intent) {
         setResult(RESULT_OK, result)
         finish()
-        Analytics.log("return_result")
     }
 
     private fun buildScanReturn(
