@@ -8,4 +8,10 @@
     <string name="change_scanner">تغيير الماسح الضوئي</string>
     <string name="app_version">نسخة التطبيق</string>
     <string name="match">مطابقة</string>
+    <string name="input_error">قالب الإدخال ليس بالتنسيق الصحيح!</string>
+    <string name="no_capture_result_error">لا توجد نتيجة التقاط من الماسح الضوئي!</string>
+    <string name="input_missing_error">\"%1$s\" مفقود!</string>
+    <string name="ok">تمام</string>
+    <string name="cancel">يلغي</string>
+    <string name="scanner_connected">تم توصيل الماسح الضوئي USB</string>
 </resources>
