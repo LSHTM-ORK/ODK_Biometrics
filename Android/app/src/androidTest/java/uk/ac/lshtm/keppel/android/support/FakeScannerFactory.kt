@@ -28,9 +28,9 @@ class FakeScanner : Scanner {
     var capturing = false
         private set
 
-    private var onConnected: () -> Unit = {}
+    private var onConnected: (Boolean) -> Unit = {}
 
-    override fun connect(onConnected: () -> Unit): Scanner {
+    override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         this.onConnected = onConnected
         return this
     }
@@ -85,7 +85,7 @@ class FakeScanner : Scanner {
         connected = true
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            onConnected()
+            onConnected(true)
         }
     }
 }

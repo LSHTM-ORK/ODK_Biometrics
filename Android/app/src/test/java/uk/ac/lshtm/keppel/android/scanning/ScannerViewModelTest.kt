@@ -73,10 +73,10 @@ private class MockScanner : Scanner {
     var captures: Int = 0
         private set
 
-    private var onConnected: (() -> Unit)? = null
+    private var onConnected: ((Boolean) -> Unit)? = null
     private var onDisconnected: (() -> Unit)? = null
 
-    override fun connect(onConnected: () -> Unit): Scanner {
+    override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         this.onConnected = onConnected
         return this
     }
@@ -99,6 +99,6 @@ private class MockScanner : Scanner {
     }
 
     fun connect() {
-        onConnected?.invoke()
+        onConnected?.invoke(true)
     }
 }

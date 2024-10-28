@@ -2,7 +2,11 @@ package uk.ac.lshtm.keppel.core
 
 interface Scanner {
 
-    fun connect(onConnected: () -> Unit): Scanner
+    /**
+     * [onConnected] should receive `true` or `false` depending on if the scanner successfully
+     * connected or not.
+     */
+    fun connect(onConnected: (Boolean) -> Unit): Scanner
 
     fun onDisconnect(onDisconnected: () -> Unit)
 

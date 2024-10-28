@@ -85,11 +85,11 @@ class MFS100ScannerTest {
                 mfs100
             }
 
-            var listenerCalled = false
-            mfSScanner.connect { listenerCalled = true }
+            var listenerCalledWith: Boolean? = null
+            mfSScanner.connect { listenerCalledWith = it }
             mfs100Event!!.OnDeviceAttached(vendorID, NEW_DEVICE_ID, true)
 
-            assertThat(listenerCalled, equalTo(true))
+            assertThat(listenerCalledWith, equalTo(true))
         }
     }
 

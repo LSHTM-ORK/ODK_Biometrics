@@ -18,8 +18,8 @@ class DemoScannerFactory : ScannerFactory {
 
 private class DemoScanner : Scanner {
 
-    override fun connect(onConnected: () -> Unit): Scanner {
-        Handler(Looper.getMainLooper()).postDelayed(onConnected, 3000)
+    override fun connect(onConnected: (Boolean) -> Unit): Scanner {
+        Handler(Looper.getMainLooper()).postDelayed({ onConnected(true) }, 3000)
         return this
     }
 
@@ -27,7 +27,7 @@ private class DemoScanner : Scanner {
 
     }
 
-    override fun capture(): CaptureResult? {
+    override fun capture(): CaptureResult {
         Thread.sleep(3000)
         return CaptureResult("demo-finger-print-iso-template", 0)
     }
