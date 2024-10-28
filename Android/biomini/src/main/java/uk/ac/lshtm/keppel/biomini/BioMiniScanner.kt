@@ -76,6 +76,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
                 onConnected(true)
                 Log.d(TAG, "mCurrentDevice attached : $mCurrentDevice")
             } else {
+                onConnected(false)
                 Log.d(TAG, "mCurrentDevice is null")
             }
         } else {
