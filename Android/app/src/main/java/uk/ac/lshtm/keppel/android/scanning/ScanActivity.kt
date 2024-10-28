@@ -82,6 +82,13 @@ class ScanActivity : AppCompatActivity() {
                     binding.captureButton.visibility = View.GONE
                     binding.captureProgressBar.visibility = View.VISIBLE
                 }
+
+                ScannerState.ConnectionFailure -> {
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(R.string.connection_failure_error)
+                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                        .show()
+                }
             }
         }
 

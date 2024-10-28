@@ -10,6 +10,7 @@
     <string name="match">Match</string>
     <string name="input_error">Input template is not in the correct format!</string>
     <string name="no_capture_result_error">No capture result from scanner!</string>
+    <string name="connection_failure_error">Couldn\'t connect to scanner!</string>
     <string name="input_missing_error">\"%1$s\" is missing!</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>

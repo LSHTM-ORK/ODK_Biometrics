@@ -27,11 +27,15 @@ class ScannerViewModel(
     val result: LiveData<Result?> = _result
 
     init {
-        scanner.connect {
-            _scannerState.value = Connected
+        scanner.connect { success ->
+            if (success) {
+                _scannerState.value = Connected
 
-            if (fast) {
-                capture()
+                if (fast) {
+                    capture()
+                }
+            } else {
+                _scannerState.value = ScannerState.ConnectionFailure
             }
         }
 
@@ -99,5 +103,6 @@ class ScannerViewModel(
         object Disconnected : ScannerState()
         object Connected : ScannerState()
         object Scanning : ScannerState()
+        object ConnectionFailure : ScannerState()
     }
 }

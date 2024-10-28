@@ -81,11 +81,18 @@ class FakeScanner : Scanner {
         fail = true
     }
 
+    fun failToConnect() {
+        callOnConnected(success = false)
+    }
+
+    private fun callOnConnected(success: Boolean) {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            onConnected(success)
+        }
+    }
+
     fun connect() {
         connected = true
-
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            onConnected(true)
-        }
+        callOnConnected(success = true)
     }
 }

@@ -17,4 +17,9 @@ class ConnectingPage : Page<ConnectingPage> {
         fakeScanner.connect()
         return destination.assert()
     }
+
+    fun <T : Page<T>> failToConnect(fakeScanner: FakeScanner, destination: T): T {
+        fakeScanner.failToConnect()
+        return destination.assert()
+    }
 }
