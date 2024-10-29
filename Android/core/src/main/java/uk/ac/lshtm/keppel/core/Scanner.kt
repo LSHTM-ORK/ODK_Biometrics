@@ -1,5 +1,7 @@
 package uk.ac.lshtm.keppel.core
 
+import java.io.Serializable
+
 interface Scanner {
 
     /**
@@ -21,4 +23,4 @@ interface Scanner {
  * Contains a hex encoded string of the ISO 19794-2 Template from a finger
  * placed on the scanner and the NFIQ score of the scan.
  */
-data class CaptureResult(val isoTemplate: String, val nfiq: Int)
+data class CaptureResult(val isoTemplate: String, val nfiq: Int) : Serializable

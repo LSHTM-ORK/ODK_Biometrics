@@ -1,11 +1,9 @@
 package uk.ac.lshtm.keppel.android.scanning
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
@@ -13,8 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.FatalErrorDialogFragment
-import uk.ac.lshtm.keppel.android.OdkExternal
-import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.FragmentScanBinding
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
@@ -23,6 +19,7 @@ import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.TaskRunner
+import java.io.Serializable
 
 class ScanFragment(
     private val request: Request,
@@ -99,7 +96,7 @@ class ScanFragment(
 
         viewModel.result.observe(viewLifecycleOwner) { result ->
             if (result != null) {
-                processResult(request, result)
+                processResult(result)
             }
         }
 
@@ -109,7 +106,7 @@ class ScanFragment(
 
         binding.cancelButton.setOnClickListener {
             Analytics.log("cancel")
-            requireActivity().finish()
+            parentFragmentManager.setFragmentResult(RESULT, Bundle())
         }
 
         if (request is Request.Match) {
@@ -122,23 +119,24 @@ class ScanFragment(
         viewModel.stopCapture()
     }
 
-    private fun processResult(request: Request, result: ScannerViewModel.Result) {
+    private fun processResult(result: ScannerViewModel.Result) {
         when (result) {
             is ScannerViewModel.Result.Match -> {
                 Analytics.log("match_return")
 
-                returnResult(
-                    buildMatchReturn(
-                        request.odkExternalRequest,
-                        result.score,
-                        result.captureResult
+                parentFragmentManager.setFragmentResult(RESULT, Bundle().also {
+                    it.putSerializable(
+                        RESULT_KEY_MATCH,
+                        MatchResult(result.captureResult, result.score)
                     )
-                )
+                })
             }
 
             is ScannerViewModel.Result.Scan -> {
                 Analytics.log("scan_return")
-                returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
+                parentFragmentManager.setFragmentResult(RESULT, Bundle().also {
+                    it.putSerializable(RESULT_KEY_SCAN, ScanResult(result.captureResult))
+                })
             }
 
             is ScannerViewModel.Result.InputError -> {
@@ -157,47 +155,17 @@ class ScanFragment(
         }
     }
 
-    private fun returnResult(result: Intent) {
-        requireActivity().setResult(RESULT_OK, result)
-        requireActivity().finish()
+    companion object {
+        const val RESULT = "result"
+        const val RESULT_KEY_SCAN = "result_key_scan"
+        const val RESULT_KEY_MATCH = "result_key_match"
     }
 
-    private fun buildScanReturn(
-        odkExternalRequest: OdkExternalRequest,
-        capture: CaptureResult
-    ): Intent {
-        return if (odkExternalRequest.isSingleReturn) {
-            OdkExternal.buildSingleReturnIntent(capture.isoTemplate)
-        } else {
-            OdkExternal.buildMultipleReturnResult(
-                odkExternalRequest.params, mapOf(
-                    External.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
-                    External.PARAM_RETURN_NFIQ to capture.nfiq
-                )
-            )
-        }
-    }
-
-    private fun buildMatchReturn(
-        odkExternalRequest: OdkExternalRequest,
-        score: Double,
-        capture: CaptureResult
-    ): Intent {
-        return if (odkExternalRequest.isSingleReturn) {
-            OdkExternal.buildSingleReturnIntent(score)
-        } else {
-            OdkExternal.buildMultipleReturnResult(
-                odkExternalRequest.params, mapOf(
-                    External.PARAM_RETURN_SCORE to score,
-                    External.PARAM_RETURN_ISO_TEMPLATE to capture.isoTemplate,
-                    External.PARAM_RETURN_NFIQ to capture.nfiq
-                )
-            )
-        }
-    }
+    data class ScanResult(val captureResult: CaptureResult) : Serializable
+    data class MatchResult(val captureResult: CaptureResult, val score: Double) : Serializable
 }
 
-class ScanViewModelFactory(
+private class ScanViewModelFactory(
     private val scanner: Scanner,
     private val matcher: Matcher,
     private val taskRunner: TaskRunner,
