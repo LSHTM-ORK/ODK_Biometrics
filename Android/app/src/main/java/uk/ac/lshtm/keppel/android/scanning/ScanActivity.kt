@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import uk.ac.lshtm.keppel.android.External
+import uk.ac.lshtm.keppel.android.FatalErrorDialogFragment
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
@@ -48,11 +48,7 @@ class ScanActivity : AppCompatActivity() {
 
                 if ((request as Request.Match).isoTemplates.isEmpty()) {
                     val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
-
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(error)
-                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                        .show()
+                    FatalErrorDialogFragment.show(supportFragmentManager, error)
 
                     return
                 }
@@ -84,10 +80,10 @@ class ScanActivity : AppCompatActivity() {
                 }
 
                 ScannerState.ConnectionFailure -> {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(R.string.connection_failure_error)
-                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                        .show()
+                    FatalErrorDialogFragment.show(
+                        supportFragmentManager,
+                        getString(R.string.connection_failure_error)
+                    )
                 }
             }
         }
@@ -137,17 +133,17 @@ class ScanActivity : AppCompatActivity() {
             }
 
             is ScannerViewModel.Result.InputError -> {
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
+                FatalErrorDialogFragment.show(
+                    supportFragmentManager,
+                    getString(R.string.input_error)
+                )
             }
 
             is ScannerViewModel.Result.NoCaptureResultError -> {
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.no_capture_result_error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
+                FatalErrorDialogFragment.show(
+                    supportFragmentManager,
+                    getString(R.string.no_capture_result_error)
+                )
             }
         }
     }
