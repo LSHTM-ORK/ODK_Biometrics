@@ -26,7 +26,8 @@ class ScanActivity : AppCompatActivity() {
                         request,
                         scannerFactory(),
                         matcher(),
-                        taskRunner()
+                        taskRunner(),
+                        supportFragmentManager
                     )
 
                     else -> super.instantiate(classLoader, className)

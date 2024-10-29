@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +26,8 @@ class ScanFragment(
     private val request: Request,
     private val scannerFactory: ScannerFactory,
     private val matcher: Matcher,
-    private val taskRunner: TaskRunner
+    private val taskRunner: TaskRunner,
+    private val resultsFragmentManager: FragmentManager
 ) : Fragment() {
 
     private val viewModel: ScannerViewModel by viewModels {
@@ -106,7 +108,7 @@ class ScanFragment(
 
         binding.cancelButton.setOnClickListener {
             Analytics.log("cancel")
-            parentFragmentManager.setFragmentResult(RESULT, Bundle())
+            resultsFragmentManager.setFragmentResult(RESULT, Bundle())
         }
 
         if (request is Request.Match) {
@@ -124,7 +126,7 @@ class ScanFragment(
             is ScannerViewModel.Result.Match -> {
                 Analytics.log("match_return")
 
-                parentFragmentManager.setFragmentResult(RESULT, Bundle().also {
+                resultsFragmentManager.setFragmentResult(RESULT, Bundle().also {
                     it.putSerializable(
                         RESULT_KEY_MATCH,
                         MatchResult(result.captureResult, result.score)
@@ -134,7 +136,7 @@ class ScanFragment(
 
             is ScannerViewModel.Result.Scan -> {
                 Analytics.log("scan_return")
-                parentFragmentManager.setFragmentResult(RESULT, Bundle().also {
+                resultsFragmentManager.setFragmentResult(RESULT, Bundle().also {
                     it.putSerializable(RESULT_KEY_SCAN, ScanResult(result.captureResult))
                 })
             }
