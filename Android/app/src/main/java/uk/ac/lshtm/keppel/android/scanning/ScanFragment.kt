@@ -5,39 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.FragmentScanBinding
 import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.core.Analytics
-import uk.ac.lshtm.keppel.core.CaptureResult
-import uk.ac.lshtm.keppel.core.Matcher
-import uk.ac.lshtm.keppel.core.Scanner
-import uk.ac.lshtm.keppel.core.TaskRunner
-import java.io.Serializable
 
-class ScanFragment(
-    private val request: Request,
-    private val scannerFactory: ScannerFactory,
-    private val matcher: Matcher,
-    private val taskRunner: TaskRunner,
-    private val resultsFragmentManager: FragmentManager
-) : Fragment() {
+class ScanFragment(private val request: Request) : Fragment() {
 
-    private val viewModel: ScannerViewModel by viewModels {
-        ScanViewModelFactory(
-            scannerFactory.create(requireActivity()),
-            matcher,
-            taskRunner,
-            request
-        )
-    }
+    private val viewModel: ScannerViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -94,8 +72,14 @@ class ScanFragment(
         }
 
         viewModel.result.observe(viewLifecycleOwner) { result ->
-            if (result != null) {
-                processResult(result)
+            if (result is ScannerViewModel.Result.InputError) {
+                findNavController().navigate(
+                    ScanFragmentDirections.scanToFatalError(getString(R.string.input_error))
+                )
+            } else if (result is ScannerViewModel.Result.NoCaptureResultError) {
+                findNavController().navigate(
+                    ScanFragmentDirections.scanToFatalError(getString(R.string.no_capture_result_error))
+                )
             }
         }
 
@@ -105,7 +89,7 @@ class ScanFragment(
 
         binding.cancelButton.setOnClickListener {
             Analytics.log("cancel")
-            resultsFragmentManager.setFragmentResult(RESULT, Bundle())
+            requireActivity().finish()
         }
 
         if (request is Request.Match) {
@@ -116,71 +100,5 @@ class ScanFragment(
     override fun onPause() {
         super.onPause()
         viewModel.stopCapture()
-    }
-
-    private fun processResult(result: ScannerViewModel.Result) {
-        when (result) {
-            is ScannerViewModel.Result.Match -> {
-                Analytics.log("match_return")
-
-                resultsFragmentManager.setFragmentResult(RESULT, Bundle().also {
-                    it.putSerializable(
-                        RESULT_KEY_MATCH,
-                        MatchResult(result.captureResult, result.score)
-                    )
-                })
-            }
-
-            is ScannerViewModel.Result.Scan -> {
-                Analytics.log("scan_return")
-                resultsFragmentManager.setFragmentResult(RESULT, Bundle().also {
-                    it.putSerializable(RESULT_KEY_SCAN, ScanResult(result.captureResult))
-                })
-            }
-
-            is ScannerViewModel.Result.InputError -> {
-                findNavController().navigate(ScanFragmentDirections.scanToFatalError(getString(R.string.input_error)))
-            }
-
-            is ScannerViewModel.Result.NoCaptureResultError -> {
-                findNavController().navigate(ScanFragmentDirections.scanToFatalError(getString(R.string.no_capture_result_error)))
-            }
-        }
-    }
-
-    companion object {
-        const val RESULT = "result"
-        const val RESULT_KEY_SCAN = "result_key_scan"
-        const val RESULT_KEY_MATCH = "result_key_match"
-    }
-
-    data class ScanResult(val captureResult: CaptureResult) : Serializable
-    data class MatchResult(val captureResult: CaptureResult, val score: Double) : Serializable
-}
-
-private class ScanViewModelFactory(
-    private val scanner: Scanner,
-    private val matcher: Matcher,
-    private val taskRunner: TaskRunner,
-    private val request: Request
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        val inputTemplates = request.let {
-            if (it is Request.Match) {
-                it.isoTemplates
-            } else {
-                emptyList()
-            }
-        }
-
-        return ScannerViewModel(
-            scanner,
-            matcher,
-            taskRunner,
-            inputTemplates,
-            request.fast
-        ) as T
     }
 }

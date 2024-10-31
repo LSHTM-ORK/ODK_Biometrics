@@ -2,9 +2,14 @@ package uk.ac.lshtm.keppel.android.scanning
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.findNavController
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
@@ -12,52 +17,61 @@ import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.matcher
 import uk.ac.lshtm.keppel.android.scannerFactory
 import uk.ac.lshtm.keppel.android.taskRunner
+import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
+import uk.ac.lshtm.keppel.core.Matcher
+import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.core.TaskRunner
 
 class ScanActivity : AppCompatActivity() {
 
     private val request: Request by lazy { IntentParser.parse(intent) }
+    private val scannerViewModel: ScannerViewModel by viewModels {
+        ScanViewModelFactory(
+            scannerFactory().create(this),
+            matcher(),
+            taskRunner(),
+            request
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         supportFragmentManager.fragmentFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
                 return when (loadFragmentClass(classLoader, className)) {
-                    ScanFragment::class.java -> ScanFragment(
-                        request,
-                        scannerFactory(),
-                        matcher(),
-                        taskRunner(),
-                        supportFragmentManager
-                    )
+                    ScanFragment::class.java -> ScanFragment(request)
 
                     else -> super.instantiate(classLoader, className)
                 }
             }
         }
 
-        supportFragmentManager.setFragmentResultListener(ScanFragment.RESULT, this) { _, result ->
-            if (result.containsKey(ScanFragment.RESULT_KEY_SCAN)) {
-                val scanResult =
-                    result.getSerializable(ScanFragment.RESULT_KEY_SCAN) as ScanFragment.ScanResult
-                returnResult(buildScanReturn(request.odkExternalRequest, scanResult.captureResult))
-            } else if (result.containsKey(ScanFragment.RESULT_KEY_MATCH)) {
-                val matchResult =
-                    result.getSerializable(ScanFragment.RESULT_KEY_MATCH) as ScanFragment.MatchResult
-                returnResult(
-                    buildMatchReturn(
-                        request.odkExternalRequest,
-                        matchResult.score,
-                        matchResult.captureResult
-                    )
-                )
-            } else {
-                finish()
-            }
-        }
-
         super.onCreate(savedInstanceState)
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        scannerViewModel.result.observe(this) { result ->
+            if (result != null) {
+                processResult(result)
+            }
+        }
+    }
+
+    private fun processResult(result: ScannerViewModel.Result) {
+        if (result is ScannerViewModel.Result.Match) {
+            Analytics.log("match_return")
+
+            returnResult(
+                buildMatchReturn(
+                    request.odkExternalRequest,
+                    result.score,
+                    result.captureResult
+                )
+            )
+        } else if (result is ScannerViewModel.Result.Scan) {
+            Analytics.log("scan_return")
+            returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
+        }
     }
 
     private fun returnResult(result: Intent) {
@@ -97,5 +111,32 @@ class ScanActivity : AppCompatActivity() {
                 )
             )
         }
+    }
+}
+
+private class ScanViewModelFactory(
+    private val scanner: Scanner,
+    private val matcher: Matcher,
+    private val taskRunner: TaskRunner,
+    private val request: Request
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+        val inputTemplates = request.let {
+            if (it is Request.Match) {
+                it.isoTemplates
+            } else {
+                emptyList()
+            }
+        }
+
+        return ScannerViewModel(
+            scanner,
+            matcher,
+            taskRunner,
+            inputTemplates,
+            request.fast
+        ) as T
     }
 }
