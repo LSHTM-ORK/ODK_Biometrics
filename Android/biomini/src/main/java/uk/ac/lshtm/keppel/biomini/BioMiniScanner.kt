@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.biomini
 
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -178,16 +179,12 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 Log.d(TAG, "found suprema usb device")
                 mUsbDevice = _device
 
-                // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
-                var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
-                if (Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
-                    FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
-                }
-
                 mPermissionIntent = PendingIntent.getBroadcast(
                     context,
                     0,
-                    Intent(ACTION_USB_PERMISSION),
+                    Intent(ACTION_USB_PERMISSION).also {
+                        it.setPackage(context.packageName)
+                    },
                     FLAG_MUTABLE,
                 )
                 mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
