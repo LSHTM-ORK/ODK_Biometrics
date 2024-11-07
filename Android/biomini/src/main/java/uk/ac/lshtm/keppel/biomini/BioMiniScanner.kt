@@ -44,7 +44,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
     var mCurrentDevice: IBioMiniDevice? = null
     private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
     private lateinit var onConnected: () -> Unit
-    private var mPermissionIntent: PendingIntent? = null
     private var mTemplateData: IBioMiniDevice.TemplateData? = null
     private var mFpQuality: Int? = null
 
@@ -179,7 +178,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 Log.d(TAG, "found suprema usb device")
                 mUsbDevice = _device
 
-                mPermissionIntent = PendingIntent.getBroadcast(
+                val permissionIntent = PendingIntent.getBroadcast(
                     context,
                     0,
                     Intent(ACTION_USB_PERMISSION).also {
@@ -187,7 +186,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     },
                     FLAG_MUTABLE,
                 )
-                mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
+                mUsbManager?.requestPermission(mUsbDevice, permissionIntent)
             } else {
                 Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
             }
