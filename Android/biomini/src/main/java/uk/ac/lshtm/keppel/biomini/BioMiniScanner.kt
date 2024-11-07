@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
-import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
@@ -27,10 +26,8 @@ private const val TAG = "KeppelBioMiniScanner"
 class BioMiniScanner(private val context: Context) : Scanner {
 
     private val BASE_EVENT = 3000
-    private val ACTIVATE_USB_DEVICE = BASE_EVENT + 1
     private val REMOVE_USB_DEVICE = BASE_EVENT + 2
     private val UPDATE_DEVICE_INFO = BASE_EVENT + 3
-    private val REQUEST_USB_PERMISSION = BASE_EVENT + 4
     private val MAKE_DELAY_1SEC = BASE_EVENT + 5
     private val ADD_DEVICE = BASE_EVENT + 6
     private val CLEAR_VIEW_FOR_CAPTURE = BASE_EVENT + 8
@@ -63,7 +60,7 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     val usbDevice = mUsbDevice
                     if (hasUsbPermission && usbDevice != null) {
                         Log.d(TAG, usbDevice.getDeviceName() + " is acquire the usb permission. activate this device.")
-                        mHandler.sendEmptyMessage(ACTIVATE_USB_DEVICE)
+                        createBioMiniDevice()
                     } else {
                         Log.d(TAG, "USB permission is not granted!")
                     }
@@ -78,34 +75,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
                     onDisconnected?.invoke()
                 }
                 else -> {}
-            }
-        }
-    }
-
-    var mHandler: android.os.Handler = object : android.os.Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: android.os.Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                ACTIVATE_USB_DEVICE -> {
-                    Log.d(TAG, "got ACTIVATE_USB_DEVICE")
-                    createBioMiniDevice()
-                }
-                REQUEST_USB_PERMISSION -> {
-                    Log.d(TAG, "got REQUEST_USB_PERMISSION")
-                    // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
-                    var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
-                    if (Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
-                        FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
-                    }
-
-                    mPermissionIntent = PendingIntent.getBroadcast(
-                        context,
-                        0,
-                        Intent(ACTION_USB_PERMISSION),
-                        FLAG_MUTABLE,
-                    )
-                    mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
-                }
             }
         }
     }
@@ -208,7 +177,20 @@ class BioMiniScanner(private val context: Context) : Scanner {
             if (_device.getVendorId() == 0x16d1) {
                 Log.d(TAG, "found suprema usb device")
                 mUsbDevice = _device
-                mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
+
+                // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
+                var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
+                if (Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
+                    FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
+                }
+
+                mPermissionIntent = PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    Intent(ACTION_USB_PERMISSION),
+                    FLAG_MUTABLE,
+                )
+                mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
             } else {
                 Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
             }
