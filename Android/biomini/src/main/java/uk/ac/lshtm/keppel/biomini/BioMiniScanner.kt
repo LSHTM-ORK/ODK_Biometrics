@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.biomini
 
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,7 +10,6 @@ import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
-import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
@@ -24,13 +24,11 @@ import java.util.concurrent.CountDownLatch
 private const val TAG = "KeppelBioMiniScanner"
 
 @Suppress("unused")
-class BioMiniScanner(private val context: Context) : Scanner {
+class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver() {
 
     private val BASE_EVENT = 3000
-    private val ACTIVATE_USB_DEVICE = BASE_EVENT + 1
     private val REMOVE_USB_DEVICE = BASE_EVENT + 2
     private val UPDATE_DEVICE_INFO = BASE_EVENT + 3
-    private val REQUEST_USB_PERMISSION = BASE_EVENT + 4
     private val MAKE_DELAY_1SEC = BASE_EVENT + 5
     private val ADD_DEVICE = BASE_EVENT + 6
     private val CLEAR_VIEW_FOR_CAPTURE = BASE_EVENT + 8
@@ -46,69 +44,10 @@ class BioMiniScanner(private val context: Context) : Scanner {
     var mCurrentDevice: IBioMiniDevice? = null
     private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
     private lateinit var onConnected: () -> Unit
-    private var mPermissionIntent: PendingIntent? = null
     private var mTemplateData: IBioMiniDevice.TemplateData? = null
     private var mFpQuality: Int? = null
 
     private var onDisconnected: (() -> Unit)? = null
-
-    private val mUsbReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val action: String? = intent.getAction()
-            when (action) {
-                ACTION_USB_PERMISSION -> {
-                    Log.d(TAG, "ACTION_USB_PERMISSION")
-                    val hasUsbPermission: Boolean =
-                        intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
-                    val usbDevice = mUsbDevice
-                    if (hasUsbPermission && usbDevice != null) {
-                        Log.d(TAG, usbDevice.getDeviceName() + " is acquire the usb permission. activate this device.")
-                        mHandler.sendEmptyMessage(ACTIVATE_USB_DEVICE)
-                    } else {
-                        Log.d(TAG, "USB permission is not granted!")
-                    }
-                }
-                UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
-                    Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED")
-                    findAndRequestPermission()
-                }
-                UsbManager.ACTION_USB_DEVICE_DETACHED -> {
-                    Log.d(TAG, "ACTION_USB_DEVICE_DETACHED")
-                    removeDevice()
-                    onDisconnected?.invoke()
-                }
-                else -> {}
-            }
-        }
-    }
-
-    var mHandler: android.os.Handler = object : android.os.Handler(Looper.getMainLooper()) {
-        override fun handleMessage(msg: android.os.Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                ACTIVATE_USB_DEVICE -> {
-                    Log.d(TAG, "got ACTIVATE_USB_DEVICE")
-                    createBioMiniDevice()
-                }
-                REQUEST_USB_PERMISSION -> {
-                    Log.d(TAG, "got REQUEST_USB_PERMISSION")
-                    // https://developer.android.com/reference/android/app/PendingIntent#FLAG_MUTABLE
-                    var FLAG_MUTABLE = 0 // PendingIntent.FLAG_MUTABLE
-                    if (Build.VERSION.SDK_INT >= 31) { // Build.VERSION_CODES.S
-                        FLAG_MUTABLE = PendingIntent.FLAG_MUTABLE
-                    }
-
-                    mPermissionIntent = PendingIntent.getBroadcast(
-                        context,
-                        0,
-                        Intent(ACTION_USB_PERMISSION),
-                        FLAG_MUTABLE,
-                    )
-                    mUsbManager?.requestPermission(mUsbDevice, mPermissionIntent)
-                }
-            }
-        }
-    }
 
     private fun removeDevice() {
         Log.d(TAG, "ACTION_USB_DEVICE_DETACHED")
@@ -166,24 +105,109 @@ class BioMiniScanner(private val context: Context) : Scanner {
         return this
     }
 
+    override fun capture(): CaptureResult? {
+        return mCurrentDevice?.let {
+            val latch = CountDownLatch(1)
+            setParameters(it)
+            doSingleCapture(latch)
+            latch.await()
+
+            val tmp = mTemplateData
+            return if (tmp?.data != null) {
+                CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
+            } else {
+                null
+            }
+        }
+    }
+
+    override fun stopCapture() {
+        val device = mCurrentDevice
+        if (device != null) {
+            if (!device.isCapturing()) {
+                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
+                return
+            }
+            val result: Int = device.abortCapturing()
+            Log.d(TAG, "run: abortCapturing : $result")
+            if (result == 0) {
+                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
+            }
+        }
+    }
+
+    override fun disconnect() {
+        var result = 0
+        val factory = mBioMiniFactory // avoid null errors
+        if (factory != null) {
+            if (mUsbDevice != null) result = factory.removeDevice(mUsbDevice)
+            if (result == IBioMiniDevice.ErrorCode.OK.value() || result == IBioMiniDevice.ErrorCode.ERR_NO_DEVICE.value()) {
+                factory.close()
+                context.unregisterReceiver(this)
+                mUsbDevice = null
+                mCurrentDevice = null
+            }
+        }
+
+        removeDevice()
+    }
+
+    override fun onDisconnect(onDisconnected: () -> Unit) {
+        this.onDisconnected = onDisconnected
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val action: String? = intent.getAction()
+        when (action) {
+            ACTION_USB_PERMISSION -> {
+                Log.d(TAG, "ACTION_USB_PERMISSION")
+                val hasUsbPermission: Boolean =
+                    intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)
+                val usbDevice = mUsbDevice
+                if (hasUsbPermission && usbDevice != null) {
+                    Log.d(
+                        TAG,
+                        usbDevice.getDeviceName() + " is acquire the usb permission. activate this device."
+                    )
+                    createBioMiniDevice()
+                } else {
+                    Log.d(TAG, "USB permission is not granted!")
+                }
+            }
+
+            UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
+                Log.d(TAG, "ACTION_USB_DEVICE_ATTACHED")
+                findAndRequestPermission()
+            }
+
+            UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                Log.d(TAG, "ACTION_USB_DEVICE_DETACHED")
+                removeDevice()
+                onDisconnected?.invoke()
+            }
+
+            else -> {}
+        }
+    }
+
     private fun registerBroadcastReceiver() {
         Log.d(TAG, "start initUsbListener!")
 
         ContextCompat.registerReceiver(
             context,
-            mUsbReceiver,
+            this,
             IntentFilter(ACTION_USB_PERMISSION),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
         ContextCompat.registerReceiver(
             context,
-            mUsbReceiver,
+            this,
             IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
         ContextCompat.registerReceiver(
             context,
-            mUsbReceiver,
+            this,
             IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
@@ -208,15 +232,20 @@ class BioMiniScanner(private val context: Context) : Scanner {
             if (_device.getVendorId() == 0x16d1) {
                 Log.d(TAG, "found suprema usb device")
                 mUsbDevice = _device
-                mHandler.sendEmptyMessage(REQUEST_USB_PERMISSION)
+
+                val permissionIntent = PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    Intent(ACTION_USB_PERMISSION).also {
+                        it.setPackage(context.packageName)
+                    },
+                    FLAG_MUTABLE,
+                )
+                mUsbManager?.requestPermission(mUsbDevice, permissionIntent)
             } else {
                 Log.d(TAG, "This device is not suprema device!  : " + _device.getVendorId())
             }
         }
-    }
-
-    override fun onDisconnect(onDisconnected: () -> Unit) {
-        this.onDisconnected = onDisconnected
     }
 
     private fun getCaptureCallback(latch: CountDownLatch): CaptureResponder {
@@ -294,53 +323,6 @@ class BioMiniScanner(private val context: Context) : Scanner {
                 30000 // 30 seconds
             )
         )
-    }
-
-    override fun capture(): CaptureResult? {
-        return mCurrentDevice?.let {
-            val latch = CountDownLatch(1)
-            setParameters(it)
-            doSingleCapture(latch)
-            latch.await()
-
-            val tmp = mTemplateData
-            return if (tmp?.data != null) {
-                CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
-            } else {
-                null
-            }
-        }
-    }
-
-    override fun stopCapture() {
-        val device = mCurrentDevice
-        if (device != null) {
-            if (!device.isCapturing()) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-                return
-            }
-            val result: Int = device.abortCapturing()
-            Log.d(TAG, "run: abortCapturing : $result")
-            if (result == 0) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-            }
-        }
-    }
-
-    override fun disconnect() {
-        var result = 0
-        val factory = mBioMiniFactory // avoid null errors
-        if (factory != null) {
-            if (mUsbDevice != null) result = factory.removeDevice(mUsbDevice)
-            if (result == IBioMiniDevice.ErrorCode.OK.value() || result == IBioMiniDevice.ErrorCode.ERR_NO_DEVICE.value()) {
-                factory.close()
-                context.unregisterReceiver(mUsbReceiver)
-                mUsbDevice = null
-                mCurrentDevice = null
-            }
-        }
-
-        removeDevice()
     }
 }
 
