@@ -1,17 +1,90 @@
 ![](Android/app/src/main/res/mipmap-xhdpi/ic_launcher.png)
 
+
 # Keppel
+
+### Biometrics Solutions for ODK Ecosystem Tools
+
+This project provides an Android app "Keppel" that interfaces with mobile data collection software of the ODK ecosystem and which allows ISO 19794-2 fingerprint templates to be scanned and/or matched as part of an [XLSForm](https://xlsform.org/). We also provide a second app, designed to be run on a computer workstation, which can compare two fingerprint templates and return a matching score (useful for _post-hoc_ quality assurance). 
+
 
 [![Android](https://github.com/LSHTM-ORK/ODK_Biometrics/workflows/Android/badge.svg)](https://github.com/LSHTM-ORK/ODK_Biometrics/actions?query=workflow%3AAndroid)
 
 [![CLI](https://github.com/LSHTM-ORK/ODK_Biometrics/workflows/CLI/badge.svg)](https://github.com/LSHTM-ORK/ODK_Biometrics/actions?query=workflow%3ACLI)
 
+## Validation 
+
+This software has been evaluated in a formal scientific context and the results are published in the following study.
+
+**Biometric linkage of longitudinally collected electronic case report forms and confirmation of subject identity: an open framework for ODK and related tools**  
+<sub>Chrissy h Roberts, Callum Stott, Marianne Shawe-Taylor, Zain Chaudhry, Sham Lal 1 & Michael Marks  
+_Front Digit Health_. 2023 Aug 4:5:1072331. eCollection 2023.</sub>
+  
+<sub>PMID: 37600479  PMCID: PMC10436742  DOI: [10.3389/fdgth.2023.1072331](https://doi.org/10.3389/fdgth.2023.1072331)</sub>
 
 
-This project provides a simple Android app that interfaces with mobile data collection software to allow fingerprint templates to be scanned as part of an [XLSForm](https://xlsform.org/). We also provide a second app, designed to be run on a computer workstation, which can compare two fingerprint templates and return a matching score. 
+## Features
+
+* Capture to XLSForm one or more `enrollment templates`<sup>A</sup> in an XLSForm
+* Capture to XLSForm a National Institute of Standards and Technology Fingerprint Image Quality (NFIQ) value, a measure of fingerprint quality
+* Scan a `verification template`<sup>B</sup> and compare template to one or more previously saved templates for a known individual
+* Return a match probability score indicating likelihood of their being a match between a verification template and one or more enrollment template.
+* Using XLSform design, constrain form progress, content or actions on basis of both NFIQ and match probability.
+* Depending on form design, capture an `identification template`<sup>C</sup> to scan a modestly sized database of people, in order to identify the current person.
+* Capture to XLSForm the verification or identification templates and verification NFIQ scores
+
+  
+<sup>A</sup> Enrollment Templates: Created when a user is initially registered in the system. These templates need to be of high quality to ensure reliable future matching.
+<sup>B</sup> Verification Templates: Generated when a user attempts to verify their identity. These are compared against enrollment templates for a match.
+<sup>C</sup> Identification Templates: Used in systems where one-to-many matching is required, such as law enforcement databases.
+
+## Disclaimer
+
+While we are confident that Keppel provides a robust framework for the integration of biometric data in the ODK ecosystem, please be aware that you use the software entirely at your own risk. We make no representations, warranties, or guarantees—express or implied—regarding the suitability, reliability, security, or accuracy of Keppel for your specific use case.
+
+By using Keppel, you acknowledge and agree that:
+
+* Data Protection: It is your responsibility to ensure compliance with all applicable data protection laws, including but not limited to the UK GDPR and the Data Protection Act 2018, when collecting, storing, or processing biometric data using this software.  
+* No Liability: To the fullest extent permitted by law, we disclaim any and all liability for any loss, damage, or legal claims that may arise from the use, misuse, or inability to use Keppel in connection with biometric data collection or processing.  
+* User Responsibility: You are solely responsible for conducting due diligence to assess the suitability of Keppel for your particular requirements, including evaluating the potential risks associated with handling sensitive biometric information.  
+* No Endorsement: The availability of Keppel does not imply any endorsement of its fitness for the collection or processing of biometric data, particularly in jurisdictions where additional regulatory or ethical considerations may apply.  
+* By continuing to use Keppel for biometric purposes, you accept these terms and conditions in full.  
+
+## Security and Privacy
+
+Please be aware that fingerprints (or any form of biometric data) are very sensitive personal data. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so. Please consider carrying out a data protection impact assessment prior to data collection.
+
+If you're collecting any personal information using ODK it would be a good idea to look into [encrypting forms](https://docs.opendatakit.org/encrypted-forms) and also to read ODK's [general documentation on security](https://docs.opendatakit.org/security-privacy/).
 
 
-## Compatibility
+## Biometric Scanner Device Compatibility
+
+Keppel works with two devices at present, but full functionality is only possible with the Biomini Slim 3 and hardware modules based on this. 
+We strongly recommend using the most recent release and a BioMini 3. Legacy users working with Mantra MDS100 should use release v0.3
+
+| <sub>Scanner</sub> | <sub>Releases</sub> |<sub>Compatible Android Versions</sub> |<sub>Register Fingerprint Templates</sub>| <sub>Match Templates on PC </sub> | <sub>Match Templates on Android Device </sub> 
+|--------------------|---------------------|-----------|-----------------------------------------|-----------------------------------|----------------------------------------------|
+|Biomini Slim 3      | 0.4.2 and above     |12 - 15 | YES | YES | YES |
+|Biomini Slim 3      | 0.4.0 - 0.4.1       |12 - 13 | YES | YES | YES |
+|Mantra MFS100       | 0.3                 |12 - 15 | YES | YES | NO|
+
+## Suppliers
+
+* **Biomini Slim 3**
+  * This device is available from a variety of stockists
+  * We bought our test devices from Xperix - https://www.xperix.com/en/contents/detail.php?code=010109
+  * Also any device using the Biomini Slim 3 Module (for instance products similar to this https://www.siasa.com/Biopad/pdf/250821_REV3.pdf)
+  * Total cost for two devices including shipping and customs taxes was ~£250
+ 
+  
+* **Mantra MFS100**
+  * We bought our test devices from Mantratec - https://www.mantratec.com/products/Fingerprint-Sensors/MFS100-Fingerprint-Scanner
+  * There's also plenty of generic biometric readers that look suspiciously like the MFS100 on Amazon, but we haven't tested these.
+  * We paid around £150 for two devices including shipping and customs taxes
+
+
+## Compatibility with ODK Ecosystem Platforms
+
 This platform should work with all platforms that are based on ODK. 
 
 | <sub>Platform</sub> | <sub>App & version</sub> | <sub>Compatibility</sub>
@@ -22,35 +95,27 @@ This platform should work with all platforms that are based on ODK.
 |<sub>CommCare</sub>|<sub>CommCare v8</sub>|<sub>Only with Advanced Plan or higher</sub>|
 |<sub>Ona</sub>|<sub>ODK COllect v2022.3</sub>|<sub>YES</sub>
 
-
+Versions 0.3 and lower worked only with the low cost (<£50) Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
 
 ## System design
 
-The novel biometrics system consists of two components. The first component is “Keppel”, a smartphone app designed to run on Google Android operating systems. This app provides an I/O interface between the ODK Collect app and an ANSI INCITS 378-2004 compliant electronic fingerprint reader/sensor device. The app has to be sideloaded (it isn't on play store yet).
+The biometrics system consists of two components. The first component is “Keppel”, a smartphone app designed to run on Google Android operating systems. This app provides an I/O interface between the ODK Collect app and an ISO19794-2 compliant electronic fingerprint reader/sensor device. The app has to be sideloaded (it isn't on play store yet). The second component is a java script which allows the comparison of templates collected with Keppel on a PC. 
 
-A really important point here is that the system is not simply taking photographs of fingerprints. The data are stored as concise code which has a very 'lite' impact on the size of the data stored in ODK and also requires no use of attachments. The fingerprint data are captured as plain text that is stored and encrypted along with other ODK data.
+An important point  is that the system is not taking photographs or scans of fingerprints. The data are stored as concise code which has a very 'lite' impact on the size of the data stored in ODK and also requires no use of attachments. The fingerprint data are captured as plain text that is stored and encrypted along with other ODK data.
 
-The Keppel Smartphone app was designed using [Android Studio and Software Development Kit (SDK)](https://developer.android.com/studio). The initial version of the app works only with the low cost (<£50) Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
-
-<p align="center"><img  src="imgs/mantra_img.jpeg" width="400"></p>
-
+The Keppel Smartphone app was designed using [Android Studio and Software Development Kit (SDK)](https://developer.android.com/studio). 
 
 The app was designed with a view to making the addition of further biometric sensors relatively simple. A software ‘demo’ scanner is also included, and this allows users to test their fingerprint supported ODK forms without having a scanner connected.
 
-
-## Security and Privacy
-
-Please be aware that fingerprints (or any form of biometric data) are very sensitive personal data. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so. Please consider carrying out a data protection impact assessment prior to data collection.
-
-If you're collecting any personal information using ODK it would be a good idea to look into [encrypting forms](https://docs.opendatakit.org/encrypted-forms) and also to read ODK's [general documentation on security](https://docs.opendatakit.org/security-privacy/).
-
+* As of v0.4.0, Keppel is able to perform registration and validation of templates
+* Keppel is controlled exclusively ODK Collect via XLSForm design
 
 
 ## Usage
 
 ### Install the Keppel App on your Android phone or tablet
 
-Download the [latest release](https://github.com/LSHTM-ORK/ODK_Biometrics/releases/latest) and sideload the APK file on to your Android device
+Download the [latest release](https://github.com/LSHTM-ORK/ODK_Biometrics/releases/latest) and sideload the APK file on to your Android device. If you are unsure of how to do this please ask for help from an information technology expert. Instructions for how to sideload on specific Android devices is widely available online, but differs between devices so we can't summarise here. Please note that sideloading any app is a potential security risk. Please refer to our open source in order to carry out your own risk assessment for sideloading. We strongly recommend that if asked, you allow your system to perform a Google Play Protect scan on our app before installing. 
 
 ### Scanning fingerprints in ODK XLSform format
 
