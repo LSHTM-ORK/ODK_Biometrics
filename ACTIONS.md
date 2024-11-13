@@ -4,7 +4,7 @@ Keppel is designed to be used as an ["external app" for ODK Collect](https://doc
 
 ## Scan
 
-The scan action (`uk.ac.lshtm.keppel.android.SCAN`) returns a hex encoded template based on a scanned finger. 
+The scan action (`uk.ac.lshtm.keppel.android.SCAN`) returns a hex encoded template (`text`) based on a scanned finger.
 
 An optional `uk.ac.lshtm.keppel.android.return_iso_template.fast` parameter can be passed as `true` to have Keppel start scanning immediately rather than needing the enumerator or participant to press "Capture".
 
@@ -21,14 +21,14 @@ ex:uk.ac.lshtm.keppel.android.SCAN
 In the group `body::intent`:
 
 ```
-ex:uk.ac.lshtm.keppel.android.SCAN(uk.ac.lshtm.keppel.android.return_iso_template=my_iso_template_field, uk.ac.lshtm.keppel.android.return_nfiq=my_nfiq_field)
+ex:uk.ac.lshtm.keppel.android.SCAN(uk.ac.lshtm.keppel.android.return_iso_template="my_iso_template_field", uk.ac.lshtm.keppel.android.return_nfiq="my_nfiq_field")
 ```
 
-The returned template or NFIQ can be included/omitted by including/omitting the corresponding parameter.
+The returned template (`text`) or NFIQ (`integer`) can be included/omitted by including/omitting the corresponding parameter.
 
 ## Match
 
-The match action (`uk.ac.lshtm.keppel.android.MATCH`) takes in a hex encoded template and returns a score based on matching against a capture.
+The match action (`uk.ac.lshtm.keppel.android.MATCH`) takes in a hex encoded template (`text`) and returns a score (`decimal`) based on matching against a capture.
 
 An optional `uk.ac.lshtm.keppel.android.return_iso_template.fast` parameter can be passed as `true` to have Keppel start scanning immediately rather than needing the enumerator or participant to press "Capture".
 
@@ -46,10 +46,10 @@ In the group `body::intent`:
 
 ```
 ex:uk.ac.lshtm.keppel.android.MATCH(uk.ac.lshtm.keppel.android.iso_template=iso_template_field, 
-uk.ac.lshtm.keppel.android.return_score=my_score_field, uk.ac.lshtm.keppel.android.return_iso_template=my_iso_template_field, uk.ac.lshtm.keppel.android.return_nfiq=my_nfiq_field)
+uk.ac.lshtm.keppel.android.return_score="my_score_field", uk.ac.lshtm.keppel.android.return_iso_template="my_iso_template_field", uk.ac.lshtm.keppel.android.return_nfiq="my_nfiq_field")
 ```
 
-The returned score, template or NFIQ can be included/omitted by including/omitting the corresponding parameter.
+The returned score (`decimal`), template (`text`) or NFIQ (`integer`) can be included/omitted by including/omitting the corresponding parameter.
 
 ## Multi-match
 
@@ -71,7 +71,7 @@ In the group `body::intent`:
 
 ```
 ex:uk.ac.lshtm.keppel.android.MATCH(uk.ac.lshtm.keppel.android.iso_template_1=iso_template_field_1, uk.ac.lshtm.keppel.android.iso_template_2=iso_template_field_2, 
-uk.ac.lshtm.keppel.android.return_score=my_score_field, uk.ac.lshtm.keppel.android.return_iso_template=my_iso_template_field, uk.ac.lshtm.keppel.android.return_nfiq=my_nfiq_field)
+uk.ac.lshtm.keppel.android.return_score="my_score_field", uk.ac.lshtm.keppel.android.return_iso_template="my_iso_template_field", uk.ac.lshtm.keppel.android.return_nfiq="my_nfiq_field")
 ```
 
-The returned score, template or NFIQ can be included/omitted by including/omitting the corresponding parameter.
+The returned score (`decimal`), template (`text`) or NFIQ (`integer`) can be included/omitted by including/omitting the corresponding parameter.
