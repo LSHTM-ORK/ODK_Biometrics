@@ -5,7 +5,7 @@
 
 ### Biometrics Solutions for ODK Ecosystem Tools
 
-This project provides an Android app "Keppel" that interfaces with mobile data collection software of the ODK ecosystem and which allows ISO 19794-2 fingerprint templates to be scanned and/or matched as part of an [XLSForm](https://xlsform.org/). We also provide a second app, designed to be run on a computer workstation, which can compare two fingerprint templates and return a matching score (useful for _post-hoc_ quality assurance). 
+This project provides an Android app `Keppel` that interfaces with mobile data collection software of the ODK ecosystem and which allows ISO 19794-2 fingerprint templates to be scanned and/or validated as part of an [XLSForm](https://xlsform.org/). We also provide a second app, the `Keppel CLI`, a command line interface which is designed to be run on a computer workstation. Keppel CLI can compare two fingerprint templates and return a matching score and is primarily useful for _post-hoc_ quality assurance and audit. 
 
 
 [![Android](https://github.com/LSHTM-ORK/ODK_Biometrics/workflows/Android/badge.svg)](https://github.com/LSHTM-ORK/ODK_Biometrics/actions?query=workflow%3AAndroid)
@@ -21,6 +21,8 @@ This software has been evaluated in a formal scientific context and the results 
 _Front Digit Health_. 2023 Aug 4:5:1072331. eCollection 2023.</sub>
   
 <sub>PMID: 37600479  PMCID: PMC10436742  DOI: [10.3389/fdgth.2023.1072331](https://doi.org/10.3389/fdgth.2023.1072331)</sub>
+
+
 
 
 ## Features
@@ -54,8 +56,19 @@ By using Keppel, you acknowledge and agree that:
 
 Please be aware that fingerprints (or any form of biometric data) are very sensitive personal data. Collecting them may help your programme or study but make sure to fully consider privacy and security concerns when doing so. Please consider carrying out a data protection impact assessment prior to data collection.
 
-If you're collecting any personal information using ODK it would be a good idea to look into [encrypting forms](https://docs.opendatakit.org/encrypted-forms) and also to read ODK's [general documentation on security](https://docs.opendatakit.org/security-privacy/).
+The data collected by Keppel are stored as concise textual code which has a very 'lite' impact on the size of the data stored in ODK and also requires no use of attachments. 
 
+Whilst Keppel does not directly capture an image of the fingerprint, [recent research](https://arxiv.org/pdf/2201.06164) has shown that generative adversarial networks are able to accurately reconstruct an image of a fingerprint from the type of template data that are collected by Keppel and other ISO 19794-2 templates. This new development and the inherent risk that the system could be used for malicious purpose, underlines the need for extreme caution when handling and storing template data.
+
+When validating fingerprints, a large number of templates, person identifiers and other data will be stored on Android handsets. It is of critical importance that you take steps to partition your work and minimise risk of data being exposed if one or more devices became compromised by malicious actors.
+
+As a bare minimum...
+
+* All Android devices should be **encrypted** and **password protected** with a long password or numeric pass-code that is **unique to each device**.
+* **Android devices should be managed** by an organisation. Enumerators should not use their personal devices. 
+* You should **partition your work** in to multiple forms. This minimises the risk that might emerge from having all study data on all devices. For instance, if you were working with ten schools, you should consider creating a separate version of your form for each school. This way, if a device being used in school A were to become compromised, the data being exposed would be constrained to school A.
+* Use ODK central's **app user** controls to limit access to each partitioned form, allowing only specified users to download the template data.
+  
 
 ## Biometric Scanner Device Compatibility
 
@@ -95,13 +108,11 @@ This platform should work with all platforms that are based on ODK.
 |<sub>CommCare</sub>|<sub>CommCare v8</sub>|<sub>Only with Advanced Plan or higher</sub>|
 |<sub>Ona</sub>|<sub>ODK COllect v2022.3</sub>|<sub>YES</sub>
 
-Versions 0.3 and lower worked only with the low cost (<£50) Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
+Versions 0.3 and lower worked only with the Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
 
 ## System design
 
 The biometrics system consists of two components. The first component is “Keppel”, a smartphone app designed to run on Google Android operating systems. This app provides an I/O interface between the ODK Collect app and an ISO19794-2 compliant electronic fingerprint reader/sensor device. The app has to be sideloaded (it isn't on play store yet). The second component is a java script which allows the comparison of templates collected with Keppel on a PC. 
-
-An important point  is that the system is not taking photographs or scans of fingerprints. The data are stored as concise code which has a very 'lite' impact on the size of the data stored in ODK and also requires no use of attachments. The fingerprint data are captured as plain text that is stored and encrypted along with other ODK data.
 
 The Keppel Smartphone app was designed using [Android Studio and Software Development Kit (SDK)](https://developer.android.com/studio). 
 
@@ -119,25 +130,38 @@ Download the [latest release](https://github.com/LSHTM-ORK/ODK_Biometrics/releas
 
 ### Scanning fingerprints in ODK XLSform format
 
-To setup a form to scan fingerprints the devices used for data collection will all need the app installed. It can be downloaded [here](https://github.com/chrissyhroberts/ODK_Fingerprints_Mantra/releases). The app integrates with ODK Collect's [External app widget](https://docs.opendatakit.org/form-question-types/#external-app-widget) using the `uk.ac.lshtm.keppel.android.SCAN` intent. An example [XML form](Example_ODK_form/form.xml) and [XLS Form](Example_ODK_form/XLS Form) are provided.
+The anticipated workflow is as follows
 
-Forms should be added to your ODK system as usual, via ODK Central. 
+* Timepoint 1  
+  * Register participants by scanning several templates
+  * Store several templates and information about the person's identity and location to an ODK Entities dataset.
+    
+* Timepoint 2 and further timepoints  
+  * Encounter participant, search for their name, age and location on list of entities.
+  * Confirm their identity by validating one new fingerprint template against the several stored templates.
+  * Collect further data ± updating entities
 
-To capture all the fingers of one hand, your XLS form would look like this.
 
-<p align="center"><img  src="imgs/form_five_fingers.png"></p>
+Example [XLS Forms](Example_ODK_form/) are provided for purposes of both [Registration](Example_ODK_form/person_registration.xlsx) and [Validation](Example_ODK_form/Person_follow_up.xlsx).
 
-The images below show how this looks in ODK Collect. Clicking 'launch' in ODK Collect opens the external app. Pressing 'capture' activates the scanner. Once the template has been captured, the data are returned to ODK Collect as plain text (N.B. Here I'm using the dummy scanner)
-<p float="left">
-
-  <img src="imgs/keppel_app_ss_0.png" width="200" /> 
-  <img src="imgs/keppel_app_ss_1.png" width="200" /> 
-  <img src="imgs/keppel_app_ss_2.png" width="200" />
-  <img src="imgs/keppel_app_ss_3.png" width="200" /> 
-
-</p>
 
 For a full list of actions that Keppel supports, see [here](ACTIONS.md).
+An example XLSform providing a complete list of functions is provided [here](Example_ODK_form/All_Functions.xlsx)
+
+
+### Quality Assurance and Threshold Values
+
+**NFIQ** is a quality metric. It is a score between 1 (best) and 5 (worst). You should generally aim to accept templates which have NFIQ scores of 1 or 2. When using Keppel, you should generally constrain your forms to progress only when NFIQ <=3. You may need to scan an individual's finger several times in order to get a high quality template.   
+
+Known Issue : Some individuals have poor quality fingerprints and it may be difficult to obtain NFIQ < 4. Sometimes it can help to scantly moisten the skin before scanning. This increases the surface contact between the scanner and skin.   
+
+**Matching Score** is a unitless metric that describes how well two templates compare to one another. It is likely to be much higher when two high quality (NFIQ = 1) templates are compared. Your ability to validate an indentity on the basis of the matching score is therefore predicated on the quality of the templates that are stored during registration and read during validation.   
+
+In order to confirm or reject the validation of an individual, you will need to constrain the matching score to an arbitrary **Threshold value**. In our validation study we found that it was very highly unlikely to obtain a matching score above 100 if the templates being validated were not obtained from the same finger. Whilst values above 40 are also likely to be true matches, we strongly encourage you to rescan any validation which obtains a score between 40 and 100. By rescanning, it is likely that in the case of a true match, you will eventually obtain a better matching score. We have constrained the example forms to matching scores >= 100. 
+
+![fdgth-05-1072331-g002](https://github.com/user-attachments/assets/997f6b46-7806-46a2-8181-2f3d106ee6af)
+_Figure (A). ROC analysis (Single Finger). The area under the ROC curve for any pair of fingerprint templates was 0.99. This analysis was based on 1,010 true positive and 1,010 true negative template pairs. (B) Assay performance variations by finger. There was a progressive (from thumb to pinkie) decrease in the average score [S] of a true positive template pair according to which finger was used. (C) ROC analysis (score summed across thumb, index and middle finger). The area under the ROC curve was 1.00, indicating a perfect delineation between true positives and true negatives. (D) Summed scores [∑S] of three-finger scanning among true positive and true negative groups._
+
 
 ### ODK data downloads
 
@@ -151,6 +175,8 @@ When you download your data CSV file from ODK Central, your fingerprint template
 |<sub>2021-12-22T12:00:11.682Z</sub>|<sub>004</sub> |<sub>464d520020323000000000d80000013c016200c500c501000000461f807f00eed71...</sub>|<sub>uuid:9d55c0a9-901a-4908-b553-8a43a0b4037e</sub>|
 
 
+## Keppel CLI
+The Keppel CLI is a command line tool that allows you to validate any pair of templates on a PC. This may be useful for _post-hoc_ quality assurance processes. 
 
 ### Install the Keppel CLI on your workstation 
 
@@ -184,7 +210,7 @@ Commands:
 ```
 
 
-### Matching fingerprints
+### Matching fingerprints on Keppel CLI
 
 To match two (hex encoded) fingerprint templates run:
 
@@ -196,7 +222,7 @@ foo@bar:~$ keppel match /path/to/first_template /path/to/second_template
 The core function requires that each template is stored in a single line of its own text file. The default behaviour is to return the matching score for the two templates
 
 
-#### Other commands
+#### Other commands in Keppel CLI
 
 To see available commands type 
 
@@ -205,7 +231,6 @@ foo@bar:~$ keppel match -h
 ```
 
 From version 0.3, the following options are available
-
 
 **-p**         
 Treats TEMPLATE_ONE and TEMPLATE_TWO as plain text rather than file
@@ -232,7 +257,7 @@ Threshold (score) to be used to determine whether templates are a match or misma
 Show this message and exit`
 
 
-## Controlling the Keppel CLI with R
+### Controlling the Keppel CLI with R
 
 [R](https://www.r-project.org/) is our favourite application for data munging, analysis and statistics. R plays nicely with system tools and can be used to control the Keppel API. .
 
@@ -303,39 +328,15 @@ Processing n templates using the parallel approach (16 cores) took
 |<sub>2000</sub> | <sub>16</sub>  | <sub>69.7</sub>     | <sub>0.034</sub>         |
 |<sub>10000</sub>| <sub>16</sub>  | <sub>773.4</sub>    | <sub>0.077</sub>         |
 
-## Supported devices
-
-### Mantra MFS100
-
-#### Mantra Softech India Private Limited
-
-* Mantra is a leading manufacturer and developer of Biometric devices, software and solutions from 2006 onwards.
-* The biometric-based technology offers a dependable, helpful, and authentic way of verifying/identifying an individual's identity utilizing latest Biometric fingerprint scanner.
-* Fingerprint scanners are being used broadly for enrollment, identification & verification in varied projects where the identity of people is required.
-* Mantra's biometric fingerprint devices offer superior execution, accuracy, and continuance.
-* Our wide ranges of fingerprint scanner devices deliver quick personality verification with a high level of security in a consistent way for various Citizen or Person identity ventures.
-
-#### Mantra’s MFS100 - Biometric Fingerprint Scanner
-
-* FBI and STQC certified single finger scanner MFS100 is high quality USB fingerprint sensor for fingerprint authentication in desktop or network security.
-* MFS100 is based on optical sensing technology which efficiently recognizes poor quality fingerprints also.
-* MFS100 can be used for authentication, identification and verification functions that let your fingerprint act like digital passwords that cannot be lost, forgotten or stolen.
-* Hard optical sensor is resistant to scratches, impact, vibration and electrostatic shock.
-* Lowest FAR and FRR NIST complied interoperable template format standards (ANSI378 /ISO19794-2). Compatibility with ISO 19794-4 and ISO 19794-2 for fingerprint capture and verification.
-* Apart from FBI and STQC, MFS100 is CE, FCC, RoHS, WHQL, CB 60950 approved. Equivalent to FBI PIV certification.
-* Supports operating system plaforms like Windows 98 SE, Me, 2000, XP, Windows7, windows vista, windows server(2003/2007/2008) and Linux.
-* SDK, Libraries and drivers support across all mentioned platforms. (32 bit/64 bit) Easy integration into product servers and application support
-
 
 ## Why the name? 
 
-This project was created by researchers at the London School of Hygiene & Tropical Medicine. Our mission is to improve health and health equity in the UK and worldwide; working in partnership to achieve excellence in public and global health research, education and translation of knowledge into policy and practice. LSHTM's main building is situated on Keppel Street in London's Bloomsbury district. The Keppel App and CLI are named after the street where you will find us and not after any (no doubt problematic) historical figures who may have given their name to the street.
-
+This project was created by researchers at the [London School of Hygiene & Tropical Medicine](https://www.lshtm.ac.uk/) in collaboration with [getODK](https://getodk.org/). LSHTM's mission is to improve health and health equity in the UK and worldwide; working in partnership to achieve excellence in public and global health research, education and translation of knowledge into policy and practice. LSHTM's main building is situated on [Keppel Street](https://www.google.com/maps/place/Keppel+St,+London+WC1E+6DP/@51.5205239,-0.1325345,966m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48761b2e05fb6be3:0xaf76c86ede9df86d!8m2!3d51.5205206!4d-0.1299596!16s%2Fg%2F11fy7f88f4!5m1!1e1?entry=ttu&g_ep=EgoyMDI0MTExMC4wIKXMDSoASAFQAw%3D%3D) in London's Bloomsbury district. The Keppel App and CLI are named after the street where you will find us, and not after the street's own namesake [Lord Augustus Keppel (1725-1786)](https://en.wikipedia.org/wiki/Augustus_Keppel,_1st_Viscount_Keppel).
 
 
 ## Funding & Ethics
 
-This work was funded by the UK Department of Health and Social Care using UK Aid funding managed by the NIHR (PR-OD-1017-20001). Ethical permission for elements of the work that handled fingerprint templates from living humans was granted by the London School of Hygiene & Tropical Medicine Observational Research Ethics Committee (Ref. 22562).
+Initial work on Keppel was funded by the UK Department of Health and Social Care using UK Aid funding managed by the NIHR (PR-OD-1017-20001). Ethical permission for elements of the validation work that handled fingerprint templates from living humans was granted by the London School of Hygiene & Tropical Medicine Observational Research Ethics Committee (Ref. 22562). Continuing development of Keppel has been funded by the LSHTM ODK Pay What You Can Scheme, and by anonymous donors. 
 
 <p float="left">
   <img src="imgs/NIHR.png" width="250" /> 
