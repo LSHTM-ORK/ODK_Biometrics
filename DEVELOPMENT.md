@@ -10,7 +10,7 @@ For Android:
 
 For CLI development:
 
-- JDK 11
+- JDK 17
 
 ## Android Setup
 
