@@ -113,66 +113,17 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
             mCaptureOption.extractParam.maxTemplateSize =
                 IBioMiniDevice.MaxTemplateSize.MAX_TEMPLATE_1024
 
-            val latch = CountDownLatch(1)
-            var template: IBioMiniDevice.TemplateData? = null
-            var quality: Int? = null
-            val result: Boolean = device.captureSingle(
-                mCaptureOption,
-                object : CaptureResponder() {
-                    override fun onCapture(
-                        context: Any?,
-                        fingerState: IBioMiniDevice.FingerState?
-                    ) {
-                        super.onCapture(context, fingerState)
-                    }
-
-                    override fun onCaptureEx(
-                        context: Any?,
-                        option: IBioMiniDevice.CaptureOption,
-                        capturedImage: Bitmap?,
-                        capturedTemplate: IBioMiniDevice.TemplateData?,
-                        fingerState: IBioMiniDevice.FingerState?,
-                    ): Boolean {
-                        Log.d(TAG, "START! : " + mCaptureOption.captureFuntion.toString())
-                        val currentDevice = mCurrentDevice
-                        if (capturedTemplate != null) {
-                            Log.d(TAG, "TemplateData is not null!")
-                            template = capturedTemplate
-                        }
-                        if (currentDevice != null) {
-                            val imageData: ByteArray? = currentDevice.getCaptureImageAsRAW_8()
-                            if (imageData != null) {
-                                val mode: IBioMiniDevice.FpQualityMode =
-                                    IBioMiniDevice.FpQualityMode.NQS_MODE_NFIQ
-                                quality = currentDevice.getFPQuality(
-                                    imageData,
-                                    currentDevice.getImageWidth(),
-                                    currentDevice.getImageHeight(),
-                                    mode.value(),
-                                )
-                                Log.d(TAG, "mFpQuality : $quality")
-                            }
-                        }
-
-                        latch.countDown()
-                        return true
-                    }
-
-                    override fun onCaptureError(context: Any?, errorCode: Int, error: String) {
-                        latch.countDown()
-                    }
-                },
-                true,
-            )
+            val captureResponder = BlockingCaptureResponder(device)
+            val result = device.captureSingle(mCaptureOption, captureResponder, true)
 
             if (!result) {
                 Log.d(TAG, "capture failed")
             }
 
-            latch.await()
-            return template?.data.let {
+            val captureResult = captureResponder.awaitResult()
+            return captureResult?.first?.data.let {
                 if (it != null) {
-                    CaptureResult(it.toHexString(), quality ?: 0)
+                    CaptureResult(it.toHexString(), captureResult?.second ?: 0)
                 } else {
                     null
                 }
