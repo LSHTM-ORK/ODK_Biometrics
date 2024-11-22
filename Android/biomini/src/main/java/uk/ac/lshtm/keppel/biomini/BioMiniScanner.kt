@@ -43,7 +43,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     private var mBioMiniFactory: BioMiniFactory? = null
     var mCurrentDevice: IBioMiniDevice? = null
     private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
-    private lateinit var onConnected: () -> Unit
+    private lateinit var onConnected: (Boolean) -> Unit
     private var mTemplateData: IBioMiniDevice.TemplateData? = null
     private var mFpQuality: Int? = null
 
@@ -73,9 +73,10 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         if (_result == true) {
             mCurrentDevice = mBioMiniFactory?.getDevice(0)
             if (mCurrentDevice != null) {
-                onConnected()
+                onConnected(true)
                 Log.d(TAG, "mCurrentDevice attached : $mCurrentDevice")
             } else {
+                onConnected(false)
                 Log.d(TAG, "mCurrentDevice is null")
             }
         } else {
@@ -83,7 +84,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         }
     }
 
-    override fun connect(onConnected: () -> Unit): Scanner {
+    override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         getDeviceName().let { Log.d(TAG, "Device name: $it") }
         this.onConnected = onConnected
         // ** NOTE **

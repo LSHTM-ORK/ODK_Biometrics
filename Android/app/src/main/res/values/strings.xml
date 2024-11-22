@@ -10,6 +10,8 @@
     <string name="match">Match</string>
     <string name="input_error">Input template is not in the correct format!</string>
     <string name="no_capture_result_error">No capture result from scanner!</string>
+    <string name="connection_failure_error">An error occurred connecting to the fingerprint scanner. Please try one of the following:\n\n(1) For built-in fingerprint scanners, press the power button momentarily to put the tablet to sleep, and then press it again to wake up the tablet again.\n\n(2) For external USB scanners, disconnect and reconnect the USB cable going to the scanner.
+If the problem persists, please restart the tablet.</string>
     <string name="input_missing_error">\"%1$s\" is missing!</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>

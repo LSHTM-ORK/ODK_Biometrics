@@ -116,4 +116,19 @@ class ScanActionTest {
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
     }
+
+    @Test
+    fun whenScannerFailsToConnect_showsAnError() {
+        val intent = Intent(External.ACTION_SCAN).also {
+            it.putExtra(OdkExternal.PARAM_INPUT_VALUE, "foo")
+            it.putExtra(External.PARAM_FAST, "true")
+        }
+
+        val result = rule.launchAction(intent, ConnectingPage()) {
+            it.failToConnect(fakeScanner, ErrorDialogPage(R.string.connection_failure_error))
+                .clickOk()
+        }
+
+        assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
+    }
 }

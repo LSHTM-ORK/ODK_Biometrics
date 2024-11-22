@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 if (file("./google-services.json").exists()) {
     apply plugin: 'com.google.gms.google-services'
@@ -98,6 +99,7 @@ dependencies {
     implementation libs.play.services.oss.licenses
     implementation libs.androidx.preference.ktx
     implementation libs.sourceafis
+    implementation libs.androidx.navigation.fragment
     implementation project(':core')
 
     if (file("../mantramfs100/libs/mantra.mfs100.jar").exists()) {

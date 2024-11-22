@@ -2,21 +2,20 @@ package uk.ac.lshtm.keppel.android.scanning
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.navigation.findNavController
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
-import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.matcher
 import uk.ac.lshtm.keppel.android.scannerFactory
-import uk.ac.lshtm.keppel.android.scanning.ScannerViewModel.ScannerState
 import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
@@ -27,9 +26,9 @@ import uk.ac.lshtm.keppel.core.TaskRunner
 class ScanActivity : AppCompatActivity() {
 
     private val request: Request by lazy { IntentParser.parse(intent) }
-    private val viewModel: ScannerViewModel by viewModels {
+    private val scannerViewModel: ScannerViewModel by viewModels {
         ScanViewModelFactory(
-            scannerFactory().create(this@ScanActivity),
+            scannerFactory().create(this),
             matcher(),
             taskRunner(),
             request
@@ -37,111 +36,41 @@ class ScanActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        supportFragmentManager.fragmentFactory = object : FragmentFactory() {
+            override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+                return when (loadFragmentClass(classLoader, className)) {
+                    ScanFragment::class.java -> ScanFragment(request)
 
+                    else -> super.instantiate(classLoader, className)
+                }
+            }
+        }
+
+        super.onCreate(savedInstanceState)
         val binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        when (request) {
-            is Request.Match -> {
-                Analytics.log("match_start")
-
-                if ((request as Request.Match).isoTemplates.isEmpty()) {
-                    val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
-
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(error)
-                        .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                        .show()
-
-                    return
-                }
-            }
-
-            is Request.Scan -> {
-                Analytics.log("scan_start")
-            }
-        }
-
-        viewModel.scannerState.observe(this) { state ->
-            when (state) {
-                ScannerState.Disconnected -> {
-                    binding.connectProgressBar.visibility = View.VISIBLE
-                    binding.captureButton.visibility = View.GONE
-                    binding.captureProgressBar.visibility = View.GONE
-                }
-
-                ScannerState.Connected -> {
-                    binding.connectProgressBar.visibility = View.GONE
-                    binding.captureButton.visibility = View.VISIBLE
-                    binding.captureProgressBar.visibility = View.GONE
-                }
-
-                ScannerState.Scanning -> {
-                    binding.connectProgressBar.visibility = View.GONE
-                    binding.captureButton.visibility = View.GONE
-                    binding.captureProgressBar.visibility = View.VISIBLE
-                }
-            }
-        }
-
-        viewModel.result.observe(this) { result ->
+        scannerViewModel.result.observe(this) { result ->
             if (result != null) {
-                processResult(request, result)
+                processResult(result)
             }
         }
-
-        binding.captureButton.setOnClickListener {
-            viewModel.capture()
-        }
-
-        binding.cancelButton.setOnClickListener {
-            Analytics.log("cancel")
-            finish()
-        }
-
-        if (request is Request.Match) {
-            binding.captureButton.setText(R.string.match)
-        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.stopCapture()
-    }
+    private fun processResult(result: ScannerViewModel.Result) {
+        if (result is ScannerViewModel.Result.Match) {
+            Analytics.log("match_return")
 
-    private fun processResult(request: Request, result: ScannerViewModel.Result) {
-        when (result) {
-            is ScannerViewModel.Result.Match -> {
-                Analytics.log("match_return")
-
-                returnResult(
-                    buildMatchReturn(
-                        request.odkExternalRequest,
-                        result.score,
-                        result.captureResult
-                    )
+            returnResult(
+                buildMatchReturn(
+                    request.odkExternalRequest,
+                    result.score,
+                    result.captureResult
                 )
-            }
-
-            is ScannerViewModel.Result.Scan -> {
-                Analytics.log("scan_return")
-                returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
-            }
-
-            is ScannerViewModel.Result.InputError -> {
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.input_error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
-            }
-
-            is ScannerViewModel.Result.NoCaptureResultError -> {
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(R.string.no_capture_result_error)
-                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
-                    .show()
-            }
+            )
+        } else if (result is ScannerViewModel.Result.Scan) {
+            Analytics.log("scan_return")
+            returnResult(buildScanReturn(request.odkExternalRequest, result.captureResult))
         }
     }
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/scan">
+
+    <fragment
+        android:id="@+id/scan"
+        android:name="uk.ac.lshtm.keppel.android.scanning.ScanFragment"
+        android:label="Scan">
+
+        <action
+            android:id="@+id/scan_to_fatal_error"
+            app:destination="@+id/fatal_error"/>
+    </fragment>
+
+    <dialog
+        android:id="@+id/fatal_error"
+        android:name="uk.ac.lshtm.keppel.android.FatalErrorDialogFragment">
+        <argument android:name="error" />
+    </dialog>
+
+</navigation>
+

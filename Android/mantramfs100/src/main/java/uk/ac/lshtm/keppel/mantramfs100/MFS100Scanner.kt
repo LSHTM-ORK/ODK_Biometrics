@@ -12,7 +12,7 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
 
     constructor(context: Context) : this(context, ::MFS100)
 
-    private lateinit var onConnected: () -> Unit
+    private lateinit var onConnected: (Boolean) -> Unit
     private var onDisconnected: (() -> Unit)? = null
 
     private val mfS100 = mfs100Provider(object : MFS100Event {
@@ -39,7 +39,7 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
         }
     })
 
-    override fun connect(onConnected: () -> Unit): Scanner {
+    override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         this.onConnected = onConnected
         mfS100.SetApplicationContext(context)
         return this
@@ -69,7 +69,7 @@ class MFS100Scanner(private val context: Context, mfs100Provider: (MFS100Event) 
 
     private fun initialize() {
         mfS100.Init()
-        onConnected()
+        onConnected(true)
     }
 
     private fun loadFirmware() {
