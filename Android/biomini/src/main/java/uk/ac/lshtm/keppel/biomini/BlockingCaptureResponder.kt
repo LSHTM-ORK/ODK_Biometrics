@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.suprema.CaptureResponder
 import com.suprema.IBioMiniDevice
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class BlockingCaptureResponder(private val device: IBioMiniDevice) : CaptureResponder() {
 
@@ -50,8 +51,8 @@ class BlockingCaptureResponder(private val device: IBioMiniDevice) : CaptureResp
         latch.countDown()
     }
 
-    fun awaitResult(): Pair<IBioMiniDevice.TemplateData, Int>? {
-        latch.await()
+    fun awaitResult(timeout: Long): Pair<IBioMiniDevice.TemplateData, Int>? {
+        latch.await(timeout, TimeUnit.MILLISECONDS)
         return result
     }
 }

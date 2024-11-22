@@ -6,20 +6,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
-import com.suprema.CaptureResponder
 import com.suprema.IBioMiniDevice
 import com.suprema.IUsbEventHandler
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.toHexString
-import java.util.concurrent.CountDownLatch
 
 private const val TAG = "KeppelBioMiniScanner"
 
@@ -120,7 +117,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
                 Log.d(TAG, "capture failed")
             }
 
-            val captureResult = captureResponder.awaitResult()
+            val captureResult = captureResponder.awaitResult(TIMEOUT_MS)
             return captureResult?.first?.data.let {
                 if (it != null) {
                     CaptureResult(it.toHexString(), captureResult?.second ?: 0)
@@ -267,11 +264,12 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         )
 
         iBioMiniDevice.setParameter(
-            IBioMiniDevice.Parameter(
-                IBioMiniDevice.ParameterType.TIMEOUT,
-                30000 // 30 seconds
-            )
+            IBioMiniDevice.Parameter(IBioMiniDevice.ParameterType.TIMEOUT, TIMEOUT_MS)
         )
+    }
+
+    companion object {
+        private const val TIMEOUT_MS = 30000L
     }
 }
 
