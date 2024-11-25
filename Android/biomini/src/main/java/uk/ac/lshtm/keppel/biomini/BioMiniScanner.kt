@@ -39,7 +39,6 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     private var mUsbManager: UsbManager? = null
     private var mBioMiniFactory: BioMiniFactory? = null
     var mCurrentDevice: IBioMiniDevice? = null
-    private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
     private lateinit var onConnected: (Boolean) -> Unit
 
     private var onDisconnected: (() -> Unit)? = null
@@ -105,13 +104,14 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         return mCurrentDevice?.let { device ->
             setParameters(device)
             Log.d(TAG, "START!")
-            mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.CAPTURE_SINGLE
-            mCaptureOption.extractParam.captureTemplate = true
-            mCaptureOption.extractParam.maxTemplateSize =
+            val captureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
+            captureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.CAPTURE_SINGLE
+            captureOption.extractParam.captureTemplate = true
+            captureOption.extractParam.maxTemplateSize =
                 IBioMiniDevice.MaxTemplateSize.MAX_TEMPLATE_1024
 
             val captureResponder = BlockingCaptureResponder(device)
-            val result = device.captureSingle(mCaptureOption, captureResponder, true)
+            val result = device.captureSingle(captureOption, captureResponder, true)
 
             if (!result) {
                 Log.d(TAG, "capture failed")
