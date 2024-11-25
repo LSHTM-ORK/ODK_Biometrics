@@ -10,6 +10,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.ac.lshtm.keppel.android.BuildConfig
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.availableScanners
+import uk.ac.lshtm.keppel.android.scanning.ScanActivity
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -37,6 +38,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val entries = availableScanners().map { it.name }.toTypedArray()
         scannerPreference.entries = entries
         scannerPreference.entryValues = entries
+
+        findPreference<Preference>("test_scanner")!!.setOnPreferenceClickListener {
+            requireActivity().startActivity(Intent(requireActivity(), ScanActivity::class.java))
+            true
+        }
     }
 
     private fun setupAppVersionPreference() {
