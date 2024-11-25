@@ -16,6 +16,11 @@ class SettingsPage : Page<SettingsPage> {
         clickOn(R.string.change_scanner)
         return ChangeScannerDialogPage().assert()
     }
+
+    fun clickTestScanner(): ConnectingPage {
+        clickOn(R.string.test_scanner)
+        return ConnectingPage().assert()
+    }
 }
 
 class ChangeScannerDialogPage : Page<ChangeScannerDialogPage> {

@@ -6,20 +6,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
-import com.suprema.CaptureResponder
 import com.suprema.IBioMiniDevice
 import com.suprema.IUsbEventHandler
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.toHexString
-import java.util.concurrent.CountDownLatch
 
 private const val TAG = "KeppelBioMiniScanner"
 
@@ -42,10 +39,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     private var mUsbManager: UsbManager? = null
     private var mBioMiniFactory: BioMiniFactory? = null
     var mCurrentDevice: IBioMiniDevice? = null
-    private val mCaptureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
     private lateinit var onConnected: (Boolean) -> Unit
-    private var mTemplateData: IBioMiniDevice.TemplateData? = null
-    private var mFpQuality: Int? = null
 
     private var onDisconnected: (() -> Unit)? = null
 
@@ -107,33 +101,37 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     }
 
     override fun capture(): CaptureResult? {
-        return mCurrentDevice?.let {
-            val latch = CountDownLatch(1)
-            setParameters(it)
-            doSingleCapture(latch)
-            latch.await()
+        return mCurrentDevice?.let { device ->
+            setParameters(device)
+            Log.d(TAG, "START!")
+            val captureOption: IBioMiniDevice.CaptureOption = IBioMiniDevice.CaptureOption()
+            captureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.CAPTURE_SINGLE
+            captureOption.extractParam.captureTemplate = true
+            captureOption.extractParam.maxTemplateSize =
+                IBioMiniDevice.MaxTemplateSize.MAX_TEMPLATE_1024
 
-            val tmp = mTemplateData
-            return if (tmp?.data != null) {
-                CaptureResult(tmp.data.toHexString(), mFpQuality ?: 0)
-            } else {
-                null
+            val captureResponder = BlockingCaptureResponder(device)
+            val result = device.captureSingle(captureOption, captureResponder, true)
+
+            if (!result) {
+                Log.d(TAG, "capture failed")
+            }
+
+            val captureResult = captureResponder.awaitResult(TIMEOUT_MS)
+            return captureResult?.first?.data.let {
+                if (it != null) {
+                    CaptureResult(it.toHexString(), captureResult?.second ?: 0)
+                } else {
+                    null
+                }
             }
         }
     }
 
     override fun stopCapture() {
-        val device = mCurrentDevice
-        if (device != null) {
-            if (!device.isCapturing()) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-                return
-            }
-            val result: Int = device.abortCapturing()
+        mCurrentDevice?.let {
+            val result = it.abortCapturing()
             Log.d(TAG, "run: abortCapturing : $result")
-            if (result == 0) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-            }
         }
     }
 
@@ -249,67 +247,6 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         }
     }
 
-    private fun getCaptureCallback(latch: CountDownLatch): CaptureResponder {
-        return object : CaptureResponder() {
-            override fun onCapture(context: Any?, fingerState: IBioMiniDevice.FingerState?) {
-                super.onCapture(context, fingerState)
-            }
-
-            override fun onCaptureEx(
-                context: Any?,
-                option: IBioMiniDevice.CaptureOption,
-                capturedImage: Bitmap?,
-                capturedTemplate: IBioMiniDevice.TemplateData?,
-                fingerState: IBioMiniDevice.FingerState?,
-            ): Boolean {
-                Log.d(TAG, "START! : " + mCaptureOption.captureFuntion.toString())
-                val currentDevice = mCurrentDevice
-                if (capturedTemplate != null) {
-                    Log.d(TAG, "TemplateData is not null!")
-                    mTemplateData = capturedTemplate
-                }
-                if (currentDevice != null) {
-                    val imageData: ByteArray? = currentDevice.getCaptureImageAsRAW_8()
-                    if (imageData != null) {
-                        val mode: IBioMiniDevice.FpQualityMode =
-                            IBioMiniDevice.FpQualityMode.NQS_MODE_NFIQ
-                        mFpQuality = currentDevice.getFPQuality(
-                            imageData,
-                            currentDevice.getImageWidth(),
-                            currentDevice.getImageHeight(),
-                            mode.value(),
-                        )
-                        Log.d(TAG, "mFpQuality : $mFpQuality")
-                    }
-                }
-                latch.countDown()
-                return true
-            }
-
-            override fun onCaptureError(context: Any?, errorCode: Int, error: String) {
-                latch.countDown()
-            }
-        }
-    }
-
-    private fun doSingleCapture(latch: CountDownLatch) {
-        Log.d(TAG, "START!")
-        mTemplateData = null
-        mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.CAPTURE_SINGLE
-        mCaptureOption.extractParam.captureTemplate = true
-        mCaptureOption.extractParam.maxTemplateSize =
-            IBioMiniDevice.MaxTemplateSize.MAX_TEMPLATE_1024
-        val device = mCurrentDevice
-        if (device != null) {
-            val result: Boolean = device.captureSingle(
-                mCaptureOption,
-                getCaptureCallback(latch),
-                true,
-            )
-            if (result != true) Log.d(TAG, "capture failed")
-        }
-    }
-
     private fun setParameters(iBioMiniDevice: IBioMiniDevice) {
         iBioMiniDevice.setParameter(
             IBioMiniDevice.Parameter(
@@ -319,11 +256,12 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         )
 
         iBioMiniDevice.setParameter(
-            IBioMiniDevice.Parameter(
-                IBioMiniDevice.ParameterType.TIMEOUT,
-                30000 // 30 seconds
-            )
+            IBioMiniDevice.Parameter(IBioMiniDevice.ParameterType.TIMEOUT, TIMEOUT_MS)
         )
+    }
+
+    companion object {
+        private const val TIMEOUT_MS = 30000L
     }
 }
 

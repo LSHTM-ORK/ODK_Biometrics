@@ -16,4 +16,5 @@ If the problem persists, please restart the tablet.</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="scanner_connected">USB scanner connected</string>
+    <string name="test_scanner">Test scanner</string>
 </resources>

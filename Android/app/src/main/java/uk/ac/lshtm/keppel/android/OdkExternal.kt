@@ -26,7 +26,7 @@ object OdkExternal {
         return Intent().also {
             results.forEach { (key, value) ->
                 if (params.containsKey(key)) {
-                    val returnExtra = params.get(key)
+                    val returnExtra = params[key]
 
                     when (value) {
                         is Double -> it.putExtra(returnExtra, value)
@@ -49,7 +49,7 @@ object OdkExternal {
         }
 
         return OdkExternalRequest(
-            intent.action!!,
+            intent.action,
             intent.extras?.containsKey(PARAM_INPUT_VALUE) ?: false,
             intent.getStringExtra(PARAM_INPUT_VALUE),
             params ?: emptyMap()
@@ -58,7 +58,7 @@ object OdkExternal {
 }
 
 data class OdkExternalRequest(
-    val action: String,
+    val action: String?,
     val isSingleReturn: Boolean,
     val inputValue: String?,
     val params: Map<String, String>
