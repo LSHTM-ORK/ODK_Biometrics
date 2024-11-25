@@ -129,17 +129,9 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     }
 
     override fun stopCapture() {
-        val device = mCurrentDevice
-        if (device != null) {
-            if (!device.isCapturing()) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-                return
-            }
-            val result: Int = device.abortCapturing()
+        mCurrentDevice?.let {
+            val result = it.abortCapturing()
             Log.d(TAG, "run: abortCapturing : $result")
-            if (result == 0) {
-                mCaptureOption.captureFuntion = IBioMiniDevice.CaptureFuntion.NONE
-            }
         }
     }
 
