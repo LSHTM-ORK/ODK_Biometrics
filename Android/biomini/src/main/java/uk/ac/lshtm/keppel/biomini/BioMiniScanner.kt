@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
 import com.suprema.IBioMiniDevice
 import com.suprema.IUsbEventHandler
+import uk.ac.lshtm.keppel.biomini.eacrugged.IoControl
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.toHexString

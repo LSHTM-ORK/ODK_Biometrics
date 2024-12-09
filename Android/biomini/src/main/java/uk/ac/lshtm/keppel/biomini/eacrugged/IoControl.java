@@ -1,4 +1,4 @@
-package uk.ac.lshtm.keppel.biomini;
+package uk.ac.lshtm.keppel.biomini.eacrugged;
 
 import android.util.Log;
 
