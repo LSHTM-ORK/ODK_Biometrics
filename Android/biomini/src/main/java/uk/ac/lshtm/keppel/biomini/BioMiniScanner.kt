@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import com.suprema.BioMiniFactory
 import com.suprema.IBioMiniDevice
 import com.suprema.IUsbEventHandler
-import uk.ac.lshtm.keppel.biomini.eacrugged.IoControl
+import uk.ac.lshtm.keppel.biomini.eacrugged.EACRuggedConnectionManager
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 import uk.ac.lshtm.keppel.core.toHexString
@@ -55,6 +55,9 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         mCurrentDevice = null
     }
 
+    private val connectionManager =
+        CONNECTION_MANAGERS.find { it.supportedDevices().contains(getDeviceName()) }
+
     private fun createBioMiniDevice() {
         mBioMiniFactory?.close()
         mBioMiniFactory = object : BioMiniFactory(context, mUsbManager) {
@@ -80,17 +83,11 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     }
 
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
+        connectionManager?.connect()
+
         getDeviceName().let { Log.d(TAG, "Device name: $it") }
         this.onConnected = onConnected
-        // ** NOTE **
-        // The call to setIoStatus() may need to be commented out when using an external USB reader.
-        if (getDeviceName() == "EACRUGGED RG80") {
-            Log.d(TAG, "Calling setIoStatus() in connect")
-            IoControl.getInstance().setIoStatus(
-                IoControl.USBFP_PATH,
-                IoControl.IOSTATUS.ENABLE,
-            )
-        }
+
         if (mUsbManager == null) {
             mUsbManager =
                 context.getSystemService(Context.USB_SERVICE) as UsbManager
@@ -150,6 +147,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
         }
 
         removeDevice()
+        connectionManager?.disconnect()
     }
 
     override fun onDisconnect(onDisconnected: () -> Unit) {
@@ -263,6 +261,7 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
 
     companion object {
         private const val TIMEOUT_MS = 30000L
+        private val CONNECTION_MANAGERS = listOf(EACRuggedConnectionManager())
     }
 }
 
