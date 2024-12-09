@@ -6,7 +6,7 @@ import com.suprema.IBioMiniDevice
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class BlockingCaptureResponder(private val device: IBioMiniDevice) : CaptureResponder() {
+internal class BlockingCaptureResponder(private val device: IBioMiniDevice) : CaptureResponder() {
 
     private val latch = CountDownLatch(1)
     private var result: Pair<IBioMiniDevice.TemplateData, Int>? = null

@@ -1,4 +1,4 @@
-package uk.ac.lshtm.keppel.biomini;
+package uk.ac.lshtm.keppel.biomini.eacrugged;
 
 import android.util.Log;
 
@@ -8,7 +8,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class IoControl {
+/**
+ * This code was copied from the EAC Rugged BioMini sample app.
+ */
+class IoControl {
     private static final String TAG = "IoControlUtils";
     public static final String AFVDD28_PATH = "/sys/dy_control/afvdd28_en";
     public static final String SMARTCARD_PATH = "/sys/dy_control/smartcard_en";
