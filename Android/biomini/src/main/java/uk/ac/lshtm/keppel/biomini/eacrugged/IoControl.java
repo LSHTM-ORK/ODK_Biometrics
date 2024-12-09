@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * This code was copied from the EAC Rugged BioMini sample app.
+ */
 class IoControl {
     private static final String TAG = "IoControlUtils";
     public static final String AFVDD28_PATH = "/sys/dy_control/afvdd28_en";
