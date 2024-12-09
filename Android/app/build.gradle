@@ -23,8 +23,8 @@ android {
         applicationId "uk.ac.lshtm.keppel.android"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 44
-        versionName "0.4.1"
+        versionCode 45
+        versionName "0.5.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
