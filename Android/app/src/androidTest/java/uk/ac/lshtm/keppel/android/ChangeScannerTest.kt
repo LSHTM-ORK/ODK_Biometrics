@@ -8,6 +8,7 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.ac.lshtm.keppel.android.settings.Preferences
 import uk.ac.lshtm.keppel.android.support.FakeScanner
 import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
@@ -36,7 +37,7 @@ class ChangeScannerTest {
             .changeScanner("Scanner 2")
 
         val scannerPref =
-            getDefaultSharedPreferences(getApplicationContext<Keppel>()).getString("scanner", null)
+            getDefaultSharedPreferences(getApplicationContext<Keppel>()).getString(Preferences.SCANNER, null)
         assertThat(scannerPref, equalTo("Scanner 2"))
     }
 

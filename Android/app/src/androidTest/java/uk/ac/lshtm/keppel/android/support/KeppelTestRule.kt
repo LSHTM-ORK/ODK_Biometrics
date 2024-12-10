@@ -3,16 +3,19 @@ package uk.ac.lshtm.keppel.android.support
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import org.junit.rules.ExternalResource
+import uk.ac.lshtm.keppel.android.DefaultDependencies
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.settings.SettingsActivity
 import uk.ac.lshtm.keppel.android.support.pages.Page
 import uk.ac.lshtm.keppel.android.support.pages.SettingsPage
+import uk.ac.lshtm.keppel.android.tasks.IODispatcherTaskRunner
 import uk.ac.lshtm.keppel.core.Matcher
 import uk.ac.lshtm.keppel.core.TaskRunner
 
@@ -22,7 +25,7 @@ class KeppelTestRule(
 ) : ExternalResource() {
 
     private val application = ApplicationProvider.getApplicationContext<Keppel>()
-    private val taskRunnerIdlingResource = TaskRunnerIdlingResource(application.taskRunner)
+    private val taskRunnerIdlingResource = TaskRunnerIdlingResource(IODispatcherTaskRunner())
 
     private var activityScenario: ActivityScenario<*>? = null
         set(value) {
@@ -34,12 +37,17 @@ class KeppelTestRule(
         }
 
     override fun before() {
+        getDefaultSharedPreferences(application).edit()
+            .clear()
+            .commit()
+
         application.setDependencies(
-            availableScanners = scanners,
-            matcher = matcher,
-            taskRunner = taskRunnerIdlingResource
+            DefaultDependencies(
+                taskRunnerIdlingResource,
+                scanners,
+                matcher
+            )
         )
-        application.configureDefaultScanner(true)
 
         IdlingRegistry.getInstance().register(taskRunnerIdlingResource)
     }

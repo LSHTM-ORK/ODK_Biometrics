@@ -2,9 +2,6 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.app.Application
-import androidx.core.content.edit
-import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.matching.SourceAFISMatcher
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
@@ -17,60 +14,16 @@ import uk.ac.lshtm.keppel.core.TaskRunner
 
 class Keppel : Application() {
 
-    var taskRunner: TaskRunner = IODispatcherTaskRunner()
+    var dependencies: Dependencies = DefaultDependencies()
         private set
-
-    var availableScanners: List<ScannerFactory> = listOf(
-        BioMiniScannerFactory(),
-        MFS100ScannerFactory(),
-        DemoScannerFactory()
-    )
-        private set
-
-    var matcher: Matcher = SourceAFISMatcher()
-        private set
-
-    val scannerFactory: ScannerFactory
-        get() {
-            val sharedPreferences = getDefaultSharedPreferences(this)
-            return availableScanners.first {
-                it.name == sharedPreferences.getString("scanner", null)
-            }
-        }
 
     override fun onCreate() {
         super.onCreate()
-        configureDefaultScanner(false)
         configureAnalytics()
     }
 
-    fun setDependencies(
-        availableScanners: List<ScannerFactory>? = null,
-        matcher: Matcher? = null,
-        taskRunner: TaskRunner? = null
-    ) {
-        if (availableScanners != null) {
-            this.availableScanners = availableScanners
-        }
-
-        if (matcher != null) {
-            this.matcher = matcher
-        }
-
-        if (taskRunner != null) {
-            this.taskRunner = taskRunner
-        }
-    }
-
-    fun configureDefaultScanner(override: Boolean) {
-        availableScanners = availableScanners.filter { it.isAvailable }
-
-        val sharedPreference = getDefaultSharedPreferences(this)
-        if (override || !sharedPreference.contains("scanner")) {
-            sharedPreference.edit {
-                putString("scanner", availableScanners[0].name)
-            }
-        }
+    fun setDependencies(dependencies: Dependencies) {
+        this.dependencies = dependencies
     }
 
     private fun configureAnalytics() {
@@ -84,18 +37,22 @@ class Keppel : Application() {
     }
 }
 
-fun Activity.scannerFactory(): ScannerFactory {
-    return (this.application as Keppel).scannerFactory
+interface Dependencies {
+    val taskRunner: TaskRunner
+    val scanners: List<ScannerFactory>
+    val matcher: Matcher
 }
 
-fun Activity.taskRunner(): TaskRunner {
-    return (this.application as Keppel).taskRunner
+fun Activity.dependencies(): Dependencies {
+    return (this.application as Keppel).dependencies
 }
 
-fun Activity.matcher(): Matcher {
-    return (this.application as Keppel).matcher
-}
+class DefaultDependencies(
+    override val taskRunner: TaskRunner = IODispatcherTaskRunner(),
+    override val scanners: List<ScannerFactory> = listOf(
+        BioMiniScannerFactory(),
+        MFS100ScannerFactory(),
+        DemoScannerFactory()
+    ), override val matcher: Matcher = SourceAFISMatcher()
+) : Dependencies
 
-fun Fragment.availableScanners(): List<ScannerFactory> {
-    return (this.requireActivity().application as Keppel).availableScanners
-}
