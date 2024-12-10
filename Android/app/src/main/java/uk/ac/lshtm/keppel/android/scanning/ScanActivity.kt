@@ -14,7 +14,7 @@ import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
 import uk.ac.lshtm.keppel.android.dependencies
-import uk.ac.lshtm.keppel.android.scannerFactory
+import uk.ac.lshtm.keppel.android.settings.Preferences
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Matcher
@@ -25,9 +25,14 @@ class ScanActivity : AppCompatActivity() {
 
     private val request: Request by lazy { IntentParser.parse(intent) }
     private val scannerViewModel: ScannerViewModel by viewModels {
+        val scanners = dependencies().scanners
+        val settings = Preferences.get(this, scanners)
+        val scannerFactory = dependencies().scanners.first {
+            it.name == settings.getString(Preferences.SCANNER, null)
+        }.create(this)
 
         ScanViewModelFactory(
-            scannerFactory().create(this),
+            scannerFactory,
             dependencies().matcher,
             dependencies().taskRunner,
             request

@@ -7,15 +7,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.preference.ListPreference
 import androidx.preference.Preference
+import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.ac.lshtm.keppel.android.BuildConfig
 import uk.ac.lshtm.keppel.android.R
-import uk.ac.lshtm.keppel.android.Settings
 import uk.ac.lshtm.keppel.android.dependencies
 import uk.ac.lshtm.keppel.android.scanning.ScanActivity
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
-import uk.ac.lshtm.keppel.android.settings
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -24,7 +23,7 @@ class SettingsActivity : AppCompatActivity() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
                 return when (loadFragmentClass(classLoader, className)) {
                     SettingsFragment::class.java -> SettingsFragment(
-                        settings(),
+                        Preferences.get(this@SettingsActivity, dependencies().scanners),
                         dependencies().scanners
                     )
 
@@ -47,12 +46,12 @@ class SettingsActivity : AppCompatActivity() {
 }
 
 class SettingsFragment(
-    private val settings: Settings,
+    private val dataStore: PreferenceDataStore,
     private val scanners: List<ScannerFactory>
 ) : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.preferenceDataStore = settings
+        preferenceManager.preferenceDataStore = dataStore
 
         setPreferencesFromResource(R.xml.preferences, rootKey)
         setupScannerPreference()
@@ -60,7 +59,7 @@ class SettingsFragment(
     }
 
     private fun setupScannerPreference() {
-        val scannerPreference = findPreference<ListPreference>("scanner")!!
+        val scannerPreference = findPreference<ListPreference>(Preferences.SCANNER)!!
         val entries = scanners.filter { it.isAvailable }.map { it.name }.toTypedArray()
         scannerPreference.entries = entries
         scannerPreference.entryValues = entries

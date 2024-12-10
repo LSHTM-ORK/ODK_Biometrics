@@ -2,9 +2,6 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.app.Application
-import android.content.SharedPreferences
-import androidx.preference.PreferenceDataStore
-import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.matching.SourceAFISMatcher
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.android.scanning.scanners.BioMiniScannerFactory
@@ -40,33 +37,14 @@ class Keppel : Application() {
     }
 }
 
-fun Activity.dependencies(): Dependencies {
-    return (this.application as Keppel).dependencies
-}
-
-fun Activity.settings(): Settings {
-    return Settings(
-        getDefaultSharedPreferences(this),
-        mapOf(
-            "scanner" to {
-                val availableScanners = dependencies().scanners.filter { it.isAvailable }
-                availableScanners[0].name
-            }
-        )
-    )
-}
-
-fun Activity.scannerFactory(): ScannerFactory {
-    val settings = settings()
-    return dependencies().scanners.first {
-        it.name == settings.getString("scanner", null)
-    }
-}
-
 interface Dependencies {
     val taskRunner: TaskRunner
     val scanners: List<ScannerFactory>
     val matcher: Matcher
+}
+
+fun Activity.dependencies(): Dependencies {
+    return (this.application as Keppel).dependencies
 }
 
 class DefaultDependencies(
@@ -78,21 +56,3 @@ class DefaultDependencies(
     ), override val matcher: Matcher = SourceAFISMatcher()
 ) : Dependencies
 
-class Settings(
-    private val sharedPreferences: SharedPreferences,
-    private val defaults: Map<String?, () -> String>
-) : PreferenceDataStore() {
-    override fun getString(key: String?, defValue: String?): String? {
-        return if (sharedPreferences.contains(key)) {
-            return sharedPreferences.getString(key, defValue)
-        } else {
-            defaults[key]?.invoke() ?: defValue
-        }
-    }
-
-    override fun putString(key: String?, value: String?) {
-       sharedPreferences.edit()
-           .putString(key, value)
-           .apply()
-    }
-}
