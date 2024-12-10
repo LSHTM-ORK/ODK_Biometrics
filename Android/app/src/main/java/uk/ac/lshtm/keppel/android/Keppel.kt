@@ -2,8 +2,8 @@ package uk.ac.lshtm.keppel.android
 
 import android.app.Activity
 import android.app.Application
-import androidx.core.content.edit
-import androidx.fragment.app.Fragment
+import android.content.SharedPreferences
+import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.matching.SourceAFISMatcher
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
@@ -17,60 +17,16 @@ import uk.ac.lshtm.keppel.core.TaskRunner
 
 class Keppel : Application() {
 
-    var taskRunner: TaskRunner = IODispatcherTaskRunner()
+    var dependencies: Dependencies = DefaultDependencies()
         private set
-
-    var availableScanners: List<ScannerFactory> = listOf(
-        BioMiniScannerFactory(),
-        MFS100ScannerFactory(),
-        DemoScannerFactory()
-    )
-        private set
-
-    var matcher: Matcher = SourceAFISMatcher()
-        private set
-
-    val scannerFactory: ScannerFactory
-        get() {
-            val sharedPreferences = getDefaultSharedPreferences(this)
-            return availableScanners.first {
-                it.name == sharedPreferences.getString("scanner", null)
-            }
-        }
 
     override fun onCreate() {
         super.onCreate()
-        configureDefaultScanner(false)
         configureAnalytics()
     }
 
-    fun setDependencies(
-        availableScanners: List<ScannerFactory>? = null,
-        matcher: Matcher? = null,
-        taskRunner: TaskRunner? = null
-    ) {
-        if (availableScanners != null) {
-            this.availableScanners = availableScanners
-        }
-
-        if (matcher != null) {
-            this.matcher = matcher
-        }
-
-        if (taskRunner != null) {
-            this.taskRunner = taskRunner
-        }
-    }
-
-    fun configureDefaultScanner(override: Boolean) {
-        availableScanners = availableScanners.filter { it.isAvailable }
-
-        val sharedPreference = getDefaultSharedPreferences(this)
-        if (override || !sharedPreference.contains("scanner")) {
-            sharedPreference.edit {
-                putString("scanner", availableScanners[0].name)
-            }
-        }
+    fun setDependencies(dependencies: Dependencies) {
+        this.dependencies = dependencies
     }
 
     private fun configureAnalytics() {
@@ -84,18 +40,59 @@ class Keppel : Application() {
     }
 }
 
+fun Activity.dependencies(): Dependencies {
+    return (this.application as Keppel).dependencies
+}
+
+fun Activity.settings(): Settings {
+    return Settings(
+        getDefaultSharedPreferences(this),
+        mapOf(
+            "scanner" to {
+                val availableScanners = dependencies().scanners.filter { it.isAvailable }
+                availableScanners[0].name
+            }
+        )
+    )
+}
+
 fun Activity.scannerFactory(): ScannerFactory {
-    return (this.application as Keppel).scannerFactory
+    val settings = settings()
+    return dependencies().scanners.first {
+        it.name == settings.getString("scanner", null)
+    }
 }
 
-fun Activity.taskRunner(): TaskRunner {
-    return (this.application as Keppel).taskRunner
+interface Dependencies {
+    val taskRunner: TaskRunner
+    val scanners: List<ScannerFactory>
+    val matcher: Matcher
 }
 
-fun Activity.matcher(): Matcher {
-    return (this.application as Keppel).matcher
-}
+class DefaultDependencies(
+    override val taskRunner: TaskRunner = IODispatcherTaskRunner(),
+    override val scanners: List<ScannerFactory> = listOf(
+        BioMiniScannerFactory(),
+        MFS100ScannerFactory(),
+        DemoScannerFactory()
+    ), override val matcher: Matcher = SourceAFISMatcher()
+) : Dependencies
 
-fun Fragment.availableScanners(): List<ScannerFactory> {
-    return (this.requireActivity().application as Keppel).availableScanners
+class Settings(
+    private val sharedPreferences: SharedPreferences,
+    private val defaults: Map<String?, () -> String>
+) : PreferenceDataStore() {
+    override fun getString(key: String?, defValue: String?): String? {
+        return if (sharedPreferences.contains(key)) {
+            return sharedPreferences.getString(key, defValue)
+        } else {
+            defaults[key]?.invoke() ?: defValue
+        }
+    }
+
+    override fun putString(key: String?, value: String?) {
+       sharedPreferences.edit()
+           .putString(key, value)
+           .apply()
+    }
 }

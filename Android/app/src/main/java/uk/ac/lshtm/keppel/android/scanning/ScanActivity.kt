@@ -9,14 +9,12 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.navigation.findNavController
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.databinding.ActivityScanBinding
-import uk.ac.lshtm.keppel.android.matcher
+import uk.ac.lshtm.keppel.android.dependencies
 import uk.ac.lshtm.keppel.android.scannerFactory
-import uk.ac.lshtm.keppel.android.taskRunner
 import uk.ac.lshtm.keppel.core.Analytics
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Matcher
@@ -27,10 +25,11 @@ class ScanActivity : AppCompatActivity() {
 
     private val request: Request by lazy { IntentParser.parse(intent) }
     private val scannerViewModel: ScannerViewModel by viewModels {
+
         ScanViewModelFactory(
             scannerFactory().create(this),
-            matcher(),
-            taskRunner(),
+            dependencies().matcher,
+            dependencies().taskRunner,
             request
         )
     }
