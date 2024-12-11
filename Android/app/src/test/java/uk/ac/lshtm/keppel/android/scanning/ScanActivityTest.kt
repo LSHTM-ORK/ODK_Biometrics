@@ -27,8 +27,8 @@ class ScanActivityTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Keppel>()
-            .setDependencies(DefaultDependencies(scanners = listOf(FakeScannerFactory(fakeScanner))))
+        ApplicationProvider.getApplicationContext<Keppel>().dependencies =
+            DefaultDependencies(scanners = listOf(FakeScannerFactory(fakeScanner)))
 
         activityController = Robolectric.buildActivity(
             ScanActivity::class.java,

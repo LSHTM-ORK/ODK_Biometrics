@@ -41,12 +41,10 @@ class KeppelTestRule(
             .clear()
             .commit()
 
-        application.setDependencies(
-            DefaultDependencies(
-                taskRunnerIdlingResource,
-                scanners,
-                matcher
-            )
+        application.dependencies = DefaultDependencies(
+            taskRunnerIdlingResource,
+            scanners,
+            matcher
         )
 
         IdlingRegistry.getInstance().register(taskRunnerIdlingResource)
