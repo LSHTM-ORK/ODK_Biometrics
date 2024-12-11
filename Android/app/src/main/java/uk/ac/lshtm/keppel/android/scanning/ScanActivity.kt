@@ -27,7 +27,7 @@ class ScanActivity : AppCompatActivity() {
     private val scannerViewModel: ScannerViewModel by viewModels {
         val scanners = dependencies().scanners
         val settings = Preferences.get(this, scanners)
-        val scannerFactory = dependencies().scanners.first {
+        val scannerFactory = scanners.first {
             it.name == settings.getString(Preferences.SCANNER, null)
         }.create(this)
 
