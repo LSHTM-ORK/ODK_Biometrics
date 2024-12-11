@@ -7,8 +7,8 @@ import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 object Preferences {
     const val SCANNER = "scanner"
 
-    fun get(activity: Activity, scanners: List<ScannerFactory>): DataStore {
-        return DataStore(
+    fun get(activity: Activity, scanners: List<ScannerFactory>): DataStoreWithDefaults {
+        return DataStoreWithDefaults(
             getDefaultSharedPreferences(activity),
             mapOf(
                 SCANNER to {

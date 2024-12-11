@@ -3,7 +3,7 @@ package uk.ac.lshtm.keppel.android.settings
 import android.content.SharedPreferences
 import androidx.preference.PreferenceDataStore
 
-class DataStore(
+class DataStoreWithDefaults(
     private val sharedPreferences: SharedPreferences,
     private val defaults: Map<String?, () -> String>
 ) : PreferenceDataStore() {
