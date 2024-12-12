@@ -31,17 +31,10 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private val viewModelFactory by lazy {
-        val scanners = dependencies().scanners
-        val settings = Preferences.get(this, scanners)
-        val scannerFactory = scanners.first {
-            it.name == settings.getString(Preferences.SCANNER, null)
-        }.create(this)
-
         ScanViewModelFactory(
-            scannerFactory,
-            dependencies().matcher,
-            dependencies().taskRunner,
-            request
+            this,
+            request,
+            dependencies()
         )
     }
 

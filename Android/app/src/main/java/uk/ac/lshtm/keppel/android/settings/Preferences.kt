@@ -1,15 +1,15 @@
 package uk.ac.lshtm.keppel.android.settings
 
-import android.app.Activity
+import android.content.Context
 import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 
 object Preferences {
     const val SCANNER = "scanner"
 
-    fun get(activity: Activity, scanners: List<ScannerFactory>): DataStoreWithDefaults {
+    fun get(context: Context, scanners: List<ScannerFactory>): DataStoreWithDefaults {
         return DataStoreWithDefaults(
-            getDefaultSharedPreferences(activity),
+            getDefaultSharedPreferences(context),
             mapOf(
                 SCANNER to {
                     val availableScanners = scanners.filter { it.isAvailable }
