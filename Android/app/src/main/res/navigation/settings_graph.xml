@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings_graph"
+    app:startDestination="@id/settings">
+
+    <fragment
+        android:id="@+id/settings"
+        android:name="uk.ac.lshtm.keppel.android.settings.SettingsFragment"
+        android:label="@string/app_name">
+
+        <action
+            android:id="@+id/settings_to_test_scanner"
+            app:destination="@id/scan_graph" />
+    </fragment>
+
+    <include app:graph="@navigation/scan_graph" />
+
+</navigation>

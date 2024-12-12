@@ -5,18 +5,45 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.navigation.fragment.findNavController
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import uk.ac.lshtm.keppel.android.BuildConfig
+import uk.ac.lshtm.keppel.android.External
+import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.dependencies
-import uk.ac.lshtm.keppel.android.scanning.ScanActivity
+import uk.ac.lshtm.keppel.android.scanning.Request
+import uk.ac.lshtm.keppel.android.scanning.ScanFragment
+import uk.ac.lshtm.keppel.android.scanning.ScanViewModelFactory
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 
 class SettingsActivity : AppCompatActivity() {
+
+    private val request by lazy {
+        Request.Scan(
+            false,
+            OdkExternalRequest(External.ACTION_SCAN, true, null, emptyMap())
+        )
+    }
+
+    private val viewModelFactory by lazy {
+        val scanners = dependencies().scanners
+        val settings = Preferences.get(this, scanners)
+        val scannerFactory = scanners.first {
+            it.name == settings.getString(Preferences.SCANNER, null)
+        }.create(this)
+
+        ScanViewModelFactory(
+            scannerFactory,
+            dependencies().matcher,
+            dependencies().taskRunner,
+            request
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         this.supportFragmentManager.fragmentFactory = object : FragmentFactory() {
@@ -27,6 +54,7 @@ class SettingsActivity : AppCompatActivity() {
                         dependencies().scanners
                     )
 
+                    ScanFragment::class.java -> ScanFragment(viewModelFactory, request)
                     else -> super.instantiate(classLoader, className)
                 }
             }
@@ -57,7 +85,7 @@ class SettingsFragment(
         scannerPreference.entryValues = entries
 
         findPreference<Preference>("test_scanner")!!.setOnPreferenceClickListener {
-            requireActivity().startActivity(Intent(requireActivity(), ScanActivity::class.java))
+            findNavController().navigate(SettingsFragmentDirections.settingsToTestScanner())
             true
         }
     }
