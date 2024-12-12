@@ -19,7 +19,7 @@ import uk.ac.lshtm.keppel.android.R
 
 @RunWith(RobolectricTestRunner::class)
 @LooperMode(PAUSED)
-class DataStoreWithDefaultsActivityTest {
+class SettingsActivityTest {
 
     @get:Rule
     val rule = ActivityScenarioRule(SettingsActivity::class.java)
