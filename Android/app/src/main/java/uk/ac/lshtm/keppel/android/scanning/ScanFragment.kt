@@ -140,6 +140,8 @@ class ScanFragment(
             REQUEST_SCAN,
             Bundle().also { it.putParcelable(RESULT_INTENT, intent) }
         )
+
+        findNavController().navigateUp()
     }
 
     private fun buildScanReturn(
