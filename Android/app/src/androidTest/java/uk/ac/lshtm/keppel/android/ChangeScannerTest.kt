@@ -13,6 +13,7 @@ import uk.ac.lshtm.keppel.android.support.FakeScanner
 import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
+import uk.ac.lshtm.keppel.android.support.pages.DialogPage
 import uk.ac.lshtm.keppel.android.support.pages.SettingsPage
 
 @RunWith(AndroidJUnit4::class)
@@ -49,7 +50,8 @@ class ChangeScannerTest {
             .clickCapture()
 
         scanner1.returnTemplate("scanned", 0)
-        SettingsPage().assert()
+        DialogPage(R.string.scanner_test_success).assert()
+            .clickOk(SettingsPage())
     }
 
     @Test

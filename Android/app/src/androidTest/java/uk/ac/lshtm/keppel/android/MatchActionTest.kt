@@ -12,7 +12,7 @@ import uk.ac.lshtm.keppel.android.support.FakeScannerFactory
 import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturingPage
 import uk.ac.lshtm.keppel.android.support.pages.ConnectingPage
-import uk.ac.lshtm.keppel.android.support.pages.ErrorDialogPage
+import uk.ac.lshtm.keppel.android.support.pages.DialogPage
 import uk.ac.lshtm.keppel.android.support.pages.MatchPage
 import uk.ac.lshtm.keppel.core.toHexString
 
@@ -36,7 +36,7 @@ class MatchActionTest {
 
         val result = rule.launchAction(
             intent,
-            ErrorDialogPage(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
+            DialogPage(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
         ) {
             it.clickOk()
         }
@@ -81,7 +81,7 @@ class MatchActionTest {
         val result = rule.launchAction(intent, ConnectingPage()) {
             it.connect(fakeScanner, MatchPage()).clickMatch()
             fakeScanner.returnTemplate("scanned", 1)
-            ErrorDialogPage(R.string.input_error).assert().clickOk()
+            DialogPage(R.string.input_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))
@@ -100,7 +100,7 @@ class MatchActionTest {
         val result = rule.launchAction(intent, ConnectingPage()) {
             it.connect(fakeScanner, MatchPage()).clickMatch()
             fakeScanner.returnTemplate("scanned", 1)
-            ErrorDialogPage(R.string.input_error).assert().clickOk()
+            DialogPage(R.string.input_error).assert().clickOk()
         }
 
         assertThat(result.resultCode, equalTo(Activity.RESULT_CANCELED))

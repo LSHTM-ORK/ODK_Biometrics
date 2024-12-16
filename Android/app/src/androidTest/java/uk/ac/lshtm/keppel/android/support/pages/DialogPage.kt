@@ -7,19 +7,24 @@ import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.support.Assertions.assertTextDisplayed
 import uk.ac.lshtm.keppel.android.support.Interactions.clickOn
 
-class ErrorDialogPage(private val text: String) : Page<ErrorDialogPage> {
+class DialogPage(private val text: String) : Page<DialogPage> {
 
     constructor(
         text: Int,
         vararg formatArgs: Any
     ) : this(ApplicationProvider.getApplicationContext<Application>().getString(text, *formatArgs))
 
-    override fun assert(): ErrorDialogPage {
+    override fun assert(): DialogPage {
         assertTextDisplayed(text, root = isDialog())
         return this
     }
 
     fun clickOk() {
         clickOn(R.string.ok, root = isDialog())
+    }
+
+    fun <D : Page<D>> clickOk(destination: D): D {
+        clickOk()
+        return destination.assert()
     }
 }

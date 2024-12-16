@@ -12,7 +12,17 @@
         <action
             android:id="@+id/settings_to_test_scanner"
             app:destination="@id/scan_graph" />
+
+        <action
+            android:id="@+id/settings_to_message"
+            app:destination="@id/message" />
     </fragment>
+
+    <dialog
+        android:id="@+id/message"
+        android:name="uk.ac.lshtm.keppel.android.MessageDialogFragment">
+        <argument android:name="message" />
+    </dialog>
 
     <include app:graph="@navigation/scan_graph" />
 

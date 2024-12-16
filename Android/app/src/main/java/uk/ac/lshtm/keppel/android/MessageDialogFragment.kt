@@ -6,13 +6,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class FatalErrorDialogFragment : DialogFragment() {
+class MessageDialogFragment : DialogFragment() {
 
-    private val args: FatalErrorDialogFragmentArgs by navArgs()
+    private val args: MessageDialogFragmentArgs by navArgs()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
-            .setMessage(args.error)
+            .setMessage(args.message)
             .setPositiveButton(R.string.ok) { _, _ -> requireActivity().finish() }
             .show()
     }
