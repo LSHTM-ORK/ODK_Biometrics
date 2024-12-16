@@ -17,4 +17,5 @@ If the problem persists, please restart the tablet.</string>
     <string name="cancel">Cancel</string>
     <string name="scanner_connected">USB scanner connected</string>
     <string name="test_scanner">Test scanner</string>
+    <string name="scanner_test_success">"Scanner captured fingerprint successfully! "</string>
 </resources>

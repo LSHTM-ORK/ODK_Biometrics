@@ -12,6 +12,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.LooperMode
+import uk.ac.lshtm.keppel.android.DefaultDependencies
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.Keppel
 import uk.ac.lshtm.keppel.core.Scanner
@@ -26,9 +27,8 @@ class ScanActivityTest {
 
     @Before
     fun setup() {
-        ApplicationProvider.getApplicationContext<Keppel>()
-            .setDependencies(availableScanners = listOf(FakeScannerFactory(fakeScanner)))
-        ApplicationProvider.getApplicationContext<Keppel>().configureDefaultScanner(override = true)
+        ApplicationProvider.getApplicationContext<Keppel>().dependencies =
+            DefaultDependencies(scanners = listOf(FakeScannerFactory(fakeScanner)))
 
         activityController = Robolectric.buildActivity(
             ScanActivity::class.java,

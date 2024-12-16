@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph"
+    android:id="@+id/scan_graph"
     app:startDestination="@id/scan">
 
     <fragment
@@ -16,8 +16,8 @@
 
     <dialog
         android:id="@+id/fatal_error"
-        android:name="uk.ac.lshtm.keppel.android.FatalErrorDialogFragment">
-        <argument android:name="error" />
+        android:name="uk.ac.lshtm.keppel.android.MessageDialogFragment">
+        <argument android:name="message" />
     </dialog>
 
 </navigation>

@@ -1,6 +1,7 @@
 package uk.ac.lshtm.keppel.android.support.pages
 
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import uk.ac.lshtm.keppel.android.BuildConfig
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.support.Assertions.assertTextDisplayed
 import uk.ac.lshtm.keppel.android.support.Assertions.assertTextNotDisplayed
@@ -9,6 +10,7 @@ import uk.ac.lshtm.keppel.android.support.Interactions.clickOn
 class SettingsPage : Page<SettingsPage> {
     override fun assert(): SettingsPage {
         assertTextDisplayed(R.string.app_name)
+        assertTextDisplayed(BuildConfig.VERSION_NAME)
         return this
     }
 

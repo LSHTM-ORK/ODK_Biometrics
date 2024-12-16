@@ -14,7 +14,7 @@ import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
 import uk.ac.lshtm.keppel.android.support.pages.CapturingPage
 import uk.ac.lshtm.keppel.android.support.pages.ConnectingPage
-import uk.ac.lshtm.keppel.android.support.pages.ErrorDialogPage
+import uk.ac.lshtm.keppel.android.support.pages.DialogPage
 import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
@@ -109,7 +109,7 @@ class ScanActionTest {
             it.connect(fakeScanner, CapturingPage())
             fakeScanner.failToCapture()
 
-            val errorDialog = ErrorDialogPage(R.string.no_capture_result_error).assert()
+            val errorDialog = DialogPage(R.string.no_capture_result_error).assert()
             assertThat(fakeScanner.capturing, equalTo(false))
             errorDialog.clickOk()
         }
@@ -125,7 +125,7 @@ class ScanActionTest {
         }
 
         val result = rule.launchAction(intent, ConnectingPage()) {
-            it.failToConnect(fakeScanner, ErrorDialogPage(R.string.connection_failure_error))
+            it.failToConnect(fakeScanner, DialogPage(R.string.connection_failure_error))
                 .clickOk()
         }
 
