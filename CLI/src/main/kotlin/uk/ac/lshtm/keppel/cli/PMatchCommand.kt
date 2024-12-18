@@ -3,6 +3,7 @@ package uk.ac.lshtm.keppel.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
+import uk.ac.lshtm.keppel.cli.subject.SubjectParser
 import uk.ac.lshtm.keppel.cli.subject.SubjectUseCases
 import java.io.File
 
@@ -14,8 +15,8 @@ class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: 
 
     override fun run() {
         val subjects = try {
-            SubjectUseCases.parseCsv(inputCsvPath)
-        } catch (e: SubjectUseCases.BadHeaderException) {
+            SubjectParser.parseCsv(inputCsvPath)
+        } catch (e: SubjectParser.BadHeaderException) {
             throw IllegalArgumentException(Strings.ERROR_PMATCH_NO_HEADER_ROW)
         }
 
