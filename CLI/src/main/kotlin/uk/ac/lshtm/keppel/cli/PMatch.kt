@@ -3,6 +3,8 @@ package uk.ac.lshtm.keppel.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
+import uk.ac.lshtm.keppel.cli.subject.Subject
+import uk.ac.lshtm.keppel.cli.subject.SubjectUseCases
 import java.io.File
 
 class PMatch(private val matcher: Matcher, private val defaultThreshold: Double) : CliktCommand(name = "pmatch") {
@@ -14,19 +16,11 @@ class PMatch(private val matcher: Matcher, private val defaultThreshold: Double)
         val inputCsv = File(inputCsvPath)
         val subjects = inputCsv.readLines().drop(1).map {
             val split = it.split(", ")
-            Subject(split[0], split[1])
+            val templates = split.drop(1)
+            Subject(split[0], templates)
         }
 
-        val matches = subjects.uniqueCombinations().fold(emptyList<Match>()) { matches, combination ->
-            val subject = combination.first
-
-            val newMatches = combination.second.map {
-                val score = matcher.match(subject.template.toByteArray(), it.template.toByteArray())
-                Match(subject.id, it.id, score)
-            }.filter { it.score > defaultThreshold }
-
-            matches + newMatches
-        }
+        val matches = SubjectUseCases.findMatches(subjects, matcher, defaultThreshold)
 
         val outputCsv = File(outputCsvPath)
         outputCsv.printWriter().use { writer ->
@@ -37,15 +31,3 @@ class PMatch(private val matcher: Matcher, private val defaultThreshold: Double)
         }
     }
 }
-
-private fun <A> List<A>.uniqueCombinations(): Sequence<Pair<A, List<A>>> {
-    // Adapted from: https://stackoverflow.com/a/59144418/166053
-    return this.asSequence().mapIndexed { i, v ->
-        Pair(v, this.subList(i + 1, this.size))
-    }.filter { (_, subLst) ->
-        subLst.isNotEmpty()
-    }
-}
-
-private data class Subject(val id: String, val template: String)
-private data class Match(val id1: String, val id2: String, val score: Double)

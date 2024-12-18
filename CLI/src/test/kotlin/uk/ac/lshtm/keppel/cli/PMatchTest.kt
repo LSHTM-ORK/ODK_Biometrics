@@ -1,6 +1,5 @@
 package uk.ac.lshtm.keppel.cli
 
-import org.apache.commons.codec.binary.Hex
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Test
@@ -27,7 +26,7 @@ class PMatchTest {
 
         matcher.addScore("index1", "index2", 5.0)
         matcher.addScore("index1", "index3", 11.0)
-        matcher.addScore("index2", "index3", 9.0)
+        matcher.addScore("index2", "index3", 5.0)
 
         val app = App(matcher, 10.0)
         val outputFile = File(createTempDir(), "output.csv")
@@ -46,5 +45,42 @@ class PMatchTest {
         assertThat(output.size, equalTo(2))
         assertThat(output[0], equalTo("id_1, id_2, score_1"))
         assertThat(output[1], equalTo("1, 3, 11.0"))
+    }
+
+    @Test
+    fun `supports multiple templates per subject`() {
+        val inputCsv = createTempFile().apply {
+            writeText("""
+                id, template_1, template_2
+                1, ${"index1".toHexString()}, ${"ring1".toHexString()}
+                2, ${"index2".toHexString()}, ${"ring2".toHexString()}
+                3, ${"index3".toHexString()}, ${"ring3".toHexString()}
+            """.trimIndent())
+        }
+
+        matcher.addScore("index1", "index2", 5.0)
+        matcher.addScore("index1", "index3", 5.0)
+        matcher.addScore("index2", "index3", 5.0)
+        matcher.addScore("ring1", "ring2", 5.0)
+        matcher.addScore("ring1", "ring3", 5.0)
+        matcher.addScore("ring2", "ring3", 11.0)
+
+        val app = App(matcher, 10.0)
+        val outputFile = File(createTempDir(), "output.csv")
+        app.execute(
+            listOf(
+                "pmatch",
+                "-i", inputCsv.absolutePath,
+                "-o", outputFile.absolutePath
+            ),
+            logger
+        )
+
+        assertThat(logger.lines, equalTo(emptyList()))
+
+        val output = outputFile.readLines()
+        assertThat(output.size, equalTo(2))
+        assertThat(output[0], equalTo("id_1, id_2, score_1"))
+        assertThat(output[1], equalTo("2, 3, 11.0"))
     }
 }
