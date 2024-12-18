@@ -18,7 +18,7 @@ class App(private val matcher: Matcher,
         try {
             Root().subcommands(
                 MatchCommand(matcher, defaultThreshold, logger),
-                PMatch(matcher, defaultThreshold)
+                PMatchCommand(matcher, defaultThreshold)
             ).parse(args)
         } catch (e: PrintHelpMessage) {
             logger.log(e.command.getFormattedHelp())

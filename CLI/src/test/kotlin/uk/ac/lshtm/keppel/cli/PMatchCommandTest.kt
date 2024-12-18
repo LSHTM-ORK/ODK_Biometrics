@@ -8,7 +8,7 @@ import uk.ac.lshtm.keppel.cli.support.FakeMatcher
 import uk.ac.lshtm.keppel.cli.support.toHexString
 import java.io.File
 
-class PMatchTest {
+class PMatchCommandTest {
 
     private val logger = FakeLogger()
     private val matcher = FakeMatcher()
@@ -82,5 +82,43 @@ class PMatchTest {
         assertThat(output.size, equalTo(2))
         assertThat(output[0], equalTo("id_1, id_2, score_1"))
         assertThat(output[1], equalTo("2, 3, 11.0"))
+    }
+
+    @Test
+    fun `logs error when CSV is empty`() {
+        val emptyCsv = createTempFile().apply {
+            writeText("")
+        }
+
+        val app = App(matcher, 10.0)
+        app.execute(
+            listOf(
+                "pmatch",
+                "-i", emptyCsv.absolutePath,
+                "-o", File(createTempDir(), "output.csv").absolutePath
+            ),
+            logger
+        )
+
+        assertThat(logger.lines, equalTo(listOf(Strings.ERROR_PMATCH_NO_HEADER_ROW)))
+    }
+
+    @Test
+    fun `logs error when CSV header is incorrect`() {
+        val badCsv = createTempFile().apply {
+            writeText("blah, other, thing")
+        }
+
+        val app = App(matcher, 10.0)
+        app.execute(
+            listOf(
+                "pmatch",
+                "-i", badCsv.absolutePath,
+                "-o", File(createTempDir(), "output.csv").absolutePath
+            ),
+            logger
+        )
+
+        assertThat(logger.lines, equalTo(listOf(Strings.ERROR_PMATCH_NO_HEADER_ROW)))
     }
 }
