@@ -5,18 +5,24 @@ import uk.ac.lshtm.keppel.cli.Matcher
 
 class FakeMatcher : Matcher {
 
-    override fun match(one: ByteArray, two: ByteArray): Double {
-        val oneFinger = String(Hex.decodeHex(String(one)))
-        val (twoFinger, score) = String(Hex.decodeHex(String(two))).split("_")
+    private val scores = mutableListOf<Triple<String, String, Double>>()
 
-        return if (oneFinger == twoFinger) {
-            score.toDouble()
+    override fun match(one: ByteArray, two: ByteArray): Double {
+        val stringOne = String(Hex.decodeHex(String(one)))
+        val stringTwo = String(Hex.decodeHex(String(two)))
+
+        val score = scores.find {
+            (it.first == stringOne && it.second == stringTwo) || (it.first == stringTwo && it.second == stringOne)
+        }
+
+        if (score != null) {
+            return score.third
         } else {
-            MISMATCH_SCORE
+            throw IllegalStateException("No score for $stringOne and $stringTwo!")
         }
     }
 
-    companion object {
-        const val MISMATCH_SCORE = 5.0
+    fun addScore(one: String, two: String, score: Double) {
+        scores.add(Triple(one, two, score))
     }
 }
