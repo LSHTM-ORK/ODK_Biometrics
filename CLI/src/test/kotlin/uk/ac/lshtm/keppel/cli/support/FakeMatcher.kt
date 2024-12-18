@@ -18,7 +18,7 @@ class FakeMatcher : Matcher {
         if (score != null) {
             return score.third
         } else {
-            throw IllegalStateException("No score for $stringOne and $stringTwo!")
+            throw IllegalStateException("FakeMatcher: No score for $stringOne and $stringTwo!")
         }
     }
 
