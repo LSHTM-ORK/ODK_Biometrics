@@ -54,6 +54,43 @@ class PMatchCommandTest {
     }
 
     @Test
+    fun `uses custom threshold when its provided`() {
+        val inputCsv = createTempFile().apply {
+            writeText(
+                """
+                id, template_1
+                1, ${"index1".toHexString()}
+                2, ${"index2".toHexString()}
+                3, ${"index3".toHexString()}
+            """.trimIndent()
+            )
+        }
+
+        matcher.addScore("index1", "index2", 39.0)
+        matcher.addScore("index1", "index3", 41.0)
+        matcher.addScore("index2", "index3", 39.0)
+
+        val app = App(matcher, 10.0)
+        val outputFile = File(createTempDirectory().toFile(), "output.csv")
+        app.execute(
+            listOf(
+                "pmatch",
+                "-i", inputCsv.pathString,
+                "-o", outputFile.absolutePath,
+                "-t", "40"
+            ),
+            logger
+        )
+
+        assertThat(logger.lines, equalTo(emptyList()))
+
+        val output = outputFile.readLines()
+        assertThat(output.size, equalTo(2))
+        assertThat(output[0], equalTo("id_1, id_2, score_1"))
+        assertThat(output[1], equalTo("1, 3, 41.0"))
+    }
+
+    @Test
     fun `supports multiple templates per subject`() {
         val inputCsv = createTempFile().apply {
             writeText(

@@ -17,7 +17,7 @@ object SubjectUseCases {
                 val score = matcher.match(one.toByteArray(), two.toByteArray())
                 Match(pair.first.id, pair.second.id, score)
             }.filter {
-                it.score > threshold
+                it.score >= threshold
             }.maxByOrNull {
                 it.score
             }
