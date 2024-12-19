@@ -1,30 +1,26 @@
 package uk.ac.lshtm.keppel.cli.subject
 
 import uk.ac.lshtm.keppel.cli.Matcher
+import uk.ac.lshtm.keppel.cli.util.uniquePairs
 
 object SubjectUseCases {
 
     fun findMatches(subjects: List<Subject>, matcher: Matcher, threshold: Double): List<Match> {
-        return subjects.uniqueCombinations().fold(emptyList()) { matches, combination ->
-            val subject = combination.first
+        return subjects.uniquePairs().fold(emptyList()) { matches, pair ->
+            val match = pair.first.templates.zip(pair.second.templates).map { (one, two) ->
+                val score = matcher.match(one.toByteArray(), two.toByteArray())
+                Match(pair.first.id, pair.second.id, score)
+            }.filter {
+                it.score > threshold
+            }.maxByOrNull {
+                it.score
+            }
 
-            val newMatches = combination.second.map { other ->
-                (0.until(subject.templates.size)).map {
-                    val score = matcher.match(subject.templates[it].toByteArray(), other.templates[it].toByteArray())
-                    Match(subject.id, other.id, score)
-                }.maxBy { it.score }
-            }.filterNotNull().filter { it.score > threshold }
-
-            matches + newMatches
-        }
-    }
-
-    private fun <A> List<A>.uniqueCombinations(): Sequence<Pair<A, List<A>>> {
-        // Adapted from: https://stackoverflow.com/a/59144418/166053
-        return this.asSequence().mapIndexed { i, v ->
-            Pair(v, this.subList(i + 1, this.size))
-        }.filter { (_, subLst) ->
-            subLst.isNotEmpty()
+            if (match != null) {
+                matches + match
+            } else {
+                matches
+            }
         }
     }
 
