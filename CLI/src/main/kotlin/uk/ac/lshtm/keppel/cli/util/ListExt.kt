@@ -1,6 +1,5 @@
 package uk.ac.lshtm.keppel.cli.util
 
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 fun <T> List<T>.uniquePairs(): Sequence<Pair<T, T>> {
