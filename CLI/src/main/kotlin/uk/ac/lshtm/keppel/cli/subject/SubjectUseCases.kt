@@ -13,22 +13,17 @@ object SubjectUseCases {
         parallelism: Int? = null
     ): List<Match> {
         return subjects.uniquePairs().toList().parallelFold(parallelism ?: 2) { pair ->
-            val match = pair.first.templates.zip(pair.second.templates).map { (one, two) ->
-                val score = matcher.match(one.toByteArray(), two.toByteArray())
-                Match(pair.first.id, pair.second.id, score)
-            }.filter {
-                it.score >= threshold
-            }.maxByOrNull {
-                it.score
+            val scores = pair.first.templates.zip(pair.second.templates).map { (one, two) ->
+                matcher.match(one.toByteArray(), two.toByteArray())
             }
 
-            if (match != null) {
-                setOf(match)
+            if (scores.any { it >= threshold }) {
+                setOf(Match(pair.first.id, pair.second.id, scores))
             } else {
                 emptySet()
             }
         }.toList()
     }
 
-    data class Match(val id1: String, val id2: String, val score: Double)
+    data class Match(val id1: String, val id2: String, val scores: List<Double>)
 }

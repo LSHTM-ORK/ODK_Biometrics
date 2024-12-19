@@ -28,10 +28,17 @@ class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: 
 
         val outputCsv = File(outputCsvPath)
         outputCsv.printWriter().use { writer ->
-            writer.println("id_1, id_2, score_1")
-            matches.forEach {
-                writer.println("${it.id1}, ${it.id2}, ${it.score}")
+            if (matches.isNotEmpty()) {
+                val header = "id_1, id_2, " + (1..matches[0].scores.size).joinToString(", ") { "score_$it" }
+                writer.println(header)
+
+                matches.forEach {
+                    val row = "${it.id1}, ${it.id2}, " + it.scores.joinToString(", ")
+                    writer.println(row)
+                }
             }
+
+
         }
     }
 }

@@ -105,7 +105,7 @@ class PMatchCommandTest {
 
         matcher.addScore("index1", "index2", 5.0)
         matcher.addScore("index1", "index3", 5.0)
-        matcher.addScore("index2", "index3", 5.0)
+        matcher.addScore("index2", "index3", 6.0)
         matcher.addScore("ring1", "ring2", 5.0)
         matcher.addScore("ring1", "ring3", 5.0)
         matcher.addScore("ring2", "ring3", 11.0)
@@ -125,8 +125,8 @@ class PMatchCommandTest {
 
         val output = outputFile.readLines()
         assertThat(output.size, equalTo(2))
-        assertThat(output[0], equalTo("id_1, id_2, score_1"))
-        assertThat(output[1], equalTo("2, 3, 11.0"))
+        assertThat(output[0], equalTo("id_1, id_2, score_1, score_2"))
+        assertThat(output[1], equalTo("2, 3, 6.0, 11.0"))
     }
 
     @Test
