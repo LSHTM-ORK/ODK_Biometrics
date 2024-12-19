@@ -3,6 +3,7 @@ package uk.ac.lshtm.keppel.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
+import com.github.ajalt.clikt.parameters.types.int
 import uk.ac.lshtm.keppel.cli.subject.SubjectParser
 import uk.ac.lshtm.keppel.cli.subject.SubjectUseCases
 import java.io.File
@@ -12,6 +13,7 @@ class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: 
 
     private val inputCsvPath by option("-i").required()
     private val outputCsvPath by option("-o").required()
+    private val parallelism by option("-p").int()
 
     override fun run() {
         val subjects = try {
@@ -20,7 +22,7 @@ class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: 
             throw IllegalArgumentException(Strings.ERROR_PMATCH_NO_HEADER_ROW)
         }
 
-        val matches = SubjectUseCases.findMatches(subjects, matcher, defaultThreshold)
+        val matches = SubjectUseCases.findMatches(subjects, matcher, defaultThreshold, parallelism)
 
         val outputCsv = File(outputCsvPath)
         outputCsv.printWriter().use { writer ->

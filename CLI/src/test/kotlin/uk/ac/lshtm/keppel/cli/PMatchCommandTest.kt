@@ -7,6 +7,10 @@ import uk.ac.lshtm.keppel.cli.support.FakeLogger
 import uk.ac.lshtm.keppel.cli.support.FakeMatcher
 import uk.ac.lshtm.keppel.cli.support.toHexString
 import java.io.File
+import kotlin.io.path.createTempDirectory
+import kotlin.io.path.createTempFile
+import kotlin.io.path.pathString
+import kotlin.io.path.writeText
 
 class PMatchCommandTest {
 
@@ -16,12 +20,14 @@ class PMatchCommandTest {
     @Test
     fun `writes output CSV with matched ids`() {
         val inputCsv = createTempFile().apply {
-            writeText("""
+            writeText(
+                """
                 id, template_1
                 1, ${"index1".toHexString()}
                 2, ${"index2".toHexString()}
                 3, ${"index3".toHexString()}
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
 
         matcher.addScore("index1", "index2", 5.0)
@@ -29,11 +35,11 @@ class PMatchCommandTest {
         matcher.addScore("index2", "index3", 5.0)
 
         val app = App(matcher, 10.0)
-        val outputFile = File(createTempDir(), "output.csv")
+        val outputFile = File(createTempDirectory().toFile(), "output.csv")
         app.execute(
             listOf(
                 "pmatch",
-                "-i", inputCsv.absolutePath,
+                "-i", inputCsv.pathString,
                 "-o", outputFile.absolutePath
             ),
             logger
@@ -50,12 +56,14 @@ class PMatchCommandTest {
     @Test
     fun `supports multiple templates per subject`() {
         val inputCsv = createTempFile().apply {
-            writeText("""
+            writeText(
+                """
                 id, template_1, template_2
                 1, ${"index1".toHexString()}, ${"ring1".toHexString()}
                 2, ${"index2".toHexString()}, ${"ring2".toHexString()}
                 3, ${"index3".toHexString()}, ${"ring3".toHexString()}
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
 
         matcher.addScore("index1", "index2", 5.0)
@@ -66,11 +74,11 @@ class PMatchCommandTest {
         matcher.addScore("ring2", "ring3", 11.0)
 
         val app = App(matcher, 10.0)
-        val outputFile = File(createTempDir(), "output.csv")
+        val outputFile = File(createTempDirectory().toFile(), "output.csv")
         app.execute(
             listOf(
                 "pmatch",
-                "-i", inputCsv.absolutePath,
+                "-i", inputCsv.pathString,
                 "-o", outputFile.absolutePath
             ),
             logger
@@ -85,6 +93,43 @@ class PMatchCommandTest {
     }
 
     @Test
+    fun `accepts a parallelism arg`() {
+        val inputCsv = createTempFile().apply {
+            writeText(
+                """
+                id, template_1
+                1, ${"index1".toHexString()}
+                2, ${"index2".toHexString()}
+                3, ${"index3".toHexString()}
+            """.trimIndent()
+            )
+        }
+
+        matcher.addScore("index1", "index2", 5.0)
+        matcher.addScore("index1", "index3", 11.0)
+        matcher.addScore("index2", "index3", 5.0)
+
+        val app = App(matcher, 10.0)
+        val outputFile = File(createTempDirectory().toFile(), "output.csv")
+        app.execute(
+            listOf(
+                "pmatch",
+                "-i", inputCsv.pathString,
+                "-o", outputFile.absolutePath,
+                "-p", "16"
+            ),
+            logger
+        )
+
+        assertThat(logger.lines, equalTo(emptyList()))
+
+        val output = outputFile.readLines()
+        assertThat(output.size, equalTo(2))
+        assertThat(output[0], equalTo("id_1, id_2, score_1"))
+        assertThat(output[1], equalTo("1, 3, 11.0"))
+    }
+
+    @Test
     fun `logs error when CSV is empty`() {
         val emptyCsv = createTempFile().apply {
             writeText("")
@@ -94,8 +139,8 @@ class PMatchCommandTest {
         app.execute(
             listOf(
                 "pmatch",
-                "-i", emptyCsv.absolutePath,
-                "-o", File(createTempDir(), "output.csv").absolutePath
+                "-i", emptyCsv.pathString,
+                "-o", File(createTempDirectory().toFile(), "output.csv").absolutePath
             ),
             logger
         )
@@ -113,8 +158,8 @@ class PMatchCommandTest {
         app.execute(
             listOf(
                 "pmatch",
-                "-i", badCsv.absolutePath,
-                "-o", File(createTempDir(), "output.csv").absolutePath
+                "-i", badCsv.pathString,
+                "-o", File(createTempDirectory().toFile(), "output.csv").absolutePath
             ),
             logger
         )
