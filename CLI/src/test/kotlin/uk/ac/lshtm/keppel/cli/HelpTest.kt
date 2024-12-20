@@ -23,5 +23,6 @@ class HelpTest {
         val app = App(matcher, 10.0)
         app.execute(listOf("-h"), logger)
         assertThat(logger.lines[0], containsString("match"))
+        assertThat(logger.lines[0], containsString("pmatch"))
     }
 }
