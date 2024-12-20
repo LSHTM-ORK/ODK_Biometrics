@@ -9,13 +9,19 @@ import uk.ac.lshtm.keppel.cli.subject.SubjectParser
 import uk.ac.lshtm.keppel.cli.subject.SubjectUseCases
 import java.io.File
 
-class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: Double) :
-    CliktCommand(name = "pmatch") {
+class PMatchCommand(
+    private val matcher: Matcher,
+    private val defaultThreshold: Double
+) :
+    CliktCommand(
+        name = "pmatch",
+        help = "Find matches between subjects from an input CSV. Threshold used for matching is $defaultThreshold."
+    ) {
 
-    private val inputCsvPath by option("-i").required()
-    private val outputCsvPath by option("-o").required()
-    private val parallelism by option("-p").int()
-    private val threshold by option("-t").double()
+    private val inputCsvPath by option("-i", help = Strings.INPUT_CSV_HELP).required()
+    private val outputCsvPath by option("-o", help = Strings.OUTPUT_CSV_HELP).required()
+    private val parallelism by option("-p", help = Strings.PARALLELISM_HELP).int()
+    private val threshold by option("-t", help = Strings.THRESHOLD_HELP).double()
 
     override fun run() {
         val subjects = try {
@@ -37,8 +43,6 @@ class PMatchCommand(private val matcher: Matcher, private val defaultThreshold: 
                     writer.println(row)
                 }
             }
-
-
         }
     }
 }
