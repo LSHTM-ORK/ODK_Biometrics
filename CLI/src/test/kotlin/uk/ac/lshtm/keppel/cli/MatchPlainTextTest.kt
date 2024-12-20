@@ -15,7 +15,9 @@ class MatchPlainTextTest {
     @Test
     fun logsScore() {
         val app = App(matcher, 10.0)
-        app.execute(listOf("match", "-p", Hex.encodeHexString("index".toByteArray()), Hex.encodeHexString("index_210".toByteArray())), logger)
+        matcher.addScore("index1", "index2", 210.0)
+
+        app.execute(listOf("match", "-p", Hex.encodeHexString("index1".toByteArray()), Hex.encodeHexString("index2".toByteArray())), logger)
         assertThat(logger.lines, equalTo(listOf("210.0")))
     }
 

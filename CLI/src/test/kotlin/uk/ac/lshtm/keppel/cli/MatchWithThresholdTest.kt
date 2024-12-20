@@ -15,9 +15,10 @@ class MatchWithThresholdTest {
     private val matcher = FakeMatcher()
 
     @Test
-    fun whenMatchIsLessThanThreshold_logsScore() {
-        val fileOne = createTempFile().apply { writeText("index".toHexString()) }
-        val fileTwo = createTempFile().apply { writeText("index_15.0".toHexString()) }
+    fun whenMatchIsLessThanThreshold_logsNotAMatch() {
+        val fileOne = createTempFile().apply { writeText("index1".toHexString()) }
+        val fileTwo = createTempFile().apply { writeText("index2".toHexString()) }
+        matcher.addScore("index1", "index2", 15.0)
 
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-m", "-t", "20", fileOne.absolutePath, fileTwo.absolutePath), logger)
@@ -25,9 +26,10 @@ class MatchWithThresholdTest {
     }
 
     @Test
-    fun whenEqualToThreshold_logsNotAMatch() {
-        val fileOne = createTempFile().apply { writeText("index".toHexString()) }
-        val fileTwo = createTempFile().apply { writeText("index_20.0".toHexString()) }
+    fun whenEqualToThreshold_logsAMatch() {
+        val fileOne = createTempFile().apply { writeText("index1".toHexString()) }
+        val fileTwo = createTempFile().apply { writeText("index2".toHexString()) }
+        matcher.addScore("index1", "index2", 20.0)
 
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-m", "-t", "20", fileOne.absolutePath, fileTwo.absolutePath), logger)
@@ -35,9 +37,10 @@ class MatchWithThresholdTest {
     }
 
     @Test
-    fun whenGreaterThanThreshold_logsNotAMatch() {
-        val fileOne = createTempFile().apply { writeText("index".toHexString()) }
-        val fileTwo = createTempFile().apply { writeText("index_21.0".toHexString()) }
+    fun whenGreaterThanThreshold_logsAMatch() {
+        val fileOne = createTempFile().apply { writeText("index1".toHexString()) }
+        val fileTwo = createTempFile().apply { writeText("index2".toHexString()) }
+        matcher.addScore("index1", "index2", 21.0)
 
         val app = App(matcher, 10.0)
         app.execute(listOf("match", "-m", "-t", "20", fileOne.absolutePath, fileTwo.absolutePath), logger)
