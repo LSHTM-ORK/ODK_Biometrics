@@ -3,14 +3,28 @@
 
 # Keppel
 
-### Biometrics Solutions for ODK Ecosystem Tools
-
-This project provides an Android app `Keppel` that interfaces with mobile data collection software of the ODK ecosystem and which allows ISO 19794-2 fingerprint templates to be scanned and/or validated as part of an [XLSForm](https://xlsform.org/). We also provide a second app, the `Keppel CLI`, a command line interface which is designed to be run on a computer workstation. Keppel CLI can compare two fingerprint templates and return a matching score and is primarily useful for _post-hoc_ quality assurance and audit. 
-
+## Biometrics Solutions for ODK Ecosystem Tools
 
 [![Android](https://github.com/LSHTM-ORK/ODK_Biometrics/workflows/Android/badge.svg)](https://github.com/LSHTM-ORK/ODK_Biometrics/actions?query=workflow%3AAndroid)
 
 [![CLI](https://github.com/LSHTM-ORK/ODK_Biometrics/workflows/CLI/badge.svg)](https://github.com/LSHTM-ORK/ODK_Biometrics/actions?query=workflow%3ACLI)
+
+This project provides an Android app `Keppel` that interfaces with mobile data collection software of the ODK ecosystem and which allows ISO 19794-2 fingerprint templates to be scanned and/or validated as part of an [XLSForm](https://xlsform.org/). We also provide a second app, the `Keppel CLI`, a command line interface which is designed to be run on a computer workstation. Keppel CLI can compare two fingerprint templates and return a matching score and is primarily useful for _post-hoc_ quality assurance and audit. 
+
+
+
+
+### Demo : Registration & Verification/Validation 
+
+Please start by watching this video demonstration of registration and verification/validation of fingerprint templates.
+[![Watch the video](https://img.youtube.com/vi/2q3iZiACFN4/hqdefault.jpg)](https://youtu.be/2q3iZiACFN4)  
+Click the image to begin
+
+### Demo : Core Functions in Detail
+
+A more in-depth demonstration of the core functions of the software is also available on YouTube
+[![Watch the video](https://img.youtube.com/vi/wTRbKZzGTLI/hqdefault.jpg)](https://youtu.be/wTRbKZzGTLI)  
+Click the image to begin
 
 ## Validation 
 
@@ -69,6 +83,19 @@ As a bare minimum...
 * You should **partition your work** in to multiple forms. This minimises the risk that might emerge from having all study data on all devices. For instance, if you were working with ten schools, you should consider creating a separate version of your form for each school. This way, if a device being used in school A were to become compromised, the data being exposed would be constrained to school A.
 * Use ODK central's **app user** controls to limit access to each partitioned form, allowing only specified users to download the template data.
   
+## Compatibility with ODK Ecosystem Platforms
+
+This platform should work with all platforms that are based on ODK. 
+
+| <sub>Platform</sub>  | <sub>App & version</sub>         | <sub>Compatible with Releases <0.4.0</sub> |  <sub>Compatible with Releases >=0.4.0</sub>|
+|----------------------|----------------------------------|--------------------------------------------|---------------------------------------------|
+|<sub>ODK</sub>        |<sub>ODK Collect v2022.3</sub>    |<sub>YES</sub>                              | <sub>YES</sub>   
+|<sub>KoBoToolbox</sub>|<sub>KoboCollect v2022.1.2</sub>  |<sub>YES</sub>                              | <sub>UNTESTED</sub>   
+|<sub>SurveyCTO</sub>  |<sub>SurveyCTO Collect v2.72</sub>|<sub>YES</sub>                              | <sub>UNTESTED</sub>   
+|<sub>CommCare</sub>   |<sub>CommCare v8</sub>            |<sub>Only with Advanced Plan or higher</sub>| <sub>UNTESTED</sub>   
+|<sub>Ona</sub>        |<sub>ODK COllect v2022.3</sub>    |<sub>YES</sub>                              | <sub>UNTESTED</sub>   
+
+Versions 0.3 and lower worked only with the Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
 
 ## Biometric Scanner Device Compatibility
 
@@ -95,20 +122,6 @@ We strongly recommend using the most recent release and a BioMini 3. Legacy user
   * There's also plenty of generic biometric readers that look suspiciously like the MFS100 on Amazon, but we haven't tested these.
   * We paid around £150 for two devices including shipping and customs taxes
 
-
-## Compatibility with ODK Ecosystem Platforms
-
-This platform should work with all platforms that are based on ODK. 
-
-| <sub>Platform</sub> | <sub>App & version</sub> | <sub>Compatibility</sub>
-|-------|-----------|------------------|
-|<sub>ODK</sub>|<sub>ODK Collect v2022.3</sub>|<sub>YES</sub>|
-|<sub>KoBoToolbox</sub>|<sub>KoboCollect v2022.1.2</sub>|<sub>YES</sub>|
-|<sub>SurveyCTO</sub>|<sub>SurveyCTO Collect v2.72</sub>|<sub>YES</sub>|
-|<sub>CommCare</sub>|<sub>CommCare v8</sub>|<sub>Only with Advanced Plan or higher</sub>|
-|<sub>Ona</sub>|<sub>ODK COllect v2022.3</sub>|<sub>YES</sub>
-
-Versions 0.3 and lower worked only with the Mantra MFS100 Biometric C-Type Fingerprint Scanner from [Mantra Softech Inc](www.mantratec.com), functionality for which was based on code templates provided within the [Mantra MFS100 Software Development Kit](https://download.mantratecapp.com/).
 
 ## System design
 
