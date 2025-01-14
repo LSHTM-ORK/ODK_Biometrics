@@ -90,7 +90,7 @@ This platform should work with all platforms that are based on ODK.
 | <sub>Platform</sub>  | <sub>App & version</sub>         | <sub>Compatible with Releases <0.4.0</sub> |  <sub>Compatible with Releases >=0.4.0</sub>|
 |----------------------|----------------------------------|--------------------------------------------|---------------------------------------------|
 |<sub>ODK</sub>        |<sub>ODK Collect v2022.3</sub>    |<sub>YES</sub>                              | <sub>YES</sub>   
-|<sub>KoBoToolbox</sub>|<sub>KoboCollect v2022.1.2</sub>  |<sub>YES</sub>                              | <sub>UNTESTED</sub>   
+|<sub>KoBoToolbox</sub>|<sub>KoboCollect v2022.1.2</sub>  |<sub>YES</sub>                              | <sub>YES - No Method for select_one from existing rows</sub>   
 |<sub>SurveyCTO</sub>  |<sub>SurveyCTO Collect v2.72</sub>|<sub>YES</sub>                              | <sub>UNTESTED</sub>   
 |<sub>CommCare</sub>   |<sub>CommCare v8</sub>            |<sub>Only with Advanced Plan or higher</sub>| <sub>UNTESTED</sub>   
 |<sub>Ona</sub>        |<sub>ODK COllect v2022.3</sub>    |<sub>YES</sub>                              | <sub>UNTESTED</sub>   
