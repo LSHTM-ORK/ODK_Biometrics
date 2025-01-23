@@ -8,11 +8,13 @@ import com.github.ajalt.clikt.parameters.types.double
 import java.io.File
 
 class MatchCommand(
-        private val matcher: Matcher,
-        private val defaultThreshold: Double,
-        private val logger: Logger) : CliktCommand(
-        name = "match",
-        help = "Match two hex encoded ISO fingerprint templates. Threshold used for matching is $defaultThreshold.") {
+    private val matcher: Matcher,
+    private val defaultThreshold: Double,
+    private val logger: Logger
+) : CliktCommand(
+    name = "match",
+    help = "Match two hex encoded ISO fingerprint templates. Threshold used for matching is $defaultThreshold."
+) {
 
     private val plainText by option("-p", help = Strings.PLAIN_TEXT_HELP).flag(default = false)
     private val matchWithScore by option("-ms", help = Strings.MATCH_WITH_SCORE_HELP).flag(default = false)
