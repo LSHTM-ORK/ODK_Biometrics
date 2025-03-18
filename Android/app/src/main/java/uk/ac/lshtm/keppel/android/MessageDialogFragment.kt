@@ -13,7 +13,11 @@ class MessageDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext())
             .setMessage(args.message)
-            .setPositiveButton(R.string.ok) { _, _ -> requireActivity().finish() }
+            .setPositiveButton(R.string.ok) { _, _ ->
+                if (args.shouldFinish) {
+                    requireActivity().finish()
+                }
+            }
             .show()
     }
 }
