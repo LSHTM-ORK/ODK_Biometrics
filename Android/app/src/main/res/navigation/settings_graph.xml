@@ -21,7 +21,8 @@
     <dialog
         android:id="@+id/message"
         android:name="uk.ac.lshtm.keppel.android.MessageDialogFragment">
-        <argument android:name="message" />
+        <argument android:name="message"/>
+        <argument android:name="shouldFinish" app:argType="boolean" android:defaultValue="false"/>
     </dialog>
 
     <include app:graph="@navigation/scan_graph" />

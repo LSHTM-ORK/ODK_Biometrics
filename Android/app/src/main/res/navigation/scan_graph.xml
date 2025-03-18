@@ -18,6 +18,7 @@
         android:id="@+id/fatal_error"
         android:name="uk.ac.lshtm.keppel.android.MessageDialogFragment">
         <argument android:name="message" />
+        <argument android:name="shouldFinish" app:argType="boolean" android:defaultValue="true"/>
     </dialog>
 
 </navigation>
