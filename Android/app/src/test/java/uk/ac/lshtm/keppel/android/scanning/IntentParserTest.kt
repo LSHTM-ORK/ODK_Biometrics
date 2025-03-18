@@ -35,6 +35,17 @@ class IntentParserTest {
     }
 
     @Test
+    fun `blank isoTemplate is not included for MATCH`() {
+        val intent = Intent().also {
+            it.action = External.ACTION_MATCH
+            it.putExtra(External.PARAM_ISO_TEMPLATE, "")
+        }
+
+        val request = IntentParser.parse(intent)
+        assertThat((request as Request.Match).isoTemplates, equalTo(emptyList()))
+    }
+
+    @Test
     fun `isoTemplates is empty when list of MULTI_MATCH templates does not start at 1`() {
         val intent = Intent().also {
             it.action = External.ACTION_MULTI_MATCH
@@ -58,7 +69,7 @@ class IntentParserTest {
     }
 
     @Test
-    fun `isoTemplates that are blank are filtered out`() {
+    fun `isoTemplates that are blank are filtered out for MULTI_MATCH`() {
         val intent = Intent().also {
             it.action = External.ACTION_MULTI_MATCH
             it.putExtra(External.paramIsoTemplate(1), "")
