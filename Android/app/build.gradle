@@ -110,6 +110,10 @@ dependencies {
         implementation project(':biomini')
     }
 
+    if (file("../aratek/libs/TrustFinger_v3.1.0.4.jar").exists()) {
+        implementation project(':aratek')
+    }
+
     if (file("./google-services.json").exists()) {
         implementation project(':firebase-analytics')
     }
