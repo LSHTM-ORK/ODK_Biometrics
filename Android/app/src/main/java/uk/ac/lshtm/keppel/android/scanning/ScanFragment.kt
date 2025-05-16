@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import uk.ac.lshtm.keppel.android.External
@@ -23,7 +23,7 @@ class ScanFragment(
     private val request: Request
 ) : Fragment() {
 
-    private val viewModel: ScannerViewModel by activityViewModels { viewModelFactory }
+    private val viewModel: ScannerViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
