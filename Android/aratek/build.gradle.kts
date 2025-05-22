@@ -33,4 +33,6 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(files("libs/TrustFinger_v3.1.0.4.jar"))
+    implementation(libs.timber)
 }
