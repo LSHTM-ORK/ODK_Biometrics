@@ -5,4 +5,7 @@
 
     <!-- Mantra MFS100 -->
     <usb-device vendor-id="11279" product-id="4101"/>
+
+    <!-- Aratek A700 -->
+    <usb-device vendor-id="10477" product-id="4388"/>
 </resources>
