@@ -14,11 +14,11 @@ import uk.ac.lshtm.keppel.core.Scanner
 
 class AratekScanner(private val context: Context) : Scanner {
 
+    private val trustFinger = TrustFinger.getInstance(context)
     private var device: TrustFingerDevice? = null
 
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         try {
-            val trustFinger = TrustFinger.getInstance(context)
             trustFinger.initialize()
             trustFinger.openDevice(0, object : DeviceOpenListener {
                 override fun openSuccess(trustFingerDevice: TrustFingerDevice) {
@@ -68,6 +68,7 @@ class AratekScanner(private val context: Context) : Scanner {
     }
 
     override fun disconnect() {
-
+        device!!.close()
+        trustFinger.release()
     }
 }
