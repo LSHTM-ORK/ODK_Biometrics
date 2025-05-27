@@ -12,7 +12,7 @@ import com.aratek.trustfinger.sdk.TrustFingerException
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
 
-class AratekScanner(private val context: Context) : Scanner {
+class AratekScanner(context: Context) : Scanner {
 
     private val trustFinger = TrustFinger.getInstance(context)
     private var device: TrustFingerDevice? = null
@@ -42,25 +42,27 @@ class AratekScanner(private val context: Context) : Scanner {
     }
 
     override fun capture(): CaptureResult? {
-        device!!.setLedStatus(LedIndex.RED, LedStatus.OPEN)
+        return device?.let {
+            it.setLedStatus(LedIndex.RED, LedStatus.OPEN)
 
-        var rawCapture: ByteArray
-        do {
-            rawCapture = device!!.captureRawData()
-            val quality = device!!.rawDataQuality(rawCapture)
-        } while (quality < 50)
+            var rawCapture: ByteArray
+            do {
+                rawCapture = it.captureRawData()
+                val quality = it.rawDataQuality(rawCapture)
+            } while (quality < 50)
 
-        val isoData = device!!.rawToISO(
-            rawCapture,
-            device!!.imageInfo.width,
-            device!!.imageInfo.height,
-            device!!.imageInfo.resolution,
-            FingerPosition.Unknown,
-            ImgCompressAlg.UNCOMPRESSED_NO_BIT_PACKING
-        )
+            val isoData = it.rawToISO(
+                rawCapture,
+                it.imageInfo.width,
+                it.imageInfo.height,
+                it.imageInfo.resolution,
+                FingerPosition.Unknown,
+                ImgCompressAlg.UNCOMPRESSED_NO_BIT_PACKING
+            )
 
-        device!!.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
-        return CaptureResult(String(isoData), 0)
+            it.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
+            return CaptureResult(String(isoData), 0)
+        }
     }
 
     override fun stopCapture() {
@@ -68,7 +70,7 @@ class AratekScanner(private val context: Context) : Scanner {
     }
 
     override fun disconnect() {
-        device!!.close()
+        device?.close()
         trustFinger.release()
     }
 }
