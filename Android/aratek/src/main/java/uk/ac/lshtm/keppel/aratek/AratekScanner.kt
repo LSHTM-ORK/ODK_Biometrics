@@ -11,11 +11,14 @@ import com.aratek.trustfinger.sdk.TrustFingerDevice
 import com.aratek.trustfinger.sdk.TrustFingerException
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
+import java.util.concurrent.atomic.AtomicBoolean
 
 class AratekScanner(context: Context) : Scanner {
 
     private val trustFinger = TrustFinger.getInstance(context)
     private var device: TrustFingerDevice? = null
+
+    private var capturing = AtomicBoolean(false)
 
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         try {
@@ -45,11 +48,17 @@ class AratekScanner(context: Context) : Scanner {
         return device?.let {
             it.setLedStatus(LedIndex.RED, LedStatus.OPEN)
 
+            capturing.set(true)
             var rawCapture: ByteArray
             do {
+                if (!capturing.get()) {
+                    return null
+                }
+
                 rawCapture = it.captureRawData()
                 val quality = it.rawDataQuality(rawCapture)
             } while (quality < 50)
+            capturing.set(false)
 
             val isoData = it.rawToISO(
                 rawCapture,
@@ -66,7 +75,7 @@ class AratekScanner(context: Context) : Scanner {
     }
 
     override fun stopCapture() {
-
+        capturing.set(false)
     }
 
     override fun disconnect() {
