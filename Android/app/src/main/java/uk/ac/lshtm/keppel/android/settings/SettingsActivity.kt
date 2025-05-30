@@ -26,7 +26,15 @@ class SettingsActivity : AppCompatActivity() {
     private val request by lazy {
         Request.Scan(
             false,
-            OdkExternalRequest(External.ACTION_SCAN, true, null, emptyMap())
+            OdkExternalRequest(
+                External.ACTION_SCAN,
+                false,
+                null,
+                mapOf(
+                    External.PARAM_RETURN_ISO_TEMPLATE to "template",
+                    External.PARAM_RETURN_NFIQ to "nfiq"
+                )
+            )
         )
     }
 
@@ -82,7 +90,13 @@ class SettingsFragment(
             this
         ) { _, result ->
             if (!result.getBoolean(ScanFragment.RESULT_CANCEL)) {
-                findNavController().navigate(SettingsFragmentDirections.settingsToMessage(getString(R.string.scanner_test_success)))
+                val intent = result.getParcelable<Intent>(ScanFragment.RESULT_INTENT)!!
+                findNavController().navigate(
+                    SettingsFragmentDirections.settingsToTestResults(
+                        intent.getStringExtra("template")!!,
+                        intent.getIntExtra("nfiq", -1)
+                    )
+                )
             }
         }
 

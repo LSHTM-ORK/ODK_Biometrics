@@ -14,15 +14,15 @@
             app:destination="@id/scan_graph" />
 
         <action
-            android:id="@+id/settings_to_message"
-            app:destination="@id/message" />
+            android:id="@+id/settings_to_test_results"
+            app:destination="@id/test_results" />
     </fragment>
 
     <dialog
-        android:id="@+id/message"
-        android:name="uk.ac.lshtm.keppel.android.MessageDialogFragment">
-        <argument android:name="message"/>
-        <argument android:name="shouldFinish" app:argType="boolean" android:defaultValue="false"/>
+        android:id="@+id/test_results"
+        android:name="uk.ac.lshtm.keppel.android.settings.TestScannerResultsDialogFragment">
+        <argument android:name="template"/>
+        <argument android:name="nfiq" app:argType="integer"/>
     </dialog>
 
     <include app:graph="@navigation/scan_graph" />

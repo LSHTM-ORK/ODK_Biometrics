@@ -2,7 +2,9 @@ package uk.ac.lshtm.keppel.android.support.pages
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Root
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import org.hamcrest.Matcher
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.support.Assertions.assertTextDisplayed
 import uk.ac.lshtm.keppel.android.support.Interactions.clickOn
@@ -17,6 +19,10 @@ class DialogPage(private val text: String) : Page<DialogPage> {
     override fun assert(): DialogPage {
         assertTextDisplayed(text, root = isDialog())
         return this
+    }
+
+    override fun root(): Matcher<Root>? {
+        return isDialog()
     }
 
     fun clickOk() {
