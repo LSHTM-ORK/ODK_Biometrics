@@ -6,6 +6,7 @@ import android.os.Looper
 import uk.ac.lshtm.keppel.android.scanning.ScannerFactory
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
+import java.util.concurrent.atomic.AtomicBoolean
 
 class DemoScannerFactory : ScannerFactory {
 
@@ -18,6 +19,8 @@ class DemoScannerFactory : ScannerFactory {
 
 private class DemoScanner : Scanner {
 
+    private var capturing = AtomicBoolean(false)
+
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         Handler(Looper.getMainLooper()).postDelayed({ onConnected(true) }, 3000)
         return this
@@ -27,13 +30,19 @@ private class DemoScanner : Scanner {
 
     }
 
-    override fun capture(): CaptureResult {
+    override fun capture(): CaptureResult? {
+        capturing.set(true)
         Thread.sleep(3000)
-        return CaptureResult("demo-finger-print-iso-template", 0)
+
+        return if (capturing.getAndSet(false)) {
+            CaptureResult("demo-finger-print-iso-template", 0)
+        } else {
+            null
+        }
     }
 
     override fun stopCapture() {
-
+        capturing.set(false)
     }
 
     override fun disconnect() {

@@ -37,7 +37,11 @@ class ScanActivity : AppCompatActivity() {
         val navFragmentManager =
             binding.navHostFragment.getFragment<NavHostFragment>().childFragmentManager
         navFragmentManager.setFragmentResultListener(ScanFragment.REQUEST_SCAN, this) { _, result ->
-            returnResult(result.getParcelable(ScanFragment.RESULT_INTENT)!!)
+            if (!result.getBoolean(ScanFragment.RESULT_CANCEL)) {
+                returnResult(result.getParcelable(ScanFragment.RESULT_INTENT)!!)
+            } else {
+                finish()
+            }
         }
     }
 

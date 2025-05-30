@@ -81,7 +81,9 @@ class SettingsFragment(
             ScanFragment.REQUEST_SCAN,
             this
         ) { _, result ->
-            findNavController().navigate(SettingsFragmentDirections.settingsToMessage(getString(R.string.scanner_test_success)))
+            if (!result.getBoolean(ScanFragment.RESULT_CANCEL)) {
+                findNavController().navigate(SettingsFragmentDirections.settingsToMessage(getString(R.string.scanner_test_success)))
+            }
         }
 
         findPreference<Preference>("test_scanner")!!.setOnPreferenceClickListener {

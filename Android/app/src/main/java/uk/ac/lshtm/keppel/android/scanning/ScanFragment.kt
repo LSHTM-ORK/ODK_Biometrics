@@ -105,7 +105,12 @@ class ScanFragment(
 
         binding.cancelButton.setOnClickListener {
             Analytics.log("cancel")
-            requireActivity().finish()
+            parentFragmentManager.setFragmentResult(
+                REQUEST_SCAN,
+                Bundle().also { it.putBoolean(RESULT_CANCEL, true) }
+            )
+
+            findNavController().popBackStack()
         }
 
         if (request is Request.Match) {
@@ -141,7 +146,7 @@ class ScanFragment(
             Bundle().also { it.putParcelable(RESULT_INTENT, intent) }
         )
 
-        findNavController().navigateUp()
+        findNavController().popBackStack()
     }
 
     private fun buildScanReturn(
@@ -181,5 +186,6 @@ class ScanFragment(
     companion object {
         val REQUEST_SCAN = "scan"
         val RESULT_INTENT = "intent"
+        val RESULT_CANCEL = "cancel"
     }
 }

@@ -55,6 +55,17 @@ class ChangeScannerTest {
     }
 
     @Test
+    fun canCancelTestingScanner() {
+        rule.launchApp()
+            .clickTestScanner()
+            .connect(scanner1, CapturePage())
+            .clickCapture()
+            .clickCancel()
+
+        SettingsPage().assert()
+    }
+
+    @Test
     fun unavailableScannersAreNotShown() {
         rule.launchApp()
             .clickChangeScanner()
