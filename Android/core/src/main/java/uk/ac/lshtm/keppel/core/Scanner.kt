@@ -10,6 +10,10 @@ interface Scanner {
 
     fun onDisconnect(onDisconnected: () -> Unit)
 
+    /**
+     * Waits for scanner to capture finger. Should return `null` if [stopCapture] is called while
+     * [capture] is blocking.
+     */
     fun capture(): CaptureResult?
 
     fun stopCapture()

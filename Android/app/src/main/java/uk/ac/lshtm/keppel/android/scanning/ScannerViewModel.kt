@@ -22,6 +22,7 @@ class ScannerViewModel(
 
     private val _scannerState = MutableLiveData<ScannerState>(Disconnected)
     private val _result = MutableLiveData<Result?>(null)
+    private var capturing = false
 
     val scannerState: LiveData<ScannerState> = _scannerState
     val result: LiveData<Result?> = _result
@@ -46,6 +47,7 @@ class ScannerViewModel(
 
     fun capture() {
         _scannerState.value = Scanning
+        capturing = true
 
         taskRunner.execute {
             val capture = scanner.capture()
@@ -75,15 +77,17 @@ class ScannerViewModel(
                 }
             } else if (capture != null) {
                 _result.postValue(Result.Scan(capture))
-            } else {
+            } else if (capturing) {
                 _result.postValue(Result.NoCaptureResultError)
             }
 
+            capturing = false
             _scannerState.postValue(Connected)
         }
     }
 
     fun stopCapture() {
+        capturing = false
         scanner.stopCapture()
     }
 
