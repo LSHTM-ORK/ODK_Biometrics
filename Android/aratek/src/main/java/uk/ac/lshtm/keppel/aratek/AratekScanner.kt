@@ -61,15 +61,7 @@ class AratekScanner(context: Context) : Scanner {
             } while (quality < 50)
             capturing.set(false)
 
-            val isoData = it.rawToISO(
-                rawCapture,
-                it.imageInfo.width,
-                it.imageInfo.height,
-                it.imageInfo.resolution,
-                FingerPosition.Unknown,
-                ImgCompressAlg.COMPRESSED_JPEG
-            )
-
+            val isoData = it.extractISOFeature(rawCapture, FingerPosition.Unknown)
             it.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
             return CaptureResult(isoData.toHexString(), it.getNfiqScore(rawCapture))
         }
