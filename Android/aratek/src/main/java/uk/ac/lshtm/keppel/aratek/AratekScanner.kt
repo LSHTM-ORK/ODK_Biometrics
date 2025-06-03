@@ -11,6 +11,7 @@ import com.aratek.trustfinger.sdk.TrustFingerDevice
 import com.aratek.trustfinger.sdk.TrustFingerException
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.core.toHexString
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AratekScanner(context: Context) : Scanner {
@@ -66,11 +67,11 @@ class AratekScanner(context: Context) : Scanner {
                 it.imageInfo.height,
                 it.imageInfo.resolution,
                 FingerPosition.Unknown,
-                ImgCompressAlg.UNCOMPRESSED_NO_BIT_PACKING
+                ImgCompressAlg.COMPRESSED_JPEG
             )
 
             it.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
-            return CaptureResult(String(isoData), 0)
+            return CaptureResult(isoData.toHexString(), 0)
         }
     }
 

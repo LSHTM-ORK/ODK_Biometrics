@@ -14,7 +14,7 @@ class TestScannerResultsDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = FragmentTestScannerResultsDialogBinding.inflate(layoutInflater)
-        binding.template.text = args.template
+        binding.template.text = getString(R.string.shortened_template, args.template.takeMiddle(16))
         binding.nfiq.text = args.nfiq.toString()
 
         return MaterialAlertDialogBuilder(requireContext())
@@ -22,4 +22,11 @@ class TestScannerResultsDialogFragment : DialogFragment() {
             .setPositiveButton(R.string.ok, null)
             .show()
     }
+}
+
+
+private fun String.takeMiddle(n: Int): String {
+    val middle = this.length / 2
+    val halfN = n / 2
+    return this.substring(middle - halfN, middle + halfN)
 }

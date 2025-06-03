@@ -20,4 +20,5 @@ If the problem persists, please restart the tablet.</string>
     <string name="scanner_test_success">"Scanner captured fingerprint successfully! "</string>
     <string name="hex_encoded_template">Hex encoded template:</string>
     <string name="nfiq">NFIQ:</string>
+    <string name="shortened_template">…%1$s…</string>
 </resources>
