@@ -71,7 +71,7 @@ class AratekScanner(context: Context) : Scanner {
             )
 
             it.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
-            return CaptureResult(isoData.toHexString(), 0)
+            return CaptureResult(isoData.toHexString(), it.getNfiqScore(rawCapture))
         }
     }
 
