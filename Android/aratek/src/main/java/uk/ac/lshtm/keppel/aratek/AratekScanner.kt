@@ -31,11 +31,11 @@ class AratekScanner(context: Context) : Scanner {
                 }
 
                 override fun openFail(errorMessage: String) {
-                    TODO("Not yet implemented")
+                    onConnected(false)
                 }
             })
         } catch (e: TrustFingerException) {
-            throw RuntimeException("TrustFingerException: ${e.type}")
+            onConnected(false)
         }
 
         return this
