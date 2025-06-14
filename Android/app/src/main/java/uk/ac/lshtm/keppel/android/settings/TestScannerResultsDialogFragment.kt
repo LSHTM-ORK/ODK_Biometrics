@@ -7,6 +7,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import uk.ac.lshtm.keppel.android.R
 import uk.ac.lshtm.keppel.android.databinding.FragmentTestScannerResultsDialogBinding
+import uk.ac.lshtm.keppel.core.takeMiddle
 
 class TestScannerResultsDialogFragment : DialogFragment() {
 
@@ -14,7 +15,15 @@ class TestScannerResultsDialogFragment : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = FragmentTestScannerResultsDialogBinding.inflate(layoutInflater)
-        binding.template.text = getString(R.string.shortened_template, args.template.takeMiddle(16))
+
+        val template = args.template
+        if (template.length <= MAX_TEMPLATE_LENGTH) {
+            binding.template.text = template
+        } else {
+            val shortenedTemplate = template.takeMiddle(MAX_TEMPLATE_LENGTH)
+            binding.template.text = getString(R.string.shortened_template, shortenedTemplate)
+        }
+
         binding.nfiq.text = args.nfiq.toString()
 
         return MaterialAlertDialogBuilder(requireContext())
@@ -22,11 +31,8 @@ class TestScannerResultsDialogFragment : DialogFragment() {
             .setPositiveButton(R.string.ok, null)
             .show()
     }
-}
 
-
-private fun String.takeMiddle(n: Int): String {
-    val middle = this.length / 2
-    val halfN = n / 2
-    return this.substring(middle - halfN, middle + halfN)
+    companion object {
+        private const val MAX_TEMPLATE_LENGTH = 16
+    }
 }
