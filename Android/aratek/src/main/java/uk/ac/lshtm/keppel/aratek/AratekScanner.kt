@@ -3,7 +3,6 @@ package uk.ac.lshtm.keppel.aratek
 import android.content.Context
 import com.aratek.trustfinger.sdk.DeviceOpenListener
 import com.aratek.trustfinger.sdk.FingerPosition
-import com.aratek.trustfinger.sdk.ImgCompressAlg
 import com.aratek.trustfinger.sdk.LedIndex
 import com.aratek.trustfinger.sdk.LedStatus
 import com.aratek.trustfinger.sdk.TrustFinger
@@ -11,6 +10,7 @@ import com.aratek.trustfinger.sdk.TrustFingerDevice
 import com.aratek.trustfinger.sdk.TrustFingerException
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.core.Scanner.Companion.TIMEOUT_MS
 import uk.ac.lshtm.keppel.core.toHexString
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -49,10 +49,11 @@ class AratekScanner(context: Context) : Scanner {
         return device?.let {
             it.setLedStatus(LedIndex.RED, LedStatus.OPEN)
 
+            val startTime = System.currentTimeMillis()
             capturing.set(true)
             var rawCapture: ByteArray
             do {
-                if (!capturing.get()) {
+                if (!capturing.get() || (System.currentTimeMillis() - startTime) > TIMEOUT_MS) {
                     return null
                 }
 

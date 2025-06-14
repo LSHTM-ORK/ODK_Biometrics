@@ -19,6 +19,10 @@ interface Scanner {
     fun stopCapture()
 
     fun disconnect()
+
+    companion object {
+        const val TIMEOUT_MS = 30000L
+    }
 }
 
 /**
