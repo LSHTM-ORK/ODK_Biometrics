@@ -68,6 +68,7 @@ class AratekScanner(context: Context) : Scanner {
     }
 
     override fun stopCapture() {
+        device?.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
         capturing.set(false)
     }
 
