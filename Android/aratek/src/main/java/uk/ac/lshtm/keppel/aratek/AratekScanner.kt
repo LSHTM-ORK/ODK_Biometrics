@@ -17,16 +17,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 class AratekScanner(context: Context) : Scanner {
 
     private val trustFinger = TrustFinger.getInstance(context)
-    private var device: TrustFingerDevice? = null
-
-    private var capturing = AtomicBoolean(false)
+    private var device: AratekDeviceWrapper? = null
 
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         try {
             trustFinger.initialize()
             trustFinger.openDevice(0, object : DeviceOpenListener {
                 override fun openSuccess(trustFingerDevice: TrustFingerDevice) {
-                    device = trustFingerDevice
+                    device = AratekDeviceWrapper(trustFingerDevice)
                     onConnected(true)
                 }
 
@@ -47,34 +45,65 @@ class AratekScanner(context: Context) : Scanner {
 
     override fun capture(): CaptureResult? {
         return device?.let {
-            it.setLedStatus(LedIndex.RED, LedStatus.OPEN)
+            val result = it.waitForTemplate()
 
-            val startTime = System.currentTimeMillis()
-            capturing.set(true)
-            var rawCapture: ByteArray
-            do {
-                if (!capturing.get() || (System.currentTimeMillis() - startTime) > TIMEOUT_MS) {
-                    return null
-                }
-
-                rawCapture = it.captureRawData()
-                val quality = it.rawDataQuality(rawCapture)
-            } while (quality < 50)
-            capturing.set(false)
-
-            val isoData = it.extractISOFeature(rawCapture, FingerPosition.Unknown)
-            it.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
-            return CaptureResult(isoData.toHexString(), it.getNfiqScore(rawCapture))
+            if (result != null) {
+                CaptureResult(result.first.toHexString(), result.second)
+            } else {
+                null
+            }
         }
     }
 
     override fun stopCapture() {
-        device?.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
-        capturing.set(false)
+        device?.stopCapture()
     }
 
     override fun disconnect() {
         device?.close()
         trustFinger.release()
+    }
+}
+
+/**
+ * Wrapper for [TrustFingerDevice] that hides details like switching LEDs on/off when capturing
+ */
+private class AratekDeviceWrapper(val device: TrustFingerDevice) {
+
+    private val capturing = AtomicBoolean(false)
+
+    fun waitForTemplate(): Pair<ByteArray, Int>? {
+        startCapture()
+
+        val startTime = System.currentTimeMillis()
+        var rawCapture: ByteArray
+        do {
+            if (!capturing.get() || (System.currentTimeMillis() - startTime) > TIMEOUT_MS) {
+                return null
+            }
+
+            rawCapture = device.captureRawData()
+            val quality = device.rawDataQuality(rawCapture)
+        } while (quality < 50)
+
+        stopCapture()
+        return Pair(
+            device.extractISOFeature(rawCapture, FingerPosition.Unknown),
+            device.getNfiqScore(rawCapture)
+        )
+    }
+
+    fun stopCapture() {
+        device.setLedStatus(LedIndex.RED, LedStatus.CLOSE)
+        capturing.set(false)
+    }
+
+    fun close() {
+        device.close()
+    }
+
+    private fun startCapture() {
+        device.setLedStatus(LedIndex.RED, LedStatus.OPEN)
+        capturing.set(true)
     }
 }
