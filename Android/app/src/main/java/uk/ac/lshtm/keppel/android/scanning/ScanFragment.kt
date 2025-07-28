@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import uk.ac.lshtm.keppel.android.External
+import uk.ac.lshtm.keppel.android.NavControllerExt.navigateToDialog
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
@@ -42,7 +43,10 @@ class ScanFragment(
 
                 if (request.isoTemplates.isEmpty()) {
                     val error = getString(R.string.input_missing_error, External.PARAM_ISO_TEMPLATE)
-                    findNavController().navigate(ScanFragmentDirections.scanToFatalError(error))
+                    findNavController().navigateToDialog(
+                        R.id.fatal_error,
+                        ScanFragmentDirections.scanToFatalError(error)
+                    )
 
                     return
                 }
@@ -74,7 +78,10 @@ class ScanFragment(
                 }
 
                 ScannerState.ConnectionFailure -> {
-                    findNavController().navigate(ScanFragmentDirections.scanToFatalError(getString(R.string.connection_failure_error)))
+                    findNavController().navigateToDialog(
+                        R.id.fatal_error,
+                        ScanFragmentDirections.scanToFatalError(getString(R.string.connection_failure_error))
+                    )
                 }
             }
         }
@@ -82,13 +89,15 @@ class ScanFragment(
         viewModel.result.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is ScannerViewModel.Result.InputError -> {
-                    findNavController().navigate(
+                    findNavController().navigateToDialog(
+                        R.id.fatal_error,
                         ScanFragmentDirections.scanToFatalError(getString(R.string.input_error))
                     )
                 }
 
                 is ScannerViewModel.Result.NoCaptureResultError -> {
-                    findNavController().navigate(
+                    findNavController().navigateToDialog(
+                        R.id.fatal_error,
                         ScanFragmentDirections.scanToFatalError(getString(R.string.no_capture_result_error))
                     )
                 }
