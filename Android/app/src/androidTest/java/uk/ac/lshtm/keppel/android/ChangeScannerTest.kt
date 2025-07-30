@@ -72,6 +72,14 @@ class ChangeScannerTest {
     }
 
     @Test
+    fun returnsToSettingsIfAnErrorOccursTestingScanner() {
+        rule.launchApp()
+            .clickTestScanner()
+            .failToConnect(scanner1, DialogPage(R.string.connection_failure_error))
+            .clickOk(SettingsPage())
+    }
+
+    @Test
     fun unavailableScannersAreNotShown() {
         rule.launchApp()
             .clickChangeScanner()
