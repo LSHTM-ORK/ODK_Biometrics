@@ -1,7 +1,9 @@
 package uk.ac.lshtm.keppel.android
 
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 
 object NavControllerExt {
 
@@ -17,5 +19,15 @@ object NavControllerExt {
         }
 
         navigate(directions)
+    }
+
+    /**
+     * Pop back stack of [NavController] or finish the host [android.app.Activity] if the doing
+     * so empties the backstack
+     */
+    fun Fragment.popBackStackOrFinish() {
+        if (!findNavController().popBackStack()) {
+            requireActivity().finish()
+        }
     }
 }

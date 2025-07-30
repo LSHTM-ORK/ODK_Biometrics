@@ -1,5 +1,6 @@
 package uk.ac.lshtm.keppel.android.scanning
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import uk.ac.lshtm.keppel.android.External
+import uk.ac.lshtm.keppel.android.MessageDialogFragment
 import uk.ac.lshtm.keppel.android.NavControllerExt.navigateToDialog
+import uk.ac.lshtm.keppel.android.NavControllerExt.popBackStackOrFinish
 import uk.ac.lshtm.keppel.android.OdkExternal
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
 import uk.ac.lshtm.keppel.android.R
@@ -35,6 +38,10 @@ class ScanFragment(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        parentFragmentManager.setFragmentResultListener(MessageDialogFragment.REQUEST_FATAL, viewLifecycleOwner) { _, _ ->
+            popBackStackOrFinish()
+        }
+
         val binding = FragmentScanBinding.bind(view)
 
         when (request) {
