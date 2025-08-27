@@ -84,7 +84,7 @@ private class AratekDeviceWrapper(val device: TrustFingerDevice) {
 
             rawCapture = device.captureRawData()
             val quality = device.rawDataQuality(rawCapture)
-        } while (quality < 50)
+        } while (quality < CAPTURE_QUALITY_THRESHOLD)
 
         stopCapture()
         return Pair(
@@ -105,5 +105,9 @@ private class AratekDeviceWrapper(val device: TrustFingerDevice) {
     private fun startCapture() {
         device.setLedStatus(LedIndex.RED, LedStatus.OPEN)
         capturing.set(true)
+    }
+
+    companion object {
+        private const val CAPTURE_QUALITY_THRESHOLD = 50
     }
 }
