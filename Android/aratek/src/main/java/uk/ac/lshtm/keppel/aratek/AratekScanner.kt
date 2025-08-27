@@ -40,7 +40,7 @@ class AratekScanner(context: Context) : Scanner {
     }
 
     override fun onDisconnect(onDisconnected: () -> Unit) {
-
+        // TODO
     }
 
     override fun capture(): CaptureResult? {
