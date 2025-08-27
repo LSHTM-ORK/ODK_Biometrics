@@ -23,6 +23,5 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.4.
 play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.1.0" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.12.2" }
 sourceafis = { module = "com.machinezoo.sourceafis:sourceafis", version = "3.18.1" }
-timber = 'com.jakewharton.timber:timber:5.0.1'
 
 [plugins]
