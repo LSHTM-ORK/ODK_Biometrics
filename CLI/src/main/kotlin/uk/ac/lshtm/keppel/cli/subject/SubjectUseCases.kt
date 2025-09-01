@@ -12,7 +12,7 @@ object SubjectUseCases {
         threshold: Double,
         parallelism: Int? = null
     ): List<Match> {
-        return subjects.uniquePairs().toList().parallelFold(parallelism ?: 2) { pair ->
+        return subjects.uniquePairs().parallelFold(parallelism ?: 2) { pair ->
             val scores = pair.first.templates.zip(pair.second.templates).map { (one, two) ->
                 matcher.match(one.toByteArray(), two.toByteArray())
             }

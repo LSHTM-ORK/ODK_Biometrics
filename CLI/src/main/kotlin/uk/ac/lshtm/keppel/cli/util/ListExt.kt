@@ -13,7 +13,7 @@ fun <T> List<T>.uniquePairs(): Sequence<Pair<T, T>> {
     }
 }
 
-fun <T, U> List<T>.parallelFold(threads: Int = 2, operation: (T) -> Set<U>): Set<U> {
+fun <T, U> Sequence<T>.parallelFold(threads: Int = 2, operation: (T) -> Set<U>): Set<U> {
     val workerPool = Executors.newFixedThreadPool(threads)
     val futures = this.map { item ->
         workerPool.submit<Set<U>> {
