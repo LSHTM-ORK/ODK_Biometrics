@@ -15,6 +15,7 @@ import uk.ac.lshtm.keppel.android.support.KeppelTestRule
 import uk.ac.lshtm.keppel.android.support.pages.CapturePage
 import uk.ac.lshtm.keppel.android.support.pages.DialogPage
 import uk.ac.lshtm.keppel.android.support.pages.SettingsPage
+import uk.ac.lshtm.keppel.core.toHexString
 
 @RunWith(AndroidJUnit4::class)
 class ChangeScannerTest {
@@ -38,7 +39,10 @@ class ChangeScannerTest {
             .changeScanner("Scanner 2")
 
         val scannerPref =
-            getDefaultSharedPreferences(getApplicationContext<Keppel>()).getString(Preferences.SCANNER, null)
+            getDefaultSharedPreferences(getApplicationContext<Keppel>()).getString(
+                Preferences.SCANNER,
+                null
+            )
         assertThat(scannerPref, equalTo("Scanner 2"))
     }
 
@@ -49,8 +53,29 @@ class ChangeScannerTest {
             .connect(scanner1, CapturePage())
             .clickCapture()
 
-        scanner1.returnTemplate("scanned", 0)
+        scanner1.returnTemplate("scanned", 3)
         DialogPage(R.string.scanner_test_success).assert()
+            .assertTextDisplayed("scanned".toHexString())
+            .assertTextDisplayed("3")
+            .clickOk(SettingsPage())
+    }
+
+    @Test
+    fun canCancelTestingScanner() {
+        rule.launchApp()
+            .clickTestScanner()
+            .connect(scanner1, CapturePage())
+            .clickCapture()
+            .clickCancel()
+
+        SettingsPage().assert()
+    }
+
+    @Test
+    fun returnsToSettingsIfAnErrorOccursTestingScanner() {
+        rule.launchApp()
+            .clickTestScanner()
+            .failToConnect(scanner1, DialogPage(R.string.connection_failure_error))
             .clickOk(SettingsPage())
     }
 

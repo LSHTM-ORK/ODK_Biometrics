@@ -17,6 +17,7 @@ import com.suprema.IUsbEventHandler
 import uk.ac.lshtm.keppel.biomini.eacrugged.EACRuggedConnectionManager
 import uk.ac.lshtm.keppel.core.CaptureResult
 import uk.ac.lshtm.keppel.core.Scanner
+import uk.ac.lshtm.keppel.core.Scanner.Companion.TIMEOUT_MS
 import uk.ac.lshtm.keppel.core.toHexString
 
 private const val TAG = "KeppelBioMiniScanner"
@@ -260,7 +261,6 @@ class BioMiniScanner(private val context: Context) : Scanner, BroadcastReceiver(
     }
 
     companion object {
-        private const val TIMEOUT_MS = 30000L
         private val CONNECTION_MANAGERS = listOf(EACRuggedConnectionManager())
     }
 }

@@ -11,6 +11,11 @@ if (file("./biomini-aar/libBioMini.aar").exists()) {
     include ':biomini-aar'
 }
 
+if (file("./aratek/libs/TrustFinger_v3.1.0.4.jar").exists()) {
+    include ':aratek'
+}
+
 if (file("./app/google-services.json").exists()) {
     include ':firebase-analytics'
 }
+

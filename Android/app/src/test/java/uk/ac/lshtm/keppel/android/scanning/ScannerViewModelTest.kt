@@ -53,11 +53,24 @@ class ScannerViewModelTest {
     @Test
     fun whenFastMode_whenScannerConnected_startsCapturing() {
         val scanner = MockScanner()
-        val viewModel = ScannerViewModel(scanner, mock(), InstantTaskRunner(), fast = true)
+        ScannerViewModel(scanner, mock(), InstantTaskRunner(), fast = true)
         assertThat(scanner.captures, equalTo(0))
 
         scanner.connect()
         assertThat(scanner.captures, equalTo(1))
+    }
+
+    @Test
+    fun stopCapture_shouldIgnoreCaptureResultsFromScanner() {
+        val scanner = MockScanner()
+        val taskRunner = ControllableTaskRunner()
+        val viewModel = ScannerViewModel(scanner, mock(), taskRunner)
+
+        viewModel.capture()
+        viewModel.stopCapture()
+
+        taskRunner.flush()
+        assertThat(viewModel.result.value, equalTo(null))
     }
 }
 
@@ -68,6 +81,23 @@ private class InstantTaskRunner : TaskRunner {
     }
 }
 
+private class ControllableTaskRunner : TaskRunner {
+
+    private val tasks = mutableListOf<() -> Unit>()
+
+    override fun execute(runnable: () -> Unit) {
+        tasks.add(runnable)
+    }
+
+    fun flush() {
+        tasks.forEach {
+            it.invoke()
+        }
+
+        tasks.clear()
+    }
+}
+
 private class MockScanner : Scanner {
 
     var captures: Int = 0
@@ -75,6 +105,7 @@ private class MockScanner : Scanner {
 
     private var onConnected: ((Boolean) -> Unit)? = null
     private var onDisconnected: (() -> Unit)? = null
+    private var cancelled = false
 
     override fun connect(onConnected: (Boolean) -> Unit): Scanner {
         this.onConnected = onConnected
@@ -87,11 +118,16 @@ private class MockScanner : Scanner {
 
     override fun capture(): CaptureResult? {
         captures += 1
-        return null
+
+        return if (cancelled) {
+            null
+        } else {
+            CaptureResult("demo-finger-print-iso-template", 0)
+        }
     }
 
     override fun stopCapture() {
-
+        cancelled = true
     }
 
     override fun disconnect() {
