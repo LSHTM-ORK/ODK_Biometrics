@@ -3,7 +3,7 @@ lifecycle = "2.8.6"
 espresso = "3.6.1"
 minSdk = "21"
 compileSdk = "36"
-targetSdk = "34"
+targetSdk = "36"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
