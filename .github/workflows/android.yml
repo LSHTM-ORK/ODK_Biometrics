@@ -20,7 +20,7 @@ jobs:
         distribution: 'temurin'
     - name: Import device SDKs
       run: ./import-device-sdks.sh
-    - name: Build with Gradle
+    - name: Assemble
       run: |
           cd Android
-          ./gradlew build
+          ./gradlew assembleDebug
