@@ -24,3 +24,7 @@ jobs:
       run: |
           cd Android
           ./gradlew assembleDebug
+    - name: Test
+      run: ./gradlew testDebug
+    - name: Lint
+      run: ./gradlew lintDebug
