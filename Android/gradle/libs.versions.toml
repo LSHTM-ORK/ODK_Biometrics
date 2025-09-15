@@ -2,7 +2,7 @@
 lifecycle = "2.8.6"
 espresso = "3.6.1"
 minSdk = "21"
-compileSdk = "34"
+compileSdk = "36"
 targetSdk = "34"
 
 [libraries]
