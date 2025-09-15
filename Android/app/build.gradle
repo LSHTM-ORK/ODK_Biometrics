@@ -16,13 +16,13 @@ if (secretsFile.exists()) {
 android {
     namespace "uk.ac.lshtm.keppel.android"
 
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk libs.versions.compileSdk.get().toInteger()
     ndkVersion rootProject.ext.ndkVersion
 
     defaultConfig {
         applicationId "uk.ac.lshtm.keppel.android"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         versionCode 45
         versionName "0.5.0"
 
