@@ -1,8 +1,10 @@
 package uk.ac.lshtm.keppel.android.settings
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.navigation.fragment.findNavController
@@ -61,8 +63,13 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        WindowCompat.enableEdgeToEdge(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
+            currentNightMode == Configuration.UI_MODE_NIGHT_NO
     }
 }
 
