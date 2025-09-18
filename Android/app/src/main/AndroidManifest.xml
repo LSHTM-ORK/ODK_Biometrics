@@ -28,9 +28,7 @@
 
         <activity
             android:name="uk.ac.lshtm.keppel.android.scanning.ScanActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
+            android:exported="true">
             <intent-filter>
                 <action android:name="uk.ac.lshtm.keppel.android.SCAN" />
                 <category android:name="android.intent.category.DEFAULT" />
