@@ -1,10 +1,8 @@
 package uk.ac.lshtm.keppel.android.settings
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.navigation.fragment.findNavController
@@ -13,6 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import uk.ac.lshtm.keppel.android.ActivityExt.enableEdgeToEdge
 import uk.ac.lshtm.keppel.android.BuildConfig
 import uk.ac.lshtm.keppel.android.External
 import uk.ac.lshtm.keppel.android.OdkExternalRequest
@@ -49,6 +48,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+
         this.supportFragmentManager.fragmentFactory = object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
                 return when (loadFragmentClass(classLoader, className)) {
@@ -63,13 +64,8 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        WindowCompat.enableEdgeToEdge(window)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
-            currentNightMode == Configuration.UI_MODE_NIGHT_NO
     }
 }
 
